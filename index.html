@@ -94,9 +94,9 @@
             background: rgba(255, 255, 255, 0.9);
             border: 4px solid #3b82f6;
             border-radius: 20px;
-            padding: 10px 40px;
+            padding: 5px 25px; /* הקטנת ריווח למניעת גלישה */
             color: #1e3a8a;
-            font-size: 3rem;
+            font-size: 2.2rem; /* הקטנת פונט להתאמה לנייד */
             font-weight: bold;
             pointer-events: none;
             z-index: 5;
@@ -104,7 +104,16 @@
             transition: all 0.3s ease;
             direction: ltr; 
             unicode-bidi: embed;
+            white-space: nowrap; /* מניעת שבירת שורות */
         }
+        /* התאמה למסכים גדולים יותר */
+        @media (min-width: 768px) {
+            .question-box {
+                font-size: 3rem;
+                padding: 10px 40px;
+            }
+        }
+
         body.archer-theme .question-box { background: #fff; border-color: #65a30d; color: #365314; box-shadow: 0 8px 0px rgba(101, 163, 13, 0.2); }
         body.underwater-theme .question-box { background: rgba(255, 255, 255, 0.9); border-color: #facc15; color: #0c4a6e; box-shadow: 0 8px 0px rgba(12, 74, 110, 0.3); }
         body.racing-theme .question-box { background: #fff; border-color: #ef4444; color: #b91c1c; box-shadow: 0 8px 0px rgba(185, 28, 28, 0.3); }
@@ -277,6 +286,11 @@
     let currentQuestion = null;
     let lastTime = 0;
     
+    // משתנים לזיהוי גרירה בטאץ'
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let isDragging = false;
+
     function resize() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -421,13 +435,13 @@
         if (!currentQuestion || gameMode !== 'archery') return;
         
         targets = [];
-        const correctIndex = Math.floor(Math.random() * 4);
-        const startY = canvas.height * 0.15;
-        const gapY = (canvas.height * 0.7) / 3;
+        const correctIndex = Math.floor(Math.random() * 3); // שינוי ל-3 מטרות
+        const startY = canvas.height * 0.2;
+        const gapY = (canvas.height * 0.6) / 2; // ריווח מתאים ל-3 אלמנטים
         const usedValues = new Set();
         usedValues.add(currentQuestion.answer);
 
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < 3; i++) { // לולאה עד 3
             let val;
             if (i === correctIndex) {
                 val = currentQuestion.answer;
@@ -456,7 +470,7 @@
         }
     }
 
-    function handleInput(x, y, isClick) {
+    function handleInput(x, y) {
         if (gameState !== 'playing') return;
         if (launchState !== 'idle') return; 
 
@@ -468,29 +482,58 @@
             player.y = y;
             if (player.y < 50) player.y = 50;
             if (player.y > canvas.height - 50) player.y = canvas.height - 50;
-
-            if (isClick && !arrow.active) {
-                shootArrow();
-            }
         }
     }
 
     function shootArrow() {
-        arrow.active = true;
-        arrow.x = player.x; 
-        arrow.y = player.y;
+        // פונקציית ירייה עצמאית
+        if (gameState === 'playing' && gameMode === 'archery' && !arrow.active) {
+            arrow.active = true;
+            arrow.x = player.x; 
+            arrow.y = player.y;
+        }
     }
 
-    canvas.addEventListener('mousemove', (e) => handleInput(e.clientX, e.clientY, false));
-    canvas.addEventListener('mousedown', (e) => handleInput(e.clientX, e.clientY, true));
+    // --- טיפול באירועי קלט ---
+
+    // עכבר
+    canvas.addEventListener('mousemove', (e) => handleInput(e.clientX, e.clientY));
+    canvas.addEventListener('mousedown', (e) => {
+        // בעכבר, קליק גם יורה
+        if (gameMode === 'archery') shootArrow();
+    });
+
+    // מגע (Touch) עם זיהוי גרירה vs טאפ
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const t = e.touches[0];
+        touchStartX = t.clientX;
+        touchStartY = t.clientY;
+        isDragging = false;
+        handleInput(t.clientX, t.clientY); // עדכון מיקום מיידי
+    }, { passive: false });
+
     canvas.addEventListener('touchmove', (e) => {
         e.preventDefault();
-        handleInput(e.touches[0].clientX, e.touches[0].clientY, false);
+        const t = e.touches[0];
+        
+        // בדיקה האם זזנו מספיק כדי שזה ייחשב גרירה
+        if (Math.abs(t.clientX - touchStartX) > 10 || Math.abs(t.clientY - touchStartY) > 10) {
+            isDragging = true;
+        }
+        
+        handleInput(t.clientX, t.clientY);
     }, { passive: false });
-    canvas.addEventListener('touchstart', (e) => {
-        e.preventDefault(); 
-        handleInput(e.touches[0].clientX, e.touches[0].clientY, true);
-    }, { passive: false });
+
+    canvas.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        // אם זו לא הייתה גרירה, סימן שזה "טאפ" - ואז יורים
+        if (!isDragging && gameMode === 'archery') {
+            shootArrow();
+        }
+        isDragging = false;
+    });
+
 
     function createParticles(x, y, color, amount = 20, type = 'spark') {
         for (let i = 0; i < amount; i++) {
