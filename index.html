@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>מסע בחלל המספרים</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+            overflow: hidden;
+            background-color: #0f172a;
+            touch-action: none;
+            user-select: none;
+            transition: background-color 1s ease;
+        }
+        body.archer-theme {
+            background-color: #ecfccb; /* יער */
+        }
+        body.underwater-theme {
+            background-color: #1e3a8a; /* כחול עמוק */
+            background: linear-gradient(to bottom, #3b82f6, #0f172a);
+        }
+        body.racing-theme {
+            background-color: #334155; /* אספלט */
+        }
+        body.soccer-theme {
+            background-color: #15803d; /* דשא */
+            background: linear-gradient(to bottom, #16a34a, #14532d);
+        }
+
+        canvas {
+            display: block;
+        }
+        .game-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 10;
+            transition: opacity 0.3s;
+        }
+        body.archer-theme .game-overlay { background: rgba(236, 252, 203, 0.95); }
+        body.underwater-theme .game-overlay { background: rgba(30, 58, 138, 0.95); }
+        body.racing-theme .game-overlay { background: rgba(51, 65, 85, 0.95); }
+        body.soccer-theme .game-overlay { background: rgba(20, 83, 45, 0.95); }
+        
+        /* צבעי טקסט לפי תמה */
+        body.archer-theme h1, body.archer-theme p, body.archer-theme h2, body.archer-theme label { color: #365314; text-shadow: none; }
+        body.underwater-theme h1, body.underwater-theme p, body.underwater-theme h2, body.underwater-theme label { color: #bfdbfe; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        body.racing-theme h1, body.racing-theme p, body.racing-theme h2, body.racing-theme label { color: #facc15; text-shadow: 2px 2px 0 #000; }
+        body.soccer-theme h1, body.soccer-theme p, body.soccer-theme h2, body.soccer-theme label { color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        
+        /* הגדרות טקסט כלליות בתפריטים */
+        label { color: white; }
+        h2 { color: white; }
+
+        .hidden {
+            display: none !important;
+        }
+        .hud {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 5;
+            text-shadow: 2px 2px 0px #000;
+            transition: color 0.3s ease;
+            direction: rtl; 
+        }
+        body.archer-theme .hud { color: #365314; text-shadow: none; }
+        body.underwater-theme .hud { color: #e0f2fe; }
+        body.racing-theme .hud { color: #facc15; }
+        body.soccer-theme .hud { color: #fff; }
+
+        .question-box {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: 4px solid #3b82f6;
+            border-radius: 20px;
+            padding: 10px 40px;
+            color: #1e3a8a;
+            font-size: 3rem;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 5;
+            box-shadow: 0 8px 0px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            direction: ltr; 
+            unicode-bidi: embed;
+        }
+        body.archer-theme .question-box { background: #fff; border-color: #65a30d; color: #365314; box-shadow: 0 8px 0px rgba(101, 163, 13, 0.2); }
+        body.underwater-theme .question-box { background: rgba(255, 255, 255, 0.9); border-color: #facc15; color: #0c4a6e; box-shadow: 0 8px 0px rgba(12, 74, 110, 0.3); }
+        body.racing-theme .question-box { background: #fff; border-color: #ef4444; color: #b91c1c; box-shadow: 0 8px 0px rgba(185, 28, 28, 0.3); }
+        body.soccer-theme .question-box { background: rgba(255, 255, 255, 0.9); border-color: #15803d; color: #14532d; box-shadow: 0 8px 0px rgba(20, 83, 45, 0.3); }
+
+        @keyframes flashRed {
+            0% { background-color: rgba(239, 68, 68, 0.3); }
+            100% { background-color: transparent; }
+        }
+        .flash-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 8;
+        }
+
+        /* סגנון לכפתורי הגדרות */
+        .settings-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 20;
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.2s;
+        }
+        .settings-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.4); }
+        body.archer-theme .settings-btn { border-color: #365314; color: #365314; background: rgba(54, 83, 20, 0.2); }
+        
+        .option-group {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 300px;
+        }
+        .radio-label {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+        .radio-label input { margin-left: 10px; transform: scale(1.2); }
+    </style>
+</head>
+<body>
+
+    <div id="flashOverlay" class="flash-overlay"></div>
+
+    <div class="hud" id="hud">
+        <div id="livesDisplay">חיים: ❤️❤️❤️</div>
+        <div id="scoreDisplay">ניקוד: 0</div>
+    </div>
+
+    <div class="question-box" id="questionDisplay">?</div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- מסך פתיחה -->
+    <div id="startScreen" class="game-overlay">
+        <div id="openSettingsBtn" class="settings-btn">⚙️</div>
+        
+        <h1 class="text-6xl font-extrabold text-white mb-4 text-center drop-shadow-lg" style="-webkit-text-stroke: 2px black;" id="titleText">
+            מסע בחלל המספרים
+        </h1>
+        <p class="text-gray-200 mb-8 text-center text-2xl font-bold max-w-md" id="instructionText">
+            גררו את החללית כדי לתפוס את התשובה הנכונה!
+        </p>
+        <button id="startBtn" class="bg-yellow-400 hover:bg-yellow-500 text-black border-b-4 border-yellow-700 font-bold py-4 px-12 rounded-full text-2xl shadow-xl transform transition hover:scale-105 active:scale-95 active:border-b-0 active:translate-y-1">
+            התחל משחק
+        </button>
+    </div>
+
+    <!-- מסך הגדרות -->
+    <div id="settingsScreen" class="game-overlay hidden">
+        <h2 class="text-4xl font-bold mb-6 text-white" style="-webkit-text-stroke: 1px black;">הגדרות</h2>
+        
+        <div class="option-group">
+            <h3 class="text-xl font-bold text-white mb-2 underline">סוג תרגילים</h3>
+            <label class="radio-label"><input type="radio" name="op" value="add" checked> חיבור בלבד (+)</label>
+            <label class="radio-label"><input type="radio" name="op" value="sub"> חיסור בלבד (-)</label>
+            <label class="radio-label"><input type="radio" name="op" value="add_sub"> חיבור וחיסור (+/-)</label>
+            <label class="radio-label"><input type="radio" name="op" value="mul"> כפל (×)</label>
+            <label class="radio-label"><input type="radio" name="op" value="div"> חילוק (÷)</label>
+            <label class="radio-label"><input type="radio" name="op" value="mul_div"> כפל וחילוק (×/÷)</label>
+            <label class="radio-label"><input type="radio" name="op" value="all"> הכל מהכל</label>
+        </div>
+
+        <div class="option-group">
+            <h3 class="text-xl font-bold text-white mb-2 underline">מהירות משחק</h3>
+            <label class="radio-label"><input type="radio" name="speed" value="0.7"> איטי (רגוע)</label>
+            <label class="radio-label"><input type="radio" name="speed" value="1.0" checked> רגיל</label>
+            <label class="radio-label"><input type="radio" name="speed" value="1.4"> מהיר (מאתגר)</label>
+        </div>
+
+        <button id="closeSettingsBtn" class="bg-blue-500 hover:bg-blue-600 text-white border-b-4 border-blue-800 font-bold py-3 px-8 rounded-full text-xl shadow-xl mt-4">
+            שמור וחזור
+        </button>
+    </div>
+
+    <!-- מסך סיום -->
+    <div id="gameOverScreen" class="game-overlay hidden">
+        <h2 class="text-5xl font-bold text-red-500 mb-4" style="-webkit-text-stroke: 1px white;">המשחק נגמר!</h2>
+        <p id="finalScore" class="text-3xl text-white mb-8 font-bold">ניקוד סופי: 0</p>
+        <button id="restartBtn" class="bg-green-500 hover:bg-green-600 text-white border-b-4 border-green-800 font-bold py-4 px-12 rounded-full text-2xl shadow-xl transition transform hover:scale-105 active:scale-95 active:border-b-0 active:translate-y-1">
+            שחק שוב
+        </button>
+    </div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const startScreen = document.getElementById('startScreen');
+    const settingsScreen = document.getElementById('settingsScreen');
+    const gameOverScreen = document.getElementById('gameOverScreen');
+    const questionDisplay = document.getElementById('questionDisplay');
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const livesDisplay = document.getElementById('livesDisplay');
+    const finalScoreDisplay = document.getElementById('finalScore');
+    const titleText = document.getElementById('titleText');
+    const instructionText = document.getElementById('instructionText');
+    const flashOverlay = document.getElementById('flashOverlay');
+    
+    const openSettingsBtn = document.getElementById('openSettingsBtn');
+    const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+
+    // קבועים לספי מעבר שלבים
+    const LEVEL_2_THRESHOLD = 5;
+    const LEVEL_3_THRESHOLD = 10;
+    const LEVEL_4_THRESHOLD = 15;
+    const LEVEL_5_THRESHOLD = 20;
+
+    let gameState = 'start'; 
+    let gameMode = 'space'; // 'space', 'archery', 'underwater', 'racing', 'soccer'
+    let score = 0;
+    let lives = 3;
+    let correctStreak = 0; 
+    
+    // הגדרות משתמש
+    let config = {
+        operations: 'add',
+        speedMultiplier: 1.0
+    };
+
+    // מצבי המראה (רלוונטי לחלל)
+    let launchState = 'idle'; 
+
+    let player = { x: 0, y: 0, width: 70, height: 70 };
+    let arrow = { active: false, x: 0, y: 0, w: 40, h: 10, speed: 18 };
+    let fallingObjects = []; 
+    let targets = []; 
+    let particles = [];
+    let feedbackTexts = []; 
+    let stars = []; 
+    // כביש (למצב מרוץ)
+    let roadStripes = [];
+    let roadOffset = 0;
+
+    let currentQuestion = null;
+    let lastTime = 0;
+    
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        if (gameMode !== 'archery') {
+            if (gameState === 'start' || gameState === 'gameover') {
+                player.y = canvas.height - 120;
+                player.x = canvas.width / 2;
+            } else if (launchState === 'idle') {
+                if (player.y > canvas.height - 70) {
+                     player.y = canvas.height - 120;
+                }
+            }
+        } else {
+            player.x = 80;
+        }
+        initStars();
+        initRoad();
+    }
+    window.addEventListener('resize', resize);
+
+    // --- ניהול הגדרות ---
+    openSettingsBtn.addEventListener('click', () => {
+        startScreen.classList.add('hidden');
+        settingsScreen.classList.remove('hidden');
+    });
+
+    closeSettingsBtn.addEventListener('click', () => {
+        const opRadios = document.getElementsByName('op');
+        for (let radio of opRadios) {
+            if (radio.checked) config.operations = radio.value;
+        }
+        const speedRadios = document.getElementsByName('speed');
+        for (let radio of speedRadios) {
+            if (radio.checked) config.speedMultiplier = parseFloat(radio.value);
+        }
+
+        settingsScreen.classList.add('hidden');
+        startScreen.classList.remove('hidden');
+    });
+
+    function generateQuestion() {
+        let n1, n2, operator, answer;
+        let ops = [];
+
+        switch (config.operations) {
+            case 'add': ops = ['+']; break;
+            case 'sub': ops = ['-']; break;
+            case 'add_sub': ops = ['+', '-']; break;
+            case 'mul': ops = ['*']; break;
+            case 'div': ops = ['/']; break;
+            case 'mul_div': ops = ['*', '/']; break;
+            case 'all': ops = ['+', '-', '*', '/']; break;
+            default: ops = ['+'];
+        }
+
+        const chosenOp = ops[Math.floor(Math.random() * ops.length)];
+        let maxNum = 10 + Math.floor(score / 2); 
+        if (maxNum > 30) maxNum = 30; 
+
+        if (chosenOp === '+') {
+            n1 = Math.floor(Math.random() * maxNum);
+            n2 = Math.floor(Math.random() * (maxNum - n1)) + 1;
+            operator = '+';
+            answer = n1 + n2;
+        } else if (chosenOp === '-') {
+            n1 = Math.floor(Math.random() * maxNum) + 1;
+            n2 = Math.floor(Math.random() * n1);
+            operator = '-';
+            answer = n1 - n2;
+        } else if (chosenOp === '*') {
+            let maxFactor = 5 + Math.floor(score / 5);
+            if (maxFactor > 10) maxFactor = 10;
+            n1 = Math.floor(Math.random() * maxFactor) + 1;
+            n2 = Math.floor(Math.random() * maxFactor) + 1;
+            operator = '×';
+            answer = n1 * n2;
+        } else if (chosenOp === '/') {
+            let maxDivisor = 5 + Math.floor(score / 5);
+            if (maxDivisor > 10) maxDivisor = 10;
+            n2 = Math.floor(Math.random() * maxDivisor) + 1;
+            answer = Math.floor(Math.random() * maxDivisor) + 1;
+            n1 = n2 * answer;
+            operator = '÷';
+        }
+
+        return {
+            text: `${n1} ${operator} ${n2} = ?`,
+            answer: answer
+        };
+    }
+
+    function spawnFallingObjects() {
+        if (!currentQuestion || (gameMode !== 'space' && gameMode !== 'underwater' && gameMode !== 'racing' && gameMode !== 'soccer') || launchState !== 'idle') return;
+
+        const lanes = 3; 
+        const laneWidth = canvas.width / lanes;
+        const correctLane = Math.floor(Math.random() * lanes);
+        const usedValues = new Set();
+        usedValues.add(currentQuestion.answer);
+
+        fallingObjects = []; 
+
+        for (let i = 0; i < lanes; i++) {
+            let val;
+            if (i === correctLane) {
+                val = currentQuestion.answer;
+            } else {
+                do {
+                    let range = 5;
+                    if (config.operations === 'mul' || config.operations === 'all') range = 10;
+                    const offset = Math.floor(Math.random() * (range * 2)) - range; 
+                    val = currentQuestion.answer + offset;
+                } while (val < 0 || usedValues.has(val));
+                usedValues.add(val);
+            }
+
+            let baseSpeed = 2 + (score * 0.05); 
+            if (gameMode === 'underwater') baseSpeed *= 0.6; 
+            if (gameMode === 'racing') baseSpeed *= 1.2; 
+            // כדורגל מהיר אבל לא מדי
+            if (gameMode === 'soccer') baseSpeed *= 1.1;
+
+            let speed = baseSpeed * config.speedMultiplier;
+            let startY = -80 - (Math.random() * 50);
+            
+            fallingObjects.push({
+                x: i * laneWidth + laneWidth / 2,
+                y: startY,
+                value: val,
+                radius: 45,
+                isCorrect: i === correctLane,
+                speed: speed, 
+                rotation: Math.random() * Math.PI,
+                rotationSpeed: 0.05, // סיבוב מהיר יותר לכדורים
+                wobbleOffset: Math.random() * Math.PI * 2 
+            });
+        }
+    }
+
+    function spawnTargets() {
+        if (!currentQuestion || gameMode !== 'archery') return;
+        
+        targets = [];
+        const correctIndex = Math.floor(Math.random() * 4);
+        const startY = canvas.height * 0.15;
+        const gapY = (canvas.height * 0.7) / 3;
+        const usedValues = new Set();
+        usedValues.add(currentQuestion.answer);
+
+        for (let i = 0; i < 4; i++) {
+            let val;
+            if (i === correctIndex) {
+                val = currentQuestion.answer;
+            } else {
+                let attempts = 0;
+                do {
+                    const offset = Math.floor(Math.random() * 10) - 5; 
+                    val = currentQuestion.answer + offset;
+                    attempts++;
+                } while ((val < 0 || usedValues.has(val)) && attempts < 20);
+                
+                if (usedValues.has(val)) val = val + 10;
+                usedValues.add(val);
+            }
+
+            targets.push({
+                x: canvas.width - 150, 
+                y: startY + i * gapY,
+                value: val,
+                radius: 50,
+                isCorrect: i === correctIndex,
+                scale: 1, 
+                hit: false,
+                wobble: Math.random() * Math.PI
+            });
+        }
+    }
+
+    function handleInput(x, y, isClick) {
+        if (gameState !== 'playing') return;
+        if (launchState !== 'idle') return; 
+
+        if (gameMode !== 'archery') {
+            player.x = x;
+            if (player.x < player.width/2) player.x = player.width/2;
+            if (player.x > canvas.width - player.width/2) player.x = canvas.width - player.width/2;
+        } else {
+            player.y = y;
+            if (player.y < 50) player.y = 50;
+            if (player.y > canvas.height - 50) player.y = canvas.height - 50;
+
+            if (isClick && !arrow.active) {
+                shootArrow();
+            }
+        }
+    }
+
+    function shootArrow() {
+        arrow.active = true;
+        arrow.x = player.x; 
+        arrow.y = player.y;
+    }
+
+    canvas.addEventListener('mousemove', (e) => handleInput(e.clientX, e.clientY, false));
+    canvas.addEventListener('mousedown', (e) => handleInput(e.clientX, e.clientY, true));
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        handleInput(e.touches[0].clientX, e.touches[0].clientY, false);
+    }, { passive: false });
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault(); 
+        handleInput(e.touches[0].clientX, e.touches[0].clientY, true);
+    }, { passive: false });
+
+    function createParticles(x, y, color, amount = 20, type = 'spark') {
+        for (let i = 0; i < amount; i++) {
+            particles.push({
+                x: x,
+                y: y,
+                vx: (Math.random() - 0.5) * 15,
+                vy: (Math.random() - 0.5) * 15,
+                life: 1.0,
+                color: color,
+                size: Math.random() * 6 + 2,
+                type: type
+            });
+        }
+    }
+
+    function createFloatingText(text, x, y, color) {
+        feedbackTexts.push({
+            text: text,
+            x: x,
+            y: y,
+            life: 1.0,
+            maxLife: 1.0,
+            color: color,
+            scale: 0.1 
+        });
+    }
+
+    function initStars() {
+        stars = [];
+        for(let i=0; i<80; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 3,
+                opacity: Math.random(),
+                speed: Math.random() * 2 + 1
+            });
+        }
+    }
+
+    function initRoad() {
+        roadStripes = [];
+        const stripeHeight = 60;
+        const gap = 40;
+        const total = Math.ceil(canvas.height / (stripeHeight + gap)) + 1;
+        
+        for(let i=0; i<total; i++) {
+            roadStripes.push(i * (stripeHeight + gap));
+        }
+    }
+
+    function update(deltaTime) {
+        if (gameState !== 'playing') return;
+
+        // --- בדיקת מעברי שלב ---
+        if (score >= LEVEL_2_THRESHOLD && score < LEVEL_3_THRESHOLD && gameMode === 'space' && launchState === 'idle') {
+            switchGameMode('archery');
+            return;
+        }
+        if (score >= LEVEL_3_THRESHOLD && score < LEVEL_4_THRESHOLD && gameMode === 'archery') {
+            switchGameMode('underwater');
+            return;
+        }
+        if (score >= LEVEL_4_THRESHOLD && score < LEVEL_5_THRESHOLD && gameMode === 'underwater') {
+            switchGameMode('racing');
+            return;
+        }
+        if (score >= LEVEL_5_THRESHOLD && gameMode === 'racing') {
+            switchGameMode('soccer');
+            return;
+        }
+
+
+        // --- ניהול המראה (רק בחלל) ---
+        if (gameMode === 'space' && launchState !== 'idle') {
+            if (launchState === 'launching') {
+                player.y -= 25; 
+                createParticles(player.x, player.y + 40, '#f97316', 5);
+                createParticles(player.x, player.y + 40, '#facc15', 5);
+                if (player.y < -150) {
+                    launchState = 'returning';
+                    player.y = canvas.height + 150; 
+                    fallingObjects = []; 
+                }
+            } else if (launchState === 'returning') {
+                player.y -= 10; 
+                createParticles(player.x, player.y + 40, '#f97316', 2);
+                if (player.y <= canvas.height - 120) {
+                    player.y = canvas.height - 120;
+                    launchState = 'idle';
+                    correctStreak = 0; 
+                    currentQuestion = null; 
+                }
+            }
+            return;
+        }
+
+        // יצירת שאלה אם אין
+        if (!currentQuestion && launchState === 'idle') {
+            currentQuestion = generateQuestion();
+            questionDisplay.textContent = currentQuestion.text;
+            questionDisplay.style.transform = "translateX(-50%) scale(1.1)";
+            setTimeout(() => questionDisplay.style.transform = "translateX(-50%) scale(1)", 200);
+            
+            if (gameMode !== 'archery') {
+                setTimeout(spawnFallingObjects, 500);
+            } else {
+                spawnTargets();
+            }
+        }
+
+        // --- לוגיקת אובייקטים נופלים ---
+        if (gameMode !== 'archery') {
+            
+            // תנועה אנכית קלה (חלל)
+            if (gameMode === 'space') {
+                let targetY = (canvas.height - 120) - (Math.min(correctStreak, 2) * 30);
+                if (launchState === 'idle') player.y += (targetY - player.y) * 0.1;
+            }
+            // מרוץ וכדורגל - קבוע למטה
+            if (gameMode === 'racing' || gameMode === 'soccer') {
+                let targetY = canvas.height - 100;
+                player.y += (targetY - player.y) * 0.1;
+            }
+            if (gameMode === 'racing') {
+                roadOffset += 10 * config.speedMultiplier; 
+                if (roadOffset > 100) roadOffset = 0;
+            }
+
+            for (let i = fallingObjects.length - 1; i >= 0; i--) {
+                let obj = fallingObjects[i];
+                if (!obj) continue;
+
+                obj.y += obj.speed;
+                obj.rotation += obj.rotationSpeed;
+                
+                if (gameMode === 'underwater') {
+                    obj.x += Math.sin(obj.y * 0.05 + obj.wobbleOffset) * 2;
+                }
+
+                const dx = player.x - obj.x;
+                const dy = player.y - obj.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+
+                if (dist < obj.radius + player.width/2) {
+                    handleAnswer(obj.isCorrect, obj.x, obj.y);
+                    fallingObjects = []; 
+                    return;
+                }
+
+                if (obj.y > canvas.height + 50) {
+                    fallingObjects.splice(i, 1);
+                    if (obj.isCorrect) {
+                        currentQuestion = null;
+                        fallingObjects = [];
+                        correctStreak = 0; 
+                        return;
+                    }
+                }
+            }
+            if (fallingObjects.length === 0 && currentQuestion && launchState === 'idle') {
+                setTimeout(() => { if(fallingObjects.length === 0) spawnFallingObjects(); }, 1000);
+            }
+        } 
+        // --- לוגיקת מצב חץ וקשת ---
+        else {
+            if (arrow.active) {
+                arrow.x += arrow.speed;
+                for (let t of targets) {
+                    if (t.hit) continue; 
+                    const dx = arrow.x - t.x;
+                    const dy = arrow.y - t.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < t.radius + 15) { 
+                        arrow.active = false;
+                        t.hit = true;
+                        handleAnswer(t.isCorrect, t.x, t.y);
+                        return;
+                    }
+                }
+                if (arrow.x > canvas.width) arrow.active = false;
+            }
+            for(let t of targets) {
+                if(t.hit) {
+                    t.scale += 0.15;
+                    t.radius *= 0.8; 
+                } else {
+                    t.wobble += 0.05; 
+                }
+            }
+        }
+
+        // עדכון חלקיקים
+        for (let i = particles.length - 1; i >= 0; i--) {
+            let p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.type === 'bubble') p.vy -= 0.1;
+            p.life -= 0.03;
+            if (p.life <= 0) particles.splice(i, 1);
+        }
+
+        // עדכון כוכבים / בועות רקע
+        if (gameMode === 'underwater') {
+             for(let s of stars) {
+                 s.y -= s.speed * 0.5 * config.speedMultiplier; 
+                 if(s.y < 0) { s.y = canvas.height; s.x = Math.random() * canvas.width; }
+             }
+        }
+
+        // עדכון טקסטים צפים
+        for (let i = feedbackTexts.length - 1; i >= 0; i--) {
+            let ft = feedbackTexts[i];
+            ft.y -= 1.5; 
+            ft.life -= 0.02;
+            if (ft.life > 0.8) ft.scale += 0.1;
+            else if (ft.scale > 1) ft.scale -= 0.05;
+            if (ft.life <= 0) feedbackTexts.splice(i, 1);
+        }
+    }
+
+    function handleAnswer(isCorrect, impactX, impactY) {
+        if (isCorrect) {
+            score++;
+            correctStreak++;
+            scoreDisplay.textContent = 'ניקוד: ' + score; 
+            
+            const praises = ["אלוף!", "מדהים!", "בול!", "וואו!", "יופי!"];
+            const text = praises[Math.floor(Math.random() * praises.length)];
+
+            createParticles(impactX, impactY, '#84cc16', 50, gameMode === 'underwater' ? 'bubble' : 'spark'); 
+            createFloatingText(text, impactX, impactY - 20, "#bef264");
+            
+            currentQuestion = null;
+            questionDisplay.textContent = "מצוין!";
+            questionDisplay.style.borderColor = "#84cc16";
+            questionDisplay.style.transform = "translateX(-50%) scale(1.2) rotate(-2deg)";
+            
+            setTimeout(() => { 
+                let borderColor = "#3b82f6";
+                if (gameMode === 'archery') borderColor = "#65a30d";
+                if (gameMode === 'underwater') borderColor = "#facc15";
+                if (gameMode === 'racing') borderColor = "#ef4444";
+                if (gameMode === 'soccer') borderColor = "#15803d";
+                
+                questionDisplay.style.borderColor = borderColor;
+                questionDisplay.style.transform = "translateX(-50%) scale(1) rotate(0deg)";
+            }, 600);
+
+            if (gameMode === 'space' && correctStreak > 0 && correctStreak % 3 === 0) {
+                launchState = 'launching';
+                createFloatingText("המראה!!!", player.x, player.y - 100, "#facc15");
+            }
+
+        } else {
+            lives--;
+            correctStreak = 0;
+            updateLives();
+            
+            createParticles(impactX, impactY, '#ef4444', 40, 'spark');
+            createFloatingText("אוי לא!", impactX, impactY - 20, "#fca5a5");
+
+            flashOverlay.style.animation = 'flashRed 0.3s';
+            setTimeout(() => flashOverlay.style.animation = 'none', 300);
+
+            if (gameMode !== 'archery') fallingObjects = [];
+            
+            if (lives <= 0) endGame();
+        }
+    }
+
+    function switchGameMode(mode) {
+        gameMode = mode;
+        fallingObjects = [];
+        targets = [];
+        currentQuestion = null;
+        arrow.active = false;
+        correctStreak = 0; 
+        launchState = 'idle';
+        
+        document.body.classList.remove('archer-theme', 'underwater-theme', 'racing-theme', 'soccer-theme');
+        
+        let msgText = "";
+        let msgColor = "";
+
+        if (mode === 'archery') {
+            document.body.classList.add('archer-theme');
+            titleText.textContent = "יער החשבון";
+            instructionText.textContent = "כוונו את הקשת ולחצו כדי לירות למטרה הנכונה!";
+            player.x = 80;
+            msgText = "שלב יער!";
+            msgColor = "#365314";
+        } else if (mode === 'underwater') {
+            document.body.classList.add('underwater-theme');
+            titleText.textContent = "מצולות הים";
+            instructionText.textContent = "הזיזו את הצוללת ותפסו את המדוזה הנכונה!";
+            player.x = canvas.width / 2;
+            player.y = canvas.height - 120;
+            msgText = "שלב ים!";
+            msgColor = "#0c4a6e";
+        } else if (mode === 'racing') {
+            document.body.classList.add('racing-theme');
+            titleText.textContent = "מרוץ הגרנד-פרי";
+            instructionText.textContent = "אספו את מטבעות הדלק עם התשובה הנכונה!";
+            player.x = canvas.width / 2;
+            player.y = canvas.height - 100;
+            msgText = "המרוץ התחיל!";
+            msgColor = "#facc15";
+            initRoad();
+        } else if (mode === 'soccer') {
+            document.body.classList.add('soccer-theme');
+            titleText.textContent = "אליפות הכדורגל";
+            instructionText.textContent = "הזיזו את השוער ותפסו את הכדורים!";
+            player.x = canvas.width / 2;
+            player.y = canvas.height - 100;
+            msgText = "בעיטת פתיחה!";
+            msgColor = "#ffffff";
+        }
+        
+        createParticles(canvas.width/2, canvas.height/2, '#ffffff', 100);
+        createFloatingText(msgText, canvas.width/2, canvas.height/2, msgColor);
+        questionDisplay.textContent = "שלב חדש!";
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // --- רקעים ---
+        if (gameMode === 'space' || gameMode === 'underwater') {
+            ctx.fillStyle = gameMode === 'underwater' ? 'rgba(255, 255, 255, 0.3)' : 'white';
+            for(let s of stars) {
+                ctx.globalAlpha = s.opacity;
+                ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+        }
+
+        // רקע למרוץ
+        if (gameMode === 'racing') {
+            ctx.fillStyle = '#166534'; // דשא
+            ctx.fillRect(0, 0, 20, canvas.height);
+            ctx.fillRect(canvas.width - 20, 0, 20, canvas.height);
+            ctx.fillStyle = '#334155'; // אספלט
+            ctx.fillRect(20, 0, canvas.width - 40, canvas.height);
+            ctx.fillStyle = '#ffffff';
+            const laneWidth = (canvas.width - 40) / 3;
+            for (let x = 1; x < 3; x++) {
+                let laneX = 20 + x * laneWidth;
+                for (let y of roadStripes) {
+                    let drawY = (y + roadOffset) % canvas.height;
+                    if (drawY > canvas.height - 40) {
+                         ctx.fillRect(laneX - 5, -40 + (drawY - canvas.height + 40), 10, 40);
+                    }
+                    ctx.fillRect(laneX - 5, drawY, 10, 40);
+                }
+            }
+        }
+        
+        // רקע לכדורגל
+        if (gameMode === 'soccer') {
+            // קווים של המגרש
+            ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            ctx.lineWidth = 4;
+            
+            // עיגול אמצע
+            ctx.beginPath();
+            ctx.arc(canvas.width/2, canvas.height/2, 100, 0, Math.PI*2);
+            ctx.stroke();
+            
+            // קו אמצע
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height/2);
+            ctx.lineTo(canvas.width, canvas.height/2);
+            ctx.stroke();
+            
+            // רחבת השער למטה
+            ctx.strokeRect(canvas.width/2 - 200, canvas.height - 150, 400, 150);
+        }
+
+        if (gameState !== 'playing') return;
+
+        // --- ציור מצב חלל ---
+        if (gameMode === 'space') {
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            if (launchState === 'launching') ctx.translate(Math.random()*4-2, Math.random()*4-2);
+            ctx.fillStyle = '#3b82f6';
+            ctx.beginPath(); ctx.moveTo(0, -35); ctx.lineTo(25, 25); ctx.lineTo(0, 15); ctx.lineTo(-25, 25); ctx.closePath(); ctx.fill();
+            let flameSize = (launchState === 'launching') ? 60 : 35;
+            ctx.fillStyle = '#f97316'; ctx.beginPath(); ctx.moveTo(-12, 25); ctx.lineTo(12, 25); ctx.lineTo(0, flameSize + Math.random() * 15); ctx.closePath(); ctx.fill();
+            if (launchState === 'launching') {
+                ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.moveTo(-8, 25); ctx.lineTo(8, 25); ctx.lineTo(0, 40 + Math.random() * 10); ctx.closePath(); ctx.fill();
+            }
+            ctx.fillStyle = '#60a5fa'; ctx.beginPath(); ctx.arc(0, -5, 12, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(3, -8, 4, 0, Math.PI*2); ctx.fill(); 
+            ctx.restore();
+
+            for(let m of fallingObjects) {
+                ctx.save();
+                ctx.translate(m.x, m.y);
+                ctx.rotate(m.rotation);
+                ctx.fillStyle = '#64748b'; ctx.beginPath(); ctx.arc(0, 0, m.radius, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#475569'; ctx.beginPath(); ctx.arc(-15, -10, 8, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(10, 15, 6, 0, Math.PI*2); ctx.fill();
+                ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 4; ctx.stroke();
+                ctx.rotate(-m.rotation);
+                ctx.fillStyle = '#fff'; ctx.font = '900 35px "Rubik"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillText(m.value, 2, 2);
+                ctx.fillStyle = '#fff'; ctx.fillText(m.value, 0, 0);
+                ctx.restore();
+            }
+        } 
+        
+        // --- ציור מצב ים ---
+        else if (gameMode === 'underwater') {
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            ctx.fillStyle = '#eab308'; 
+            ctx.beginPath(); ctx.ellipse(0, 10, 40, 25, 0, 0, Math.PI * 2); ctx.fill();
+            ctx.strokeStyle = '#a16207'; ctx.lineWidth = 3; ctx.stroke();
+            ctx.fillStyle = '#eab308'; ctx.beginPath(); ctx.rect(-15, -25, 30, 25); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, -25); ctx.lineTo(0, -40); ctx.lineTo(15, -40); ctx.lineWidth = 6; ctx.stroke();
+            ctx.fillStyle = '#3b82f6'; 
+            ctx.beginPath(); ctx.arc(-15, 10, 8, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(15, 10, 8, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#713f12'; ctx.translate(-45, 10); ctx.rotate(Date.now() / 100); 
+            ctx.fillRect(-2, -15, 4, 30);
+            ctx.restore();
+
+            for(let m of fallingObjects) {
+                ctx.save();
+                ctx.translate(m.x, m.y);
+                ctx.fillStyle = 'rgba(236, 72, 153, 0.8)'; 
+                ctx.beginPath(); ctx.arc(0, -10, m.radius, Math.PI, 0); ctx.fill();
+                ctx.strokeStyle = 'rgba(236, 72, 153, 0.6)'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+                for(let i=-2; i<=2; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(i * 10, -10);
+                    ctx.quadraticCurveTo(i * 15, 10 + Math.sin(Date.now()/200 + i)*10, i * 5, 30);
+                    ctx.stroke();
+                }
+                ctx.fillStyle = '#fff'; ctx.font = '900 35px "Rubik"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.strokeStyle = 'black'; ctx.lineWidth = 2;
+                ctx.strokeText(m.value, 0, -15);
+                ctx.fillText(m.value, 0, -15);
+                ctx.restore();
+            }
+        }
+
+        // --- ציור מצב מרוץ ---
+        else if (gameMode === 'racing') {
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            ctx.fillStyle = '#dc2626'; 
+            ctx.fillRect(-20, -35, 40, 70);
+            ctx.fillStyle = '#1e293b'; 
+            ctx.fillRect(-15, -10, 30, 20);
+            ctx.fillStyle = '#991b1b'; 
+            ctx.fillRect(-22, 25, 44, 10);
+            ctx.fillStyle = 'black';
+            ctx.fillRect(-24, -30, 6, 15); ctx.fillRect(18, -30, 6, 15);
+            ctx.fillRect(-24, 15, 6, 15); ctx.fillRect(18, 15, 6, 15);
+            ctx.fillStyle = '#facc15';
+            ctx.beginPath(); ctx.arc(-12, -35, 5, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(12, -35, 5, 0, Math.PI*2); ctx.fill();
+            ctx.restore();
+
+            for(let m of fallingObjects) {
+                ctx.save();
+                ctx.translate(m.x, m.y);
+                ctx.rotate(m.rotation * 0.5); 
+                ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.arc(0, 0, m.radius, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#eab308'; ctx.beginPath(); ctx.arc(0, 0, m.radius - 5, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#a16207'; ctx.lineWidth = 3; ctx.stroke();
+                ctx.fillStyle = '#000'; ctx.font = '900 35px "Rubik"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                ctx.fillText(m.value, 0, 0);
+                ctx.restore();
+            }
+        }
+        
+        // --- ציור מצב כדורגל ---
+        else if (gameMode === 'soccer') {
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            
+            // שוער
+            // חולצה
+            ctx.fillStyle = '#ef4444'; 
+            ctx.beginPath(); ctx.moveTo(0, -30); ctx.lineTo(25, 0); ctx.lineTo(20, 30); ctx.lineTo(-20, 30); ctx.lineTo(-25, 0); ctx.fill();
+            // ראש
+            ctx.fillStyle = '#fca5a5'; ctx.beginPath(); ctx.arc(0, -40, 12, 0, Math.PI*2); ctx.fill();
+            // כפפות
+            ctx.fillStyle = '#fbbf24'; 
+            ctx.beginPath(); ctx.arc(-30, -10, 12, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(30, -10, 12, 0, Math.PI*2); ctx.fill();
+            ctx.restore();
+
+            // כדורים
+            for(let m of fallingObjects) {
+                ctx.save();
+                ctx.translate(m.x, m.y);
+                ctx.rotate(m.rotation);
+                
+                // כדור לבן
+                ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, m.radius, 0, Math.PI * 2); ctx.fill();
+                ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
+                
+                // טלאים שחורים
+                ctx.fillStyle = '#000';
+                for(let i=0; i<5; i++) {
+                    ctx.beginPath(); ctx.arc(Math.cos(i*1.25)*20, Math.sin(i*1.25)*20, 8, 0, Math.PI*2); ctx.fill();
+                }
+                
+                // מספר במרכז
+                ctx.fillStyle = '#000'; ctx.font = '900 35px "Rubik"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                // רקע לבן קטן למספר לקריאות
+                ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.strokeText(m.value, 0, 0);
+                ctx.fillText(m.value, 0, 0);
+                
+                ctx.restore();
+            }
+        }
+
+        // --- ציור מצב חץ וקשת ---
+        else {
+            // קשת
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            ctx.strokeStyle = '#854d0e'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.arc(-10, 0, 45, -Math.PI/2, Math.PI/2, false); ctx.stroke();
+            ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(-10, -45); 
+            if (arrow.active) ctx.lineTo(-10, 45); 
+            else ctx.lineTo(-35, 0); 
+            if (!arrow.active) ctx.lineTo(-10, 45);
+            ctx.stroke();
+
+            if (!arrow.active) {
+                ctx.fillStyle = '#78350f'; ctx.fillRect(-35, -3, 50, 6); 
+                ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(15, 0); ctx.lineTo(5, -8); ctx.lineTo(5, 8); ctx.fill(); 
+            }
+            ctx.restore();
+
+            if (arrow.active) {
+                ctx.save();
+                ctx.translate(arrow.x, arrow.y);
+                ctx.fillStyle = '#78350f'; ctx.fillRect(-25, -3, 50, 6);
+                ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(25, 0); ctx.lineTo(15, -8); ctx.lineTo(15, 8); ctx.fill();
+                ctx.restore();
+            }
+
+            // מטרות
+            for (let t of targets) {
+                if (t.hit && t.radius < 5) continue; 
+
+                ctx.save();
+                ctx.translate(t.x, t.y + Math.sin(t.wobble)*5); 
+                ctx.scale(t.scale, t.scale); 
+                
+                ctx.shadowColor = 'rgba(0,0,0,0.2)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 5;
+                ctx.fillStyle = '#dc2626'; ctx.beginPath(); ctx.arc(0, 0, t.radius, 0, Math.PI*2); ctx.fill(); 
+                ctx.shadowColor = 'transparent';
+                ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, t.radius * 0.7, 0, Math.PI*2); ctx.fill(); 
+                ctx.fillStyle = '#dc2626'; ctx.beginPath(); ctx.arc(0, 0, t.radius * 0.4, 0, Math.PI*2); ctx.fill(); 
+                
+                if (!t.hit) {
+                    ctx.fillStyle = '#fff'; 
+                    ctx.font = '900 30px "Rubik"'; 
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.strokeStyle = 'black'; ctx.lineWidth = 4;
+                    ctx.strokeText(t.value, 0, 0);
+                    ctx.fillText(t.value, 0, 0);
+                }
+                
+                ctx.restore();
+            }
+        }
+
+        // חלקיקים
+        for(let p of particles) {
+            ctx.globalAlpha = p.life;
+            ctx.fillStyle = p.color;
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+
+        // טקסטים צפים משופרים
+        for(let ft of feedbackTexts) {
+            ctx.save();
+            ctx.translate(ft.x, ft.y);
+            ctx.scale(ft.scale, ft.scale);
+            ctx.rotate((Math.random()-0.5)*0.2); 
+            
+            ctx.font = '900 50px "Rubik"';
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 8;
+            ctx.strokeText(ft.text, 0, 0);
+            
+            ctx.fillStyle = ft.color;
+            ctx.fillText(ft.text, 0, 0);
+            
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.fillText(ft.text, -2, -2);
+            
+            ctx.restore();
+        }
+    }
+
+    function gameLoop(timestamp) {
+        update();
+        draw();
+        requestAnimationFrame(gameLoop);
+    }
+
+    function updateLives() {
+        let hearts = ''; for(let i=0; i<lives; i++) hearts += '❤️'; 
+        livesDisplay.textContent = 'חיים: ' + hearts;
+    }
+
+    function startGame() {
+        score = 0; lives = 3; 
+        gameMode = 'space';
+        correctStreak = 0;
+        launchState = 'idle';
+        document.body.className = ''; 
+        
+        fallingObjects = []; targets = []; currentQuestion = null; 
+        feedbackTexts = [];
+        scoreDisplay.textContent = 'ניקוד: 0';
+        updateLives();
+        
+        questionDisplay.textContent = '?';
+        startScreen.classList.add('hidden'); gameOverScreen.classList.add('hidden');
+        gameState = 'playing'; 
+        resize();
+        
+        // הגדרת ברירת מחדל אם לא שונה
+        if(!config.operations) config.operations = 'add'; 
+    }
+
+    function endGame() {
+        gameState = 'gameover'; 
+        finalScoreDisplay.textContent = 'ניקוד סופי: ' + score; 
+        gameOverScreen.classList.remove('hidden');
+    }
+
+    document.getElementById('startBtn').addEventListener('click', startGame);
+    document.getElementById('restartBtn').addEventListener('click', startGame);
+
+    resize();
+    initStars();
+    initRoad();
+    requestAnimationFrame(gameLoop);
+
+</script>
+</body>
+</html>
