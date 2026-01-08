@@ -15,68 +15,48 @@
             user-select: none;
             transition: background-color 1s ease;
         }
-        body.archer-theme {
-            background-color: #ecfccb; /* יער */
-        }
-        body.underwater-theme {
-            background-color: #1e3a8a; /* כחול עמוק */
-            background: linear-gradient(to bottom, #3b82f6, #0f172a);
-        }
-        body.racing-theme {
-            background-color: #334155; /* אספלט */
-        }
-        body.soccer-theme {
-            background-color: #15803d; /* דשא */
-            background: linear-gradient(to bottom, #16a34a, #14532d);
-        }
+        body.archer-theme { background-color: #ecfccb; }
+        body.underwater-theme { background: linear-gradient(to bottom, #3b82f6, #0f172a); }
+        body.racing-theme { background-color: #334155; }
+        body.soccer-theme { background: linear-gradient(to bottom, #16a34a, #14532d); }
+        body.unicorn-theme { background: linear-gradient(to right, #fce7f3, #ddd6fe); }
 
-        canvas {
-            display: block;
-        }
+        canvas { display: block; }
+        
         .game-overlay {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
             background: rgba(15, 23, 42, 0.95);
             z-index: 10;
             transition: opacity 0.3s;
+            overflow-y: auto; 
         }
+        
         body.archer-theme .game-overlay { background: rgba(236, 252, 203, 0.95); }
         body.underwater-theme .game-overlay { background: rgba(30, 58, 138, 0.95); }
         body.racing-theme .game-overlay { background: rgba(51, 65, 85, 0.95); }
         body.soccer-theme .game-overlay { background: rgba(20, 83, 45, 0.95); }
+        body.unicorn-theme .game-overlay { background: rgba(255, 240, 245, 0.9); }
         
-        /* צבעי טקסט לפי תמה */
         body.archer-theme h1, body.archer-theme p, body.archer-theme h2, body.archer-theme label { color: #365314; text-shadow: none; }
         body.underwater-theme h1, body.underwater-theme p, body.underwater-theme h2, body.underwater-theme label { color: #bfdbfe; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         body.racing-theme h1, body.racing-theme p, body.racing-theme h2, body.racing-theme label { color: #facc15; text-shadow: 2px 2px 0 #000; }
         body.soccer-theme h1, body.soccer-theme p, body.soccer-theme h2, body.soccer-theme label { color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        body.unicorn-theme h1, body.unicorn-theme p, body.unicorn-theme h2, body.unicorn-theme label { color: #be185d; text-shadow: none; }
         
-        /* הגדרות טקסט כלליות בתפריטים */
         label { color: white; }
         h2 { color: white; }
+        h3 { color: white; } 
 
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
+        
         .hud {
-            position: absolute;
-            top: 10px;
-            width: 100%;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            color: white;
-            font-size: 1.5rem;
-            font-weight: bold;
-            pointer-events: none;
-            z-index: 5;
+            position: absolute; top: 10px; width: 100%; padding: 0 20px;
+            display: flex; justify-content: space-between;
+            color: white; font-size: 1.5rem; font-weight: bold;
+            pointer-events: none; z-index: 5;
             text-shadow: 2px 2px 0px #000;
             transition: color 0.3s ease;
             direction: rtl; 
@@ -85,89 +65,60 @@
         body.underwater-theme .hud { color: #e0f2fe; }
         body.racing-theme .hud { color: #facc15; }
         body.soccer-theme .hud { color: #fff; }
+        body.unicorn-theme .hud { color: #a21caf; text-shadow: none; }
 
         .question-box {
-            position: absolute;
-            top: 70px;
-            left: 50%;
-            transform: translateX(-50%);
+            position: absolute; top: 70px; left: 50%; transform: translateX(-50%);
             background: rgba(255, 255, 255, 0.9);
-            border: 4px solid #3b82f6;
-            border-radius: 20px;
-            padding: 5px 25px; /* הקטנת ריווח למניעת גלישה */
-            color: #1e3a8a;
-            font-size: 2.2rem; /* הקטנת פונט להתאמה לנייד */
-            font-weight: bold;
-            pointer-events: none;
-            z-index: 5;
+            border: 4px solid #3b82f6; border-radius: 20px;
+            padding: 5px 25px;
+            color: #1e3a8a; font-size: 2.2rem; font-weight: bold;
+            pointer-events: none; z-index: 5;
             box-shadow: 0 8px 0px rgba(0,0,0,0.2);
             transition: all 0.3s ease;
-            direction: ltr; 
-            unicode-bidi: embed;
-            white-space: nowrap; /* מניעת שבירת שורות */
+            direction: ltr; unicode-bidi: embed; white-space: nowrap;
         }
-        /* התאמה למסכים גדולים יותר */
-        @media (min-width: 768px) {
-            .question-box {
-                font-size: 3rem;
-                padding: 10px 40px;
-            }
-        }
+        @media (min-width: 768px) { .question-box { font-size: 3rem; padding: 10px 40px; } }
 
         body.archer-theme .question-box { background: #fff; border-color: #65a30d; color: #365314; box-shadow: 0 8px 0px rgba(101, 163, 13, 0.2); }
         body.underwater-theme .question-box { background: rgba(255, 255, 255, 0.9); border-color: #facc15; color: #0c4a6e; box-shadow: 0 8px 0px rgba(12, 74, 110, 0.3); }
         body.racing-theme .question-box { background: #fff; border-color: #ef4444; color: #b91c1c; box-shadow: 0 8px 0px rgba(185, 28, 28, 0.3); }
         body.soccer-theme .question-box { background: rgba(255, 255, 255, 0.9); border-color: #15803d; color: #14532d; box-shadow: 0 8px 0px rgba(20, 83, 45, 0.3); }
+        body.unicorn-theme .question-box { background: #fff; border-color: #d946ef; color: #a21caf; box-shadow: 0 8px 0px rgba(192, 38, 211, 0.2); }
 
-        @keyframes flashRed {
-            0% { background-color: rgba(239, 68, 68, 0.3); }
-            100% { background-color: transparent; }
-        }
+        @keyframes flashRed { 0% { background-color: rgba(239, 68, 68, 0.3); } 100% { background-color: transparent; } }
         .flash-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 8;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 8;
         }
 
-        /* סגנון לכפתורי הגדרות */
         .settings-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
+            position: absolute; top: 20px; left: 20px;
             background: rgba(255,255,255,0.2);
-            border: 2px solid white;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            z-index: 20;
-            color: white;
-            font-size: 1.5rem;
+            border: 2px solid white; border-radius: 50%;
+            width: 50px; height: 50px;
+            display: flex; justify-content: center; align-items: center;
+            cursor: pointer; z-index: 20;
+            color: white; font-size: 1.5rem;
             transition: transform 0.2s;
         }
         .settings-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.4); }
         body.archer-theme .settings-btn { border-color: #365314; color: #365314; background: rgba(54, 83, 20, 0.2); }
+        body.unicorn-theme .settings-btn { border-color: #db2777; color: #db2777; background: rgba(255, 255, 255, 0.5); }
         
         .option-group {
             background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            width: 100%;
-            max-width: 300px;
+            padding: 15px; border-radius: 10px;
+            margin-bottom: 15px; width: 100%; max-width: 300px;
         }
         .radio-label {
-            display: flex;
-            align-items: center;
-            margin: 5px 0;
-            cursor: pointer;
-            font-size: 1.1rem;
+            display: flex; align-items: center;
+            margin: 5px 0; cursor: pointer; font-size: 1.1rem;
         }
         .radio-label input { margin-left: 10px; transform: scale(1.2); }
+        
+        #settingsScreen { justify-content: flex-start; padding-top: 20px; }
+        #settingsScreen .option-group { flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -200,13 +151,23 @@
 
     <!-- מסך הגדרות -->
     <div id="settingsScreen" class="game-overlay hidden">
-        <h2 class="text-4xl font-bold mb-6 text-white" style="-webkit-text-stroke: 1px black;">הגדרות</h2>
+        <h2 class="text-4xl font-bold mb-4 text-white" style="-webkit-text-stroke: 1px black;">הגדרות</h2>
         
         <div class="option-group">
+            <h3 class="text-xl font-bold text-white mb-2 underline">בחר שלב התחלתי (טסט)</h3>
+            <label class="radio-label"><input type="radio" name="startLevel" value="space" checked> חלל (0)</label>
+            <label class="radio-label"><input type="radio" name="startLevel" value="archery"> יער (5)</label>
+            <label class="radio-label"><input type="radio" name="startLevel" value="underwater"> ים (10)</label>
+            <label class="radio-label"><input type="radio" name="startLevel" value="racing"> מרוץ (15)</label>
+            <label class="radio-label"><input type="radio" name="startLevel" value="soccer"> כדורגל (20)</label>
+            <label class="radio-label"><input type="radio" name="startLevel" value="unicorn"> חד-קרן (25)</label>
+        </div>
+
+        <div class="option-group">
             <h3 class="text-xl font-bold text-white mb-2 underline">סוג תרגילים</h3>
-            <label class="radio-label"><input type="radio" name="op" value="add" checked> חיבור בלבד (+)</label>
+            <label class="radio-label"><input type="radio" name="op" value="add"> חיבור בלבד (+)</label>
             <label class="radio-label"><input type="radio" name="op" value="sub"> חיסור בלבד (-)</label>
-            <label class="radio-label"><input type="radio" name="op" value="add_sub"> חיבור וחיסור (+/-)</label>
+            <label class="radio-label"><input type="radio" name="op" value="add_sub" checked> חיבור וחיסור (+/-)</label>
             <label class="radio-label"><input type="radio" name="op" value="mul"> כפל (×)</label>
             <label class="radio-label"><input type="radio" name="op" value="div"> חילוק (÷)</label>
             <label class="radio-label"><input type="radio" name="op" value="mul_div"> כפל וחילוק (×/÷)</label>
@@ -220,7 +181,7 @@
             <label class="radio-label"><input type="radio" name="speed" value="1.4"> מהיר (מאתגר)</label>
         </div>
 
-        <button id="closeSettingsBtn" class="bg-blue-500 hover:bg-blue-600 text-white border-b-4 border-blue-800 font-bold py-3 px-8 rounded-full text-xl shadow-xl mt-4">
+        <button id="closeSettingsBtn" class="bg-blue-500 hover:bg-blue-600 text-white border-b-4 border-blue-800 font-bold py-3 px-8 rounded-full text-xl shadow-xl mt-4 mb-8">
             שמור וחזור
         </button>
     </div>
@@ -256,37 +217,36 @@
     const LEVEL_3_THRESHOLD = 10;
     const LEVEL_4_THRESHOLD = 15;
     const LEVEL_5_THRESHOLD = 20;
+    const LEVEL_6_THRESHOLD = 25;
 
     let gameState = 'start'; 
-    let gameMode = 'space'; // 'space', 'archery', 'underwater', 'racing', 'soccer'
+    let gameMode = 'space'; 
     let score = 0;
     let lives = 3;
     let correctStreak = 0; 
     
     // הגדרות משתמש
     let config = {
-        operations: 'add',
-        speedMultiplier: 1.0
+        operations: 'add_sub', // ברירת מחדל מעודכנת
+        speedMultiplier: 1.0,
+        startLevel: 'space' // רמת ברירת מחדל
     };
 
-    // מצבי המראה (רלוונטי לחלל)
     let launchState = 'idle'; 
 
     let player = { x: 0, y: 0, width: 70, height: 70 };
     let arrow = { active: false, x: 0, y: 0, w: 40, h: 10, speed: 18 };
-    let fallingObjects = []; 
+    let enemies = []; 
     let targets = []; 
     let particles = [];
     let feedbackTexts = []; 
     let stars = []; 
-    // כביש (למצב מרוץ)
     let roadStripes = [];
     let roadOffset = 0;
 
     let currentQuestion = null;
     let lastTime = 0;
     
-    // משתנים לזיהוי גרירה בטאץ'
     let touchStartX = 0;
     let touchStartY = 0;
     let isDragging = false;
@@ -295,7 +255,14 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         
-        if (gameMode !== 'archery') {
+        // אתחול מיקום שחקן לפי מצב משחק
+        if (gameMode === 'archery' || gameMode === 'unicorn') {
+            player.x = 80;
+            // בחד קרן מתחילים באמצע הגובה
+            if(gameMode === 'unicorn' && (gameState === 'start' || gameState === 'gameover')) {
+                player.y = canvas.height / 2;
+            }
+        } else {
             if (gameState === 'start' || gameState === 'gameover') {
                 player.y = canvas.height - 120;
                 player.x = canvas.width / 2;
@@ -304,8 +271,6 @@
                      player.y = canvas.height - 120;
                 }
             }
-        } else {
-            player.x = 80;
         }
         initStars();
         initRoad();
@@ -326,6 +291,10 @@
         const speedRadios = document.getElementsByName('speed');
         for (let radio of speedRadios) {
             if (radio.checked) config.speedMultiplier = parseFloat(radio.value);
+        }
+        const levelRadios = document.getElementsByName('startLevel');
+        for (let radio of levelRadios) {
+            if (radio.checked) config.startLevel = radio.value;
         }
 
         settingsScreen.classList.add('hidden');
@@ -383,16 +352,16 @@
         };
     }
 
-    function spawnFallingObjects() {
-        if (!currentQuestion || (gameMode !== 'space' && gameMode !== 'underwater' && gameMode !== 'racing' && gameMode !== 'soccer') || launchState !== 'idle') return;
+    function spawnEnemies() {
+        if (!currentQuestion || gameMode === 'archery' || gameMode === 'unicorn' || launchState !== 'idle') return;
+
+        const usedValues = new Set();
+        usedValues.add(currentQuestion.answer);
+        enemies = []; 
 
         const lanes = 3; 
         const laneWidth = canvas.width / lanes;
         const correctLane = Math.floor(Math.random() * lanes);
-        const usedValues = new Set();
-        usedValues.add(currentQuestion.answer);
-
-        fallingObjects = []; 
 
         for (let i = 0; i < lanes; i++) {
             let val;
@@ -411,37 +380,37 @@
             let baseSpeed = 2 + (score * 0.05); 
             if (gameMode === 'underwater') baseSpeed *= 0.6; 
             if (gameMode === 'racing') baseSpeed *= 1.2; 
-            // כדורגל מהיר אבל לא מדי
             if (gameMode === 'soccer') baseSpeed *= 1.1;
 
             let speed = baseSpeed * config.speedMultiplier;
             let startY = -80 - (Math.random() * 50);
             
-            fallingObjects.push({
+            enemies.push({
                 x: i * laneWidth + laneWidth / 2,
                 y: startY,
                 value: val,
                 radius: 45,
                 isCorrect: i === correctLane,
-                speed: speed, 
+                vx: 0,
+                vy: speed, 
                 rotation: Math.random() * Math.PI,
-                rotationSpeed: 0.05, // סיבוב מהיר יותר לכדורים
+                rotationSpeed: 0.05, 
                 wobbleOffset: Math.random() * Math.PI * 2 
             });
         }
     }
 
     function spawnTargets() {
-        if (!currentQuestion || gameMode !== 'archery') return;
+        if (!currentQuestion || (gameMode !== 'archery' && gameMode !== 'unicorn')) return;
         
         targets = [];
-        const correctIndex = Math.floor(Math.random() * 3); // שינוי ל-3 מטרות
+        const correctIndex = Math.floor(Math.random() * 3); 
         const startY = canvas.height * 0.2;
-        const gapY = (canvas.height * 0.6) / 2; // ריווח מתאים ל-3 אלמנטים
+        const gapY = (canvas.height * 0.6) / 2; 
         const usedValues = new Set();
         usedValues.add(currentQuestion.answer);
 
-        for (let i = 0; i < 3; i++) { // לולאה עד 3
+        for (let i = 0; i < 3; i++) { 
             let val;
             if (i === correctIndex) {
                 val = currentQuestion.answer;
@@ -457,6 +426,8 @@
                 usedValues.add(val);
             }
 
+            // מטרות לחד קרן (עננים) או יער (מטרות)
+            // מיקום X קבוע בצד ימין
             targets.push({
                 x: canvas.width - 150, 
                 y: startY + i * gapY,
@@ -474,20 +445,19 @@
         if (gameState !== 'playing') return;
         if (launchState !== 'idle') return; 
 
-        if (gameMode !== 'archery') {
-            player.x = x;
-            if (player.x < player.width/2) player.x = player.width/2;
-            if (player.x > canvas.width - player.width/2) player.x = canvas.width - player.width/2;
-        } else {
+        if (gameMode === 'archery' || gameMode === 'unicorn') {
             player.y = y;
             if (player.y < 50) player.y = 50;
             if (player.y > canvas.height - 50) player.y = canvas.height - 50;
+        } else {
+            player.x = x;
+            if (player.x < player.width/2) player.x = player.width/2;
+            if (player.x > canvas.width - player.width/2) player.x = canvas.width - player.width/2;
         }
     }
 
     function shootArrow() {
-        // פונקציית ירייה עצמאית
-        if (gameState === 'playing' && gameMode === 'archery' && !arrow.active) {
+        if (gameState === 'playing' && (gameMode === 'archery' || gameMode === 'unicorn') && !arrow.active) {
             arrow.active = true;
             arrow.x = player.x; 
             arrow.y = player.y;
@@ -495,40 +465,32 @@
     }
 
     // --- טיפול באירועי קלט ---
-
-    // עכבר
     canvas.addEventListener('mousemove', (e) => handleInput(e.clientX, e.clientY));
     canvas.addEventListener('mousedown', (e) => {
-        // בעכבר, קליק גם יורה
-        if (gameMode === 'archery') shootArrow();
+        if (gameMode === 'archery' || gameMode === 'unicorn') shootArrow();
     });
 
-    // מגע (Touch) עם זיהוי גרירה vs טאפ
     canvas.addEventListener('touchstart', (e) => {
         e.preventDefault();
         const t = e.touches[0];
         touchStartX = t.clientX;
         touchStartY = t.clientY;
         isDragging = false;
-        handleInput(t.clientX, t.clientY); // עדכון מיקום מיידי
+        handleInput(t.clientX, t.clientY); 
     }, { passive: false });
 
     canvas.addEventListener('touchmove', (e) => {
         e.preventDefault();
         const t = e.touches[0];
-        
-        // בדיקה האם זזנו מספיק כדי שזה ייחשב גרירה
         if (Math.abs(t.clientX - touchStartX) > 10 || Math.abs(t.clientY - touchStartY) > 10) {
             isDragging = true;
         }
-        
         handleInput(t.clientX, t.clientY);
     }, { passive: false });
 
     canvas.addEventListener('touchend', (e) => {
         e.preventDefault();
-        // אם זו לא הייתה גרירה, סימן שזה "טאפ" - ואז יורים
-        if (!isDragging && gameMode === 'archery') {
+        if (!isDragging && (gameMode === 'archery' || gameMode === 'unicorn')) {
             shootArrow();
         }
         isDragging = false;
@@ -564,13 +526,16 @@
 
     function initStars() {
         stars = [];
-        for(let i=0; i<80; i++) {
+        for(let i=0; i<100; i++) {
             stars.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
-                size: Math.random() * 3,
-                opacity: Math.random(),
-                speed: Math.random() * 2 + 1
+                size: Math.random() * 2 + 1,
+                baseOpacity: Math.random() * 0.5 + 0.3,
+                speed: Math.random() * 3 + 1,
+                layer: Math.floor(Math.random() * 3), // 0: far, 1: mid, 2: close
+                twinkleOffset: Math.random() * Math.PI * 2,
+                opacity: 1 // initialized below
             });
         }
     }
@@ -580,7 +545,6 @@
         const stripeHeight = 60;
         const gap = 40;
         const total = Math.ceil(canvas.height / (stripeHeight + gap)) + 1;
-        
         for(let i=0; i<total; i++) {
             roadStripes.push(i * (stripeHeight + gap));
         }
@@ -589,7 +553,7 @@
     function update(deltaTime) {
         if (gameState !== 'playing') return;
 
-        // --- בדיקת מעברי שלב ---
+        // --- בדיקת מעברי שלב (אוטומטי) ---
         if (score >= LEVEL_2_THRESHOLD && score < LEVEL_3_THRESHOLD && gameMode === 'space' && launchState === 'idle') {
             switchGameMode('archery');
             return;
@@ -602,8 +566,12 @@
             switchGameMode('racing');
             return;
         }
-        if (score >= LEVEL_5_THRESHOLD && gameMode === 'racing') {
+        if (score >= LEVEL_5_THRESHOLD && score < LEVEL_6_THRESHOLD && gameMode === 'racing') {
             switchGameMode('soccer');
+            return;
+        }
+        if (score >= LEVEL_6_THRESHOLD && gameMode === 'soccer') {
+            switchGameMode('unicorn');
             return;
         }
 
@@ -617,7 +585,7 @@
                 if (player.y < -150) {
                     launchState = 'returning';
                     player.y = canvas.height + 150; 
-                    fallingObjects = []; 
+                    enemies = []; 
                 }
             } else if (launchState === 'returning') {
                 player.y -= 10; 
@@ -629,7 +597,7 @@
                     currentQuestion = null; 
                 }
             }
-            return;
+            // בזמן המראה אנחנו עדיין מעדכנים כוכבים למטה
         }
 
         // יצירת שאלה אם אין
@@ -639,22 +607,22 @@
             questionDisplay.style.transform = "translateX(-50%) scale(1.1)";
             setTimeout(() => questionDisplay.style.transform = "translateX(-50%) scale(1)", 200);
             
-            if (gameMode !== 'archery') {
-                setTimeout(spawnFallingObjects, 500);
-            } else {
+            if (gameMode === 'archery' || gameMode === 'unicorn') {
                 spawnTargets();
+            } else {
+                setTimeout(spawnEnemies, 500);
             }
         }
 
-        // --- לוגיקת אובייקטים נופלים ---
-        if (gameMode !== 'archery') {
+        // --- לוגיקת אויבים (חלל/ים/מרוץ/כדורגל) ---
+        if (gameMode !== 'archery' && gameMode !== 'unicorn') {
             
-            // תנועה אנכית קלה (חלל)
+            // תנועה אנכית קלה לשחקן (חלל)
             if (gameMode === 'space') {
                 let targetY = (canvas.height - 120) - (Math.min(correctStreak, 2) * 30);
                 if (launchState === 'idle') player.y += (targetY - player.y) * 0.1;
             }
-            // מרוץ וכדורגל - קבוע למטה
+            // מרוץ, כדורגל - קבוע למטה
             if (gameMode === 'racing' || gameMode === 'soccer') {
                 let targetY = canvas.height - 100;
                 player.y += (targetY - player.y) * 0.1;
@@ -664,42 +632,47 @@
                 if (roadOffset > 100) roadOffset = 0;
             }
 
-            for (let i = fallingObjects.length - 1; i >= 0; i--) {
-                let obj = fallingObjects[i];
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                let obj = enemies[i];
                 if (!obj) continue;
 
-                obj.y += obj.speed;
+                // תנועה לפי סוג האובייקט (אנכי או אופקי)
+                obj.y += obj.vy;
+                obj.x += obj.vx;
+                
                 obj.rotation += obj.rotationSpeed;
                 
                 if (gameMode === 'underwater') {
                     obj.x += Math.sin(obj.y * 0.05 + obj.wobbleOffset) * 2;
                 }
 
+                // בדיקת התנגשות
                 const dx = player.x - obj.x;
                 const dy = player.y - obj.y;
                 const dist = Math.sqrt(dx*dx + dy*dy);
 
+                // התנגשות!
                 if (dist < obj.radius + player.width/2) {
                     handleAnswer(obj.isCorrect, obj.x, obj.y);
-                    fallingObjects = []; 
+                    enemies = []; 
                     return;
                 }
 
-                if (obj.y > canvas.height + 50) {
-                    fallingObjects.splice(i, 1);
+                // יציאה מהמסך
+                // למטה (משחקי נפילה)
+                if (obj.vy > 0 && obj.y > canvas.height + 50) {
+                    enemies.splice(i, 1);
                     if (obj.isCorrect) {
-                        currentQuestion = null;
-                        fallingObjects = [];
-                        correctStreak = 0; 
+                        handleMiss();
                         return;
                     }
                 }
             }
-            if (fallingObjects.length === 0 && currentQuestion && launchState === 'idle') {
-                setTimeout(() => { if(fallingObjects.length === 0) spawnFallingObjects(); }, 1000);
+            if (enemies.length === 0 && currentQuestion && launchState === 'idle') {
+                setTimeout(() => { if(enemies.length === 0) spawnEnemies(); }, 1000);
             }
         } 
-        // --- לוגיקת מצב חץ וקשת ---
+        // --- לוגיקת מצב ירי (חץ וקשת / חד קרן) ---
         else {
             if (arrow.active) {
                 arrow.x += arrow.speed;
@@ -737,12 +710,35 @@
             if (p.life <= 0) particles.splice(i, 1);
         }
 
-        // עדכון כוכבים / בועות רקע
-        if (gameMode === 'underwater') {
-             for(let s of stars) {
-                 s.y -= s.speed * 0.5 * config.speedMultiplier; 
-                 if(s.y < 0) { s.y = canvas.height; s.x = Math.random() * canvas.width; }
-             }
+        // --- עדכון כוכבים / רקעים ---
+        const time = Date.now() * 0.001;
+        for(let s of stars) {
+            // נצנוץ
+            s.opacity = s.baseOpacity + Math.sin(time * 2 + s.twinkleOffset) * 0.2;
+            
+            let moveSpeed = s.speed * config.speedMultiplier;
+            // שכבות עומק
+            moveSpeed *= (1 + s.layer * 0.5);
+
+            if (gameMode === 'space') {
+                // אפקט וורפ
+                if (launchState === 'launching') moveSpeed *= 8;
+                
+                // תנועה למטה (מדמה טיסה קדימה)
+                s.y += moveSpeed;
+                if(s.y > canvas.height) { s.y = 0; s.x = Math.random() * canvas.width; }
+            } 
+            else if (gameMode === 'underwater') {
+                // תנועה למעלה (בועות)
+                s.y -= moveSpeed * 0.5; 
+                s.x += Math.sin(time + s.y * 0.01) * 0.5; // רעידה
+                if(s.y < 0) { s.y = canvas.height; s.x = Math.random() * canvas.width; }
+            }
+            else if (gameMode === 'unicorn') {
+                // תנועה שמאלה (מדמה תעופה ימינה)
+                s.x -= moveSpeed;
+                if(s.x < 0) { s.x = canvas.width; s.y = Math.random() * canvas.height; }
+            }
         }
 
         // עדכון טקסטים צפים
@@ -754,6 +750,12 @@
             else if (ft.scale > 1) ft.scale -= 0.05;
             if (ft.life <= 0) feedbackTexts.splice(i, 1);
         }
+    }
+
+    function handleMiss() {
+        currentQuestion = null;
+        enemies = [];
+        correctStreak = 0;
     }
 
     function handleAnswer(isCorrect, impactX, impactY) {
@@ -779,6 +781,7 @@
                 if (gameMode === 'underwater') borderColor = "#facc15";
                 if (gameMode === 'racing') borderColor = "#ef4444";
                 if (gameMode === 'soccer') borderColor = "#15803d";
+                if (gameMode === 'unicorn') borderColor = "#e879f9";
                 
                 questionDisplay.style.borderColor = borderColor;
                 questionDisplay.style.transform = "translateX(-50%) scale(1) rotate(0deg)";
@@ -800,7 +803,7 @@
             flashOverlay.style.animation = 'flashRed 0.3s';
             setTimeout(() => flashOverlay.style.animation = 'none', 300);
 
-            if (gameMode !== 'archery') fallingObjects = [];
+            if (gameMode !== 'archery' && gameMode !== 'unicorn') enemies = [];
             
             if (lives <= 0) endGame();
         }
@@ -808,19 +811,24 @@
 
     function switchGameMode(mode) {
         gameMode = mode;
-        fallingObjects = [];
+        enemies = [];
         targets = [];
         currentQuestion = null;
         arrow.active = false;
         correctStreak = 0; 
         launchState = 'idle';
         
-        document.body.classList.remove('archer-theme', 'underwater-theme', 'racing-theme', 'soccer-theme');
+        document.body.classList.remove('archer-theme', 'underwater-theme', 'racing-theme', 'soccer-theme', 'unicorn-theme');
         
         let msgText = "";
         let msgColor = "";
 
-        if (mode === 'archery') {
+        if (mode === 'space') {
+            player.x = canvas.width / 2;
+            player.y = canvas.height - 120;
+            msgText = "שלב חלל!";
+            msgColor = "#3b82f6";
+        } else if (mode === 'archery') {
             document.body.classList.add('archer-theme');
             titleText.textContent = "יער החשבון";
             instructionText.textContent = "כוונו את הקשת ולחצו כדי לירות למטרה הנכונה!";
@@ -852,6 +860,14 @@
             player.y = canvas.height - 100;
             msgText = "בעיטת פתיחה!";
             msgColor = "#ffffff";
+        } else if (mode === 'unicorn') {
+            document.body.classList.add('unicorn-theme');
+            titleText.textContent = "ממלכת הקסם";
+            instructionText.textContent = "הזיזו את החד-קרן וירו קסם על העננים!";
+            player.x = 80;
+            player.y = canvas.height / 2;
+            msgText = "ממלכת הקסם!";
+            msgColor = "#db2777";
         }
         
         createParticles(canvas.width/2, canvas.height/2, '#ffffff', 100);
@@ -862,14 +878,39 @@
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // --- רקעים ---
-        if (gameMode === 'space' || gameMode === 'underwater') {
-            ctx.fillStyle = gameMode === 'underwater' ? 'rgba(255, 255, 255, 0.3)' : 'white';
+        // --- ציור כוכבים / רקעים דינמיים ---
+        if (gameMode === 'space') {
+            ctx.fillStyle = 'white';
             for(let s of stars) {
                 ctx.globalAlpha = s.opacity;
-                ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath();
+                if (launchState === 'launching') {
+                    // מריחת כוכבים בהמראה
+                    ctx.rect(s.x, s.y - 20, s.size, 30);
+                } else {
+                    ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+                }
+                ctx.fill();
             }
             ctx.globalAlpha = 1;
+        }
+        else if (gameMode === 'underwater') {
+            // בועות
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            for(let s of stars) {
+                ctx.beginPath(); ctx.arc(s.x, s.y, s.size, 0, Math.PI*2); ctx.fill();
+            }
+        }
+        else if (gameMode === 'unicorn') {
+            // עננים לבנים ורדרדים ברקע
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            for(let s of stars) {
+                // מצייר עננים במקום כוכבים
+                ctx.beginPath(); 
+                ctx.arc(s.x, s.y, s.size * 3, 0, Math.PI*2); 
+                ctx.arc(s.x + 10, s.y + 5, s.size * 2, 0, Math.PI*2);
+                ctx.fill();
+            }
         }
 
         // רקע למרוץ
@@ -898,19 +939,8 @@
             // קווים של המגרש
             ctx.strokeStyle = 'rgba(255,255,255,0.4)';
             ctx.lineWidth = 4;
-            
-            // עיגול אמצע
-            ctx.beginPath();
-            ctx.arc(canvas.width/2, canvas.height/2, 100, 0, Math.PI*2);
-            ctx.stroke();
-            
-            // קו אמצע
-            ctx.beginPath();
-            ctx.moveTo(0, canvas.height/2);
-            ctx.lineTo(canvas.width, canvas.height/2);
-            ctx.stroke();
-            
-            // רחבת השער למטה
+            ctx.beginPath(); ctx.arc(canvas.width/2, canvas.height/2, 100, 0, Math.PI*2); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, canvas.height/2); ctx.lineTo(canvas.width, canvas.height/2); ctx.stroke();
             ctx.strokeRect(canvas.width/2 - 200, canvas.height - 150, 400, 150);
         }
 
@@ -932,7 +962,7 @@
             ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(3, -8, 4, 0, Math.PI*2); ctx.fill(); 
             ctx.restore();
 
-            for(let m of fallingObjects) {
+            for(let m of enemies) {
                 ctx.save();
                 ctx.translate(m.x, m.y);
                 ctx.rotate(m.rotation);
@@ -964,7 +994,7 @@
             ctx.fillRect(-2, -15, 4, 30);
             ctx.restore();
 
-            for(let m of fallingObjects) {
+            for(let m of enemies) {
                 ctx.save();
                 ctx.translate(m.x, m.y);
                 ctx.fillStyle = 'rgba(236, 72, 153, 0.8)'; 
@@ -1002,7 +1032,7 @@
             ctx.beginPath(); ctx.arc(12, -35, 5, 0, Math.PI*2); ctx.fill();
             ctx.restore();
 
-            for(let m of fallingObjects) {
+            for(let m of enemies) {
                 ctx.save();
                 ctx.translate(m.x, m.y);
                 ctx.rotate(m.rotation * 0.5); 
@@ -1032,28 +1062,107 @@
             ctx.beginPath(); ctx.arc(30, -10, 12, 0, Math.PI*2); ctx.fill();
             ctx.restore();
 
-            // כדורים
-            for(let m of fallingObjects) {
+            for(let m of enemies) {
                 ctx.save();
                 ctx.translate(m.x, m.y);
                 ctx.rotate(m.rotation);
-                
-                // כדור לבן
                 ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, m.radius, 0, Math.PI * 2); ctx.fill();
                 ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.stroke();
-                
-                // טלאים שחורים
                 ctx.fillStyle = '#000';
                 for(let i=0; i<5; i++) {
                     ctx.beginPath(); ctx.arc(Math.cos(i*1.25)*20, Math.sin(i*1.25)*20, 8, 0, Math.PI*2); ctx.fill();
                 }
-                
-                // מספר במרכז
                 ctx.fillStyle = '#000'; ctx.font = '900 35px "Rubik"'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-                // רקע לבן קטן למספר לקריאות
                 ctx.strokeStyle = '#fff'; ctx.lineWidth = 4; ctx.strokeText(m.value, 0, 0);
                 ctx.fillText(m.value, 0, 0);
+                ctx.restore();
+            }
+        }
+        
+        // --- ציור מצב חד קרן ---
+        else if (gameMode === 'unicorn') {
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            
+            // גוף (לבן עם הצללה ורדרדה)
+            ctx.fillStyle = '#fff0f5'; 
+            // גוף מעוגל יותר
+            ctx.beginPath(); ctx.ellipse(0, 15, 40, 25, 0, 0, Math.PI*2); ctx.fill();
+            
+            // רגליים
+            ctx.fillStyle = '#fff0f5';
+            ctx.beginPath(); ctx.roundRect(-20, 30, 8, 25, 4); ctx.fill();
+            ctx.beginPath(); ctx.roundRect(10, 30, 8, 25, 4); ctx.fill();
+            
+            // צוואר וראש
+            ctx.beginPath(); ctx.ellipse(-15, -15, 15, 25, -0.3, 0, Math.PI*2); ctx.fill(); // צוואר
+            ctx.beginPath(); ctx.ellipse(0, -35, 22, 18, 0, 0, Math.PI*2); ctx.fill(); // ראש
+            ctx.beginPath(); ctx.ellipse(10, -32, 12, 10, 0, 0, Math.PI*2); ctx.fill(); // אף
+            
+            // רעמה צבעונית
+            ctx.fillStyle = '#ec4899'; ctx.beginPath(); ctx.arc(-15, -45, 8, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#a855f7'; ctx.beginPath(); ctx.arc(-20, -30, 8, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(-22, -15, 8, 0, Math.PI*2); ctx.fill();
+            
+            // זנב צבעוני
+            ctx.fillStyle = '#ec4899'; ctx.beginPath(); ctx.arc(-40, 15, 8, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#a855f7'; ctx.beginPath(); ctx.arc(-45, 25, 8, 0, Math.PI*2); ctx.fill();
+
+            // קרן קסם (זוהרת)
+            ctx.shadowColor = '#facc15'; ctx.shadowBlur = 10;
+            ctx.fillStyle = '#facc15'; 
+            ctx.beginPath(); ctx.moveTo(5, -45); ctx.lineTo(15, -75); ctx.lineTo(15, -45); ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // עין חמודה
+            ctx.fillStyle = 'black'; ctx.beginPath(); ctx.arc(5, -38, 2.5, 0, Math.PI*2); ctx.fill();
+            
+            ctx.restore();
+
+            // יריות כוכב קסם
+            if (arrow.active) {
+                ctx.save();
+                ctx.translate(arrow.x, arrow.y);
+                ctx.fillStyle = '#facc15'; 
+                ctx.shadowColor = '#fff'; ctx.shadowBlur = 10;
+                // ציור כוכב
+                ctx.beginPath();
+                for(let i=0; i<5; i++) {
+                    ctx.lineTo(Math.cos((18+i*72)/180*Math.PI)*15, -Math.sin((18+i*72)/180*Math.PI)*15);
+                    ctx.lineTo(Math.cos((54+i*72)/180*Math.PI)*7, -Math.sin((54+i*72)/180*Math.PI)*7);
+                }
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                ctx.restore();
+            }
+
+            // מטרות עננים
+            for (let t of targets) {
+                if (t.hit && t.radius < 5) continue; 
+
+                ctx.save();
+                ctx.translate(t.x, t.y + Math.sin(t.wobble)*5); 
+                ctx.scale(t.scale, t.scale); 
                 
+                // ענן לבן עם מסגרת ורודה דקה
+                ctx.shadowColor = 'rgba(236, 72, 153, 0.3)'; ctx.shadowBlur = 15;
+                ctx.fillStyle = 'white';
+                ctx.beginPath(); 
+                ctx.arc(0, 0, t.radius, 0, Math.PI*2); 
+                ctx.arc(-25, 10, t.radius*0.6, 0, Math.PI*2);
+                ctx.arc(25, 10, t.radius*0.6, 0, Math.PI*2);
+                ctx.arc(0, -20, t.radius*0.8, 0, Math.PI*2);
+                ctx.fill();
+                ctx.strokeStyle = '#fce7f3'; ctx.lineWidth = 2; ctx.stroke();
+                ctx.shadowBlur = 0;
+                
+                // מספר
+                if (!t.hit) {
+                    ctx.fillStyle = '#db2777'; 
+                    ctx.font = '900 35px "Rubik"'; 
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    ctx.fillText(t.value, 0, 0);
+                }
                 ctx.restore();
             }
         }
@@ -1159,23 +1268,38 @@
 
     function startGame() {
         score = 0; lives = 3; 
-        gameMode = 'space';
+        
+        if (config.startLevel === 'archery') score = 5;
+        else if (config.startLevel === 'underwater') score = 10;
+        else if (config.startLevel === 'racing') score = 15;
+        else if (config.startLevel === 'soccer') score = 20;
+        else if (config.startLevel === 'unicorn') score = 25;
+        
+        gameMode = 'space'; 
         correctStreak = 0;
         launchState = 'idle';
         document.body.className = ''; 
         
-        fallingObjects = []; targets = []; currentQuestion = null; 
+        enemies = []; targets = []; currentQuestion = null; 
         feedbackTexts = [];
-        scoreDisplay.textContent = 'ניקוד: 0';
+        scoreDisplay.textContent = 'ניקוד: ' + score;
         updateLives();
         
         questionDisplay.textContent = '?';
         startScreen.classList.add('hidden'); gameOverScreen.classList.add('hidden');
         gameState = 'playing'; 
-        resize();
         
+        if (score >= LEVEL_6_THRESHOLD) switchGameMode('unicorn');
+        else if (score >= LEVEL_5_THRESHOLD) switchGameMode('soccer');
+        else if (score >= LEVEL_4_THRESHOLD) switchGameMode('racing');
+        else if (score >= LEVEL_3_THRESHOLD) switchGameMode('underwater');
+        else if (score >= LEVEL_2_THRESHOLD) switchGameMode('archery');
+        else switchGameMode('space');
+        
+        resize();
+
         // הגדרת ברירת מחדל אם לא שונה
-        if(!config.operations) config.operations = 'add'; 
+        if(!config.operations) config.operations = 'add_sub'; 
     }
 
     function endGame() {
