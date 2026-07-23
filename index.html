@@ -22,7 +22,7 @@
         body.unicorn-theme { background: linear-gradient(to right, #fce7f3, #ddd6fe); }
 
         canvas { display: block; }
-        
+
         .game-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -31,27 +31,27 @@
             background: rgba(15, 23, 42, 0.95);
             z-index: 10;
             transition: opacity 0.3s;
-            overflow-y: auto; 
+            overflow-y: auto;
         }
-        
+
         body.archer-theme .game-overlay { background: rgba(236, 252, 203, 0.95); }
         body.underwater-theme .game-overlay { background: rgba(30, 58, 138, 0.95); }
         body.racing-theme .game-overlay { background: rgba(51, 65, 85, 0.95); }
         body.soccer-theme .game-overlay { background: rgba(20, 83, 45, 0.95); }
         body.unicorn-theme .game-overlay { background: rgba(255, 240, 245, 0.9); }
-        
+
         body.archer-theme h1, body.archer-theme p, body.archer-theme h2, body.archer-theme label { color: #365314; text-shadow: none; }
         body.underwater-theme h1, body.underwater-theme p, body.underwater-theme h2, body.underwater-theme label { color: #bfdbfe; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         body.racing-theme h1, body.racing-theme p, body.racing-theme h2, body.racing-theme label { color: #facc15; text-shadow: 2px 2px 0 #000; }
         body.soccer-theme h1, body.soccer-theme p, body.soccer-theme h2, body.soccer-theme label { color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         body.unicorn-theme h1, body.unicorn-theme p, body.unicorn-theme h2, body.unicorn-theme label { color: #be185d; text-shadow: none; }
-        
+
         label { color: white; }
         h2 { color: white; }
-        h3 { color: white; } 
+        h3 { color: white; }
 
         .hidden { display: none !important; }
-        
+
         .hud {
             position: absolute; top: 10px; width: 100%; padding: 0 20px;
             display: flex; justify-content: space-between;
@@ -59,7 +59,7 @@
             pointer-events: none; z-index: 5;
             text-shadow: 2px 2px 0px #000;
             transition: color 0.3s ease;
-            direction: rtl; 
+            direction: rtl;
         }
         body.archer-theme .hud { color: #365314; text-shadow: none; }
         body.underwater-theme .hud { color: #e0f2fe; }
@@ -105,7 +105,7 @@
         .settings-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.4); }
         body.archer-theme .settings-btn { border-color: #365314; color: #365314; background: rgba(54, 83, 20, 0.2); }
         body.unicorn-theme .settings-btn { border-color: #db2777; color: #db2777; background: rgba(255, 255, 255, 0.5); }
-        
+
         .option-group {
             background: rgba(255,255,255,0.1);
             padding: 15px; border-radius: 10px;
@@ -116,7 +116,7 @@
             margin: 5px 0; cursor: pointer; font-size: 1.1rem;
         }
         .radio-label input { margin-left: 10px; transform: scale(1.2); }
-        
+
         #settingsScreen { justify-content: flex-start; padding-top: 20px; }
         #settingsScreen .option-group { flex-shrink: 0; }
     </style>
@@ -137,22 +137,180 @@
     <!-- מסך פתיחה -->
     <div id="startScreen" class="game-overlay">
         <div id="openSettingsBtn" class="settings-btn">⚙️</div>
-        
-        <h1 class="text-6xl font-extrabold text-white mb-4 text-center drop-shadow-lg" style="-webkit-text-stroke: 2px black;" id="titleText">
-            מסע בחלל המספרים
-        </h1>
-        <p class="text-gray-200 mb-8 text-center text-2xl font-bold max-w-md" id="instructionText">
-            גררו את החללית כדי לתפוס את התשובה הנכונה!
-        </p>
-        <button id="startBtn" class="bg-yellow-400 hover:bg-yellow-500 text-black border-b-4 border-yellow-700 font-bold py-4 px-12 rounded-full text-2xl shadow-xl transform transition hover:scale-105 active:scale-95 active:border-b-0 active:translate-y-1">
-            התחל משחק
-        </button>
+
+        <!-- Navigation Toggle / Section Switcher -->
+        <div class="flex bg-slate-800/90 p-1 rounded-full mb-6 z-20 border-2 border-slate-700 pointer-events-auto shadow-xl">
+            <button id="switchSpaceBtn" class="px-6 py-2.5 rounded-full text-lg font-black transition duration-200 bg-yellow-400 text-black shadow-md">
+                🚀 מסע בחלל
+            </button>
+            <button id="switchFracBtn" class="px-6 py-2.5 rounded-full text-lg font-black transition duration-200 text-gray-300 hover:text-white">
+                🍕 אקדמיית השברים
+            </button>
+        </div>
+
+        <!-- Space Game Section -->
+        <div id="spaceHomeSection" class="flex flex-col items-center">
+            <h1 class="text-6xl font-extrabold text-white mb-4 text-center drop-shadow-lg" style="-webkit-text-stroke: 2px black;" id="titleText">
+                מסע בחלל המספרים
+            </h1>
+            <p class="text-gray-200 mb-8 text-center text-2xl font-bold max-w-md" id="instructionText">
+                גררו את החללית כדי לתפוס את התשובה הנכונה!
+            </p>
+            <button id="startBtn" class="bg-yellow-400 hover:bg-yellow-500 text-black border-b-4 border-yellow-700 font-bold py-4 px-12 rounded-full text-2xl shadow-xl transform transition hover:scale-105 active:scale-95 active:border-b-0 active:translate-y-1 mb-6">
+                התחל משחק
+            </button>
+        </div>
+
+        <!-- Fractions Academy Section -->
+        <div id="fractionsHomeSection" class="hidden flex flex-col items-center w-full max-w-lg">
+            <h1 class="text-5xl font-extrabold text-emerald-400 mb-2 text-center drop-shadow-lg" style="-webkit-text-stroke: 1.5px black;">
+                🍕 אקדמיית השברים
+            </h1>
+            <p class="text-gray-200 mb-6 text-center text-xl font-bold max-w-md">
+                לימוד שברים אינטראקטיבי בסגנון דואולינגו!
+            </p>
+
+            <!-- Duolingo Progressive Learning Path -->
+            <div id="fractionsMap" class="flex flex-col items-center space-y-6 w-full overflow-y-auto px-4 py-4 rounded-2xl bg-slate-900/40 border border-slate-700/50 mb-6" style="max-height: 45vh; pointer-events: auto;">
+                <!-- Level 1: Recognition -->
+                <div class="flex flex-col items-center">
+                    <button id="node1" class="w-16 h-16 rounded-full border-4 border-emerald-500 bg-emerald-400 text-white font-extrabold text-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform relative active-node pointer-events-auto">
+                        1
+                        <div class="absolute -bottom-6 bg-slate-900/90 text-emerald-300 text-xs px-2.5 py-0.5 rounded-full font-bold whitespace-nowrap border border-emerald-500/30 shadow-md">זיהוי שברים</div>
+                    </button>
+                </div>
+                <div class="w-1 h-6 bg-slate-700"></div>
+
+                <!-- Level 2: Building Fractions -->
+                <div class="flex flex-col items-center">
+                    <button id="node2" class="w-16 h-16 rounded-full border-4 locked-node text-white font-extrabold text-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform relative pointer-events-none">
+                        2
+                        <div class="absolute -bottom-6 bg-slate-900/90 text-gray-400 text-xs px-2.5 py-0.5 rounded-full font-bold whitespace-nowrap border border-slate-700/50 shadow-md">הרכבת שברים</div>
+                    </button>
+                </div>
+                <div class="w-1 h-6 bg-slate-700"></div>
+
+                <!-- Level 3: Comparison -->
+                <div class="flex flex-col items-center">
+                    <button id="node3" class="w-16 h-16 rounded-full border-4 locked-node text-white font-extrabold text-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform relative pointer-events-none">
+                        3
+                        <div class="absolute -bottom-6 bg-slate-900/90 text-gray-400 text-xs px-2.5 py-0.5 rounded-full font-bold whitespace-nowrap border border-slate-700/50 shadow-md">השוואת שברים</div>
+                    </button>
+                </div>
+                <div class="w-1 h-6 bg-slate-700"></div>
+
+                <!-- Level 4: Equivalent Fractions -->
+                <div class="flex flex-col items-center">
+                    <button id="node4" class="w-16 h-16 rounded-full border-4 locked-node text-white font-extrabold text-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform relative pointer-events-none">
+                        4
+                        <div class="absolute -bottom-6 bg-slate-900/90 text-gray-400 text-xs px-2.5 py-0.5 rounded-full font-bold whitespace-nowrap border border-slate-700/50 shadow-md">שברים שקולים</div>
+                    </button>
+                </div>
+                <div class="w-1 h-6 bg-slate-700"></div>
+
+                <!-- Level 5: Basic Operations -->
+                <div class="flex flex-col items-center mb-6">
+                    <button id="node5" class="w-16 h-16 rounded-full border-4 locked-node text-white font-extrabold text-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform relative pointer-events-none">
+                        5
+                        <div class="absolute -bottom-6 bg-slate-900/90 text-gray-400 text-xs px-2.5 py-0.5 rounded-full font-bold whitespace-nowrap border border-slate-700/50 shadow-md">חיבור וחיסור</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats/XP Streak Badge -->
+            <div class="flex justify-between w-full max-w-sm px-6 py-3 bg-slate-800/80 rounded-2xl border border-slate-700 text-white font-bold text-sm mb-4 pointer-events-auto">
+                <div id="fracStreakText">🔥 רצף יומי: 0 ימים</div>
+                <div id="fracXPText">🏆 נקודות XP: 0</div>
+            </div>
+        </div>
     </div>
 
-    <!-- מסך הגדרות -->
+    <!-- Fractions Question / Play Overlay -->
+    <div id="fractionPlayScreen" class="game-overlay hidden flex flex-col justify-between p-4 pb-8 max-w-xl mx-auto h-full text-white">
+        <!-- Top status bar -->
+        <div class="w-full flex justify-between items-center z-10 pointer-events-auto">
+            <button id="closeFracPlayBtn" class="text-3xl hover:scale-110 transition">❌</button>
+            <div class="flex-1 mx-4 bg-slate-700 h-4 rounded-full overflow-hidden border border-slate-600">
+                <div id="fracProgressBar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%;"></div>
+            </div>
+            <div id="fracLives" class="text-xl font-bold flex gap-1">❤️❤️❤️</div>
+        </div>
+
+        <!-- Mascot & instructions -->
+        <div class="w-full mt-4 flex items-center gap-4 bg-slate-800/80 p-3 rounded-2xl border border-slate-700 pointer-events-auto">
+            <div class="text-4xl animate-bounce">🦉</div>
+            <div class="text-right flex-1">
+                <div class="text-sm text-emerald-400 font-bold">ינשוף השברים אומר:</div>
+                <div id="fracPrompt" class="text-lg font-bold">מצא את השבר המתאים!</div>
+            </div>
+        </div>
+
+        <!-- Visual Canvas Area -->
+        <div class="flex-1 flex flex-col justify-center items-center my-4 w-full relative">
+            <!-- Canvas with click handler -->
+            <canvas id="fractionCanvas" width="320" height="320" class="bg-slate-900/40 rounded-2xl border border-slate-700/50 max-w-full cursor-pointer touch-none pointer-events-auto" style="width: 320px; height: 320px;"></canvas>
+            <!-- visual helper/hint/overlay comparison -->
+            <div id="visualHelperText" class="absolute bottom-2 text-emerald-300 font-bold text-center w-full drop-shadow-md"></div>
+        </div>
+
+        <!-- Inputs / Answers section -->
+        <div class="w-full flex flex-col items-center gap-3 z-10 pointer-events-auto">
+            <!-- Multiple Choice container -->
+            <div id="mcContainer" class="grid grid-cols-2 gap-3 w-full max-w-sm hidden">
+                <!-- dynamically filled option buttons -->
+            </div>
+
+            <!-- Tapping/Highlight custom target info -->
+            <div id="tapTargetInfo" class="hidden text-center text-xl font-black bg-slate-800/80 px-6 py-2 rounded-xl border-2 border-emerald-500">
+                סמן פרוסות בציור: <span id="tapCount" class="text-yellow-400 font-extrabold text-2xl">0</span> מתוך <span id="tapTotal" class="text-emerald-400 font-extrabold text-2xl">8</span>
+            </div>
+
+            <!-- Fill-in-the-Blank Numerator & Denominator -->
+            <div id="blankContainer" class="flex flex-col items-center gap-2 bg-slate-800/80 p-4 rounded-xl border border-slate-700 hidden w-full max-w-sm">
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-lg">מונה (חלקים מסומנים):</span>
+                    <input type="number" id="blankNumerator" class="w-16 p-2 rounded bg-slate-900 border border-slate-600 text-center text-xl font-bold text-yellow-400 focus:outline-none focus:border-yellow-500" min="0">
+                </div>
+                <div class="w-24 h-0.5 bg-slate-500"></div>
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-lg">מכנה (סך הכל חלקים):</span>
+                    <input type="number" id="blankDenominator" class="w-16 p-2 rounded bg-slate-900 border border-slate-600 text-center text-xl font-bold text-emerald-400 focus:outline-none focus:border-emerald-500" min="1">
+                </div>
+            </div>
+
+            <!-- Submit Check button -->
+            <button id="fracCheckBtn" class="bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black py-4 px-12 rounded-full text-2xl shadow-xl w-full max-w-sm transition transform active:scale-95 border-b-4 border-emerald-800">
+                בדוק תשובה!
+            </button>
+        </div>
+    </div>
+
+    <!-- Success / Level Complete Screen -->
+    <div id="fracCompleteScreen" class="game-overlay hidden flex flex-col justify-center items-center p-6 text-white text-center">
+        <div class="text-8xl mb-4 animate-bounce">✨🏆✨</div>
+        <h2 class="text-5xl font-extrabold text-yellow-400 mb-2">כל הכבוד!</h2>
+        <p class="text-2xl text-slate-200 mb-6">סיימת את שלב השברים בהצלחה!</p>
+
+        <div class="bg-slate-800/80 p-4 rounded-2xl border border-slate-700 flex gap-8 mb-8">
+            <div>
+                <div class="text-slate-400 font-bold text-sm">בונוס XP</div>
+                <div class="text-emerald-400 font-extrabold text-3xl">+15 XP</div>
+            </div>
+            <div class="border-l border-slate-700"></div>
+            <div>
+                <div class="text-slate-400 font-bold text-sm">רצף יומי</div>
+                <div id="completeStreakVal" class="text-yellow-400 font-extrabold text-3xl">🔥 1</div>
+            </div>
+        </div>
+
+        <button id="fracCompleteContinueBtn" class="bg-yellow-400 hover:bg-yellow-500 text-black border-b-4 border-yellow-700 font-black py-4 px-12 rounded-full text-2xl shadow-xl transition transform hover:scale-105 active:scale-95 active:border-b-0 active:translate-y-1">
+            המשך למפה
+        </button>
+    </div>
+<!-- מסך הגדרות -->
     <div id="settingsScreen" class="game-overlay hidden">
         <h2 class="text-4xl font-bold mb-4 text-white" style="-webkit-text-stroke: 1px black;">הגדרות</h2>
-        
+
         <div class="option-group">
             <h3 class="text-xl font-bold text-white mb-2 underline">בחר שלב התחלתי (טסט)</h3>
             <label class="radio-label"><input type="radio" name="startLevel" value="space" checked> חלל (0)</label>
@@ -208,7 +366,7 @@
     const titleText = document.getElementById('titleText');
     const instructionText = document.getElementById('instructionText');
     const flashOverlay = document.getElementById('flashOverlay');
-    
+
     const openSettingsBtn = document.getElementById('openSettingsBtn');
     const closeSettingsBtn = document.getElementById('closeSettingsBtn');
 
@@ -219,12 +377,12 @@
     const LEVEL_5_THRESHOLD = 20;
     const LEVEL_6_THRESHOLD = 25;
 
-    let gameState = 'start'; 
-    let gameMode = 'space'; 
+    let gameState = 'start';
+    let gameMode = 'space';
     let score = 0;
     let lives = 3;
-    let correctStreak = 0; 
-    
+    let correctStreak = 0;
+
     // הגדרות משתמש
     let config = {
         operations: 'add_sub', // ברירת מחדל מעודכנת
@@ -232,21 +390,21 @@
         startLevel: 'space' // רמת ברירת מחדל
     };
 
-    let launchState = 'idle'; 
+    let launchState = 'idle';
 
     let player = { x: 0, y: 0, width: 70, height: 70 };
     let arrow = { active: false, x: 0, y: 0, w: 40, h: 10, speed: 18 };
-    let enemies = []; 
-    let targets = []; 
+    let enemies = [];
+    let targets = [];
     let particles = [];
-    let feedbackTexts = []; 
-    let stars = []; 
+    let feedbackTexts = [];
+    let stars = [];
     let roadStripes = [];
     let roadOffset = 0;
 
     let currentQuestion = null;
     let lastTime = 0;
-    
+
     let touchStartX = 0;
     let touchStartY = 0;
     let isDragging = false;
@@ -254,7 +412,7 @@
     function resize() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        
+
         // אתחול מיקום שחקן לפי מצב משחק
         if (gameMode === 'archery' || gameMode === 'unicorn') {
             player.x = 80;
@@ -317,8 +475,8 @@
         }
 
         const chosenOp = ops[Math.floor(Math.random() * ops.length)];
-        let maxNum = 10 + Math.floor(score / 2); 
-        if (maxNum > 30) maxNum = 30; 
+        let maxNum = 10 + Math.floor(score / 2);
+        if (maxNum > 30) maxNum = 30;
 
         if (chosenOp === '+') {
             n1 = Math.floor(Math.random() * maxNum);
@@ -357,9 +515,9 @@
 
         const usedValues = new Set();
         usedValues.add(currentQuestion.answer);
-        enemies = []; 
+        enemies = [];
 
-        const lanes = 3; 
+        const lanes = 3;
         const laneWidth = canvas.width / lanes;
         const correctLane = Math.floor(Math.random() * lanes);
 
@@ -371,20 +529,20 @@
                 do {
                     let range = 5;
                     if (config.operations === 'mul' || config.operations === 'all') range = 10;
-                    const offset = Math.floor(Math.random() * (range * 2)) - range; 
+                    const offset = Math.floor(Math.random() * (range * 2)) - range;
                     val = currentQuestion.answer + offset;
                 } while (val < 0 || usedValues.has(val));
                 usedValues.add(val);
             }
 
-            let baseSpeed = 2 + (score * 0.05); 
-            if (gameMode === 'underwater') baseSpeed *= 0.6; 
-            if (gameMode === 'racing') baseSpeed *= 1.2; 
+            let baseSpeed = 2 + (score * 0.05);
+            if (gameMode === 'underwater') baseSpeed *= 0.6;
+            if (gameMode === 'racing') baseSpeed *= 1.2;
             if (gameMode === 'soccer') baseSpeed *= 1.1;
 
             let speed = baseSpeed * config.speedMultiplier;
             let startY = -80 - (Math.random() * 50);
-            
+
             enemies.push({
                 x: i * laneWidth + laneWidth / 2,
                 y: startY,
@@ -392,36 +550,36 @@
                 radius: 45,
                 isCorrect: i === correctLane,
                 vx: 0,
-                vy: speed, 
+                vy: speed,
                 rotation: Math.random() * Math.PI,
-                rotationSpeed: 0.05, 
-                wobbleOffset: Math.random() * Math.PI * 2 
+                rotationSpeed: 0.05,
+                wobbleOffset: Math.random() * Math.PI * 2
             });
         }
     }
 
     function spawnTargets() {
         if (!currentQuestion || (gameMode !== 'archery' && gameMode !== 'unicorn')) return;
-        
+
         targets = [];
-        const correctIndex = Math.floor(Math.random() * 3); 
+        const correctIndex = Math.floor(Math.random() * 3);
         const startY = canvas.height * 0.2;
-        const gapY = (canvas.height * 0.6) / 2; 
+        const gapY = (canvas.height * 0.6) / 2;
         const usedValues = new Set();
         usedValues.add(currentQuestion.answer);
 
-        for (let i = 0; i < 3; i++) { 
+        for (let i = 0; i < 3; i++) {
             let val;
             if (i === correctIndex) {
                 val = currentQuestion.answer;
             } else {
                 let attempts = 0;
                 do {
-                    const offset = Math.floor(Math.random() * 10) - 5; 
+                    const offset = Math.floor(Math.random() * 10) - 5;
                     val = currentQuestion.answer + offset;
                     attempts++;
                 } while ((val < 0 || usedValues.has(val)) && attempts < 20);
-                
+
                 if (usedValues.has(val)) val = val + 10;
                 usedValues.add(val);
             }
@@ -429,12 +587,12 @@
             // מטרות לחד קרן (עננים) או יער (מטרות)
             // מיקום X קבוע בצד ימין
             targets.push({
-                x: canvas.width - 150, 
+                x: canvas.width - 150,
                 y: startY + i * gapY,
                 value: val,
                 radius: 50,
                 isCorrect: i === correctIndex,
-                scale: 1, 
+                scale: 1,
                 hit: false,
                 wobble: Math.random() * Math.PI
             });
@@ -443,7 +601,7 @@
 
     function handleInput(x, y) {
         if (gameState !== 'playing') return;
-        if (launchState !== 'idle') return; 
+        if (launchState !== 'idle') return;
 
         if (gameMode === 'archery' || gameMode === 'unicorn') {
             player.y = y;
@@ -459,7 +617,7 @@
     function shootArrow() {
         if (gameState === 'playing' && (gameMode === 'archery' || gameMode === 'unicorn') && !arrow.active) {
             arrow.active = true;
-            arrow.x = player.x; 
+            arrow.x = player.x;
             arrow.y = player.y;
         }
     }
@@ -476,7 +634,7 @@
         touchStartX = t.clientX;
         touchStartY = t.clientY;
         isDragging = false;
-        handleInput(t.clientX, t.clientY); 
+        handleInput(t.clientX, t.clientY);
     }, { passive: false });
 
     canvas.addEventListener('touchmove', (e) => {
@@ -520,7 +678,7 @@
             life: 1.0,
             maxLife: 1.0,
             color: color,
-            scale: 0.1 
+            scale: 0.1
         });
     }
 
@@ -579,22 +737,22 @@
         // --- ניהול המראה (רק בחלל) ---
         if (gameMode === 'space' && launchState !== 'idle') {
             if (launchState === 'launching') {
-                player.y -= 25; 
+                player.y -= 25;
                 createParticles(player.x, player.y + 40, '#f97316', 5);
                 createParticles(player.x, player.y + 40, '#facc15', 5);
                 if (player.y < -150) {
                     launchState = 'returning';
-                    player.y = canvas.height + 150; 
-                    enemies = []; 
+                    player.y = canvas.height + 150;
+                    enemies = [];
                 }
             } else if (launchState === 'returning') {
-                player.y -= 10; 
+                player.y -= 10;
                 createParticles(player.x, player.y + 40, '#f97316', 2);
                 if (player.y <= canvas.height - 120) {
                     player.y = canvas.height - 120;
                     launchState = 'idle';
-                    correctStreak = 0; 
-                    currentQuestion = null; 
+                    correctStreak = 0;
+                    currentQuestion = null;
                 }
             }
             // בזמן המראה אנחנו עדיין מעדכנים כוכבים למטה
@@ -606,7 +764,7 @@
             questionDisplay.textContent = currentQuestion.text;
             questionDisplay.style.transform = "translateX(-50%) scale(1.1)";
             setTimeout(() => questionDisplay.style.transform = "translateX(-50%) scale(1)", 200);
-            
+
             if (gameMode === 'archery' || gameMode === 'unicorn') {
                 spawnTargets();
             } else {
@@ -616,7 +774,7 @@
 
         // --- לוגיקת אויבים (חלל/ים/מרוץ/כדורגל) ---
         if (gameMode !== 'archery' && gameMode !== 'unicorn') {
-            
+
             // תנועה אנכית קלה לשחקן (חלל)
             if (gameMode === 'space') {
                 let targetY = (canvas.height - 120) - (Math.min(correctStreak, 2) * 30);
@@ -628,7 +786,7 @@
                 player.y += (targetY - player.y) * 0.1;
             }
             if (gameMode === 'racing') {
-                roadOffset += 10 * config.speedMultiplier; 
+                roadOffset += 10 * config.speedMultiplier;
                 if (roadOffset > 100) roadOffset = 0;
             }
 
@@ -639,9 +797,9 @@
                 // תנועה לפי סוג האובייקט (אנכי או אופקי)
                 obj.y += obj.vy;
                 obj.x += obj.vx;
-                
+
                 obj.rotation += obj.rotationSpeed;
-                
+
                 if (gameMode === 'underwater') {
                     obj.x += Math.sin(obj.y * 0.05 + obj.wobbleOffset) * 2;
                 }
@@ -654,7 +812,7 @@
                 // התנגשות!
                 if (dist < obj.radius + player.width/2) {
                     handleAnswer(obj.isCorrect, obj.x, obj.y);
-                    enemies = []; 
+                    enemies = [];
                     return;
                 }
 
@@ -671,17 +829,17 @@
             if (enemies.length === 0 && currentQuestion && launchState === 'idle') {
                 setTimeout(() => { if(enemies.length === 0) spawnEnemies(); }, 1000);
             }
-        } 
+        }
         // --- לוגיקת מצב ירי (חץ וקשת / חד קרן) ---
         else {
             if (arrow.active) {
                 arrow.x += arrow.speed;
                 for (let t of targets) {
-                    if (t.hit) continue; 
+                    if (t.hit) continue;
                     const dx = arrow.x - t.x;
                     const dy = arrow.y - t.y;
                     const dist = Math.sqrt(dx*dx + dy*dy);
-                    if (dist < t.radius + 15) { 
+                    if (dist < t.radius + 15) {
                         arrow.active = false;
                         t.hit = true;
                         handleAnswer(t.isCorrect, t.x, t.y);
@@ -693,9 +851,9 @@
             for(let t of targets) {
                 if(t.hit) {
                     t.scale += 0.15;
-                    t.radius *= 0.8; 
+                    t.radius *= 0.8;
                 } else {
-                    t.wobble += 0.05; 
+                    t.wobble += 0.05;
                 }
             }
         }
@@ -715,7 +873,7 @@
         for(let s of stars) {
             // נצנוץ
             s.opacity = s.baseOpacity + Math.sin(time * 2 + s.twinkleOffset) * 0.2;
-            
+
             let moveSpeed = s.speed * config.speedMultiplier;
             // שכבות עומק
             moveSpeed *= (1 + s.layer * 0.5);
@@ -723,14 +881,14 @@
             if (gameMode === 'space') {
                 // אפקט וורפ
                 if (launchState === 'launching') moveSpeed *= 8;
-                
+
                 // תנועה למטה (מדמה טיסה קדימה)
                 s.y += moveSpeed;
                 if(s.y > canvas.height) { s.y = 0; s.x = Math.random() * canvas.width; }
-            } 
+            }
             else if (gameMode === 'underwater') {
                 // תנועה למעלה (בועות)
-                s.y -= moveSpeed * 0.5; 
+                s.y -= moveSpeed * 0.5;
                 s.x += Math.sin(time + s.y * 0.01) * 0.5; // רעידה
                 if(s.y < 0) { s.y = canvas.height; s.x = Math.random() * canvas.width; }
             }
@@ -744,7 +902,7 @@
         // עדכון טקסטים צפים
         for (let i = feedbackTexts.length - 1; i >= 0; i--) {
             let ft = feedbackTexts[i];
-            ft.y -= 1.5; 
+            ft.y -= 1.5;
             ft.life -= 0.02;
             if (ft.life > 0.8) ft.scale += 0.1;
             else if (ft.scale > 1) ft.scale -= 0.05;
@@ -762,27 +920,27 @@
         if (isCorrect) {
             score++;
             correctStreak++;
-            scoreDisplay.textContent = 'ניקוד: ' + score; 
-            
+            scoreDisplay.textContent = 'ניקוד: ' + score;
+
             const praises = ["אלוף!", "מדהים!", "בול!", "וואו!", "יופי!"];
             const text = praises[Math.floor(Math.random() * praises.length)];
 
-            createParticles(impactX, impactY, '#84cc16', 50, gameMode === 'underwater' ? 'bubble' : 'spark'); 
+            createParticles(impactX, impactY, '#84cc16', 50, gameMode === 'underwater' ? 'bubble' : 'spark');
             createFloatingText(text, impactX, impactY - 20, "#bef264");
-            
+
             currentQuestion = null;
             questionDisplay.textContent = "מצוין!";
             questionDisplay.style.borderColor = "#84cc16";
             questionDisplay.style.transform = "translateX(-50%) scale(1.2) rotate(-2deg)";
-            
-            setTimeout(() => { 
+
+            setTimeout(() => {
                 let borderColor = "#3b82f6";
                 if (gameMode === 'archery') borderColor = "#65a30d";
                 if (gameMode === 'underwater') borderColor = "#facc15";
                 if (gameMode === 'racing') borderColor = "#ef4444";
                 if (gameMode === 'soccer') borderColor = "#15803d";
                 if (gameMode === 'unicorn') borderColor = "#e879f9";
-                
+
                 questionDisplay.style.borderColor = borderColor;
                 questionDisplay.style.transform = "translateX(-50%) scale(1) rotate(0deg)";
             }, 600);
@@ -796,7 +954,7 @@
             lives--;
             correctStreak = 0;
             updateLives();
-            
+
             createParticles(impactX, impactY, '#ef4444', 40, 'spark');
             createFloatingText("אוי לא!", impactX, impactY - 20, "#fca5a5");
 
@@ -804,7 +962,7 @@
             setTimeout(() => flashOverlay.style.animation = 'none', 300);
 
             if (gameMode !== 'archery' && gameMode !== 'unicorn') enemies = [];
-            
+
             if (lives <= 0) endGame();
         }
     }
@@ -815,11 +973,11 @@
         targets = [];
         currentQuestion = null;
         arrow.active = false;
-        correctStreak = 0; 
+        correctStreak = 0;
         launchState = 'idle';
-        
+
         document.body.classList.remove('archer-theme', 'underwater-theme', 'racing-theme', 'soccer-theme', 'unicorn-theme');
-        
+
         let msgText = "";
         let msgColor = "";
 
@@ -869,7 +1027,7 @@
             msgText = "ממלכת הקסם!";
             msgColor = "#db2777";
         }
-        
+
         createParticles(canvas.width/2, canvas.height/2, '#ffffff', 100);
         createFloatingText(msgText, canvas.width/2, canvas.height/2, msgColor);
         questionDisplay.textContent = "שלב חדש!";
@@ -906,8 +1064,8 @@
             ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
             for(let s of stars) {
                 // מצייר עננים במקום כוכבים
-                ctx.beginPath(); 
-                ctx.arc(s.x, s.y, s.size * 3, 0, Math.PI*2); 
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.size * 3, 0, Math.PI*2);
                 ctx.arc(s.x + 10, s.y + 5, s.size * 2, 0, Math.PI*2);
                 ctx.fill();
             }
@@ -933,7 +1091,7 @@
                 }
             }
         }
-        
+
         // רקע לכדורגל
         if (gameMode === 'soccer') {
             // קווים של המגרש
@@ -959,7 +1117,7 @@
                 ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.moveTo(-8, 25); ctx.lineTo(8, 25); ctx.lineTo(0, 40 + Math.random() * 10); ctx.closePath(); ctx.fill();
             }
             ctx.fillStyle = '#60a5fa'; ctx.beginPath(); ctx.arc(0, -5, 12, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(3, -8, 4, 0, Math.PI*2); ctx.fill(); 
+            ctx.fillStyle = 'white'; ctx.beginPath(); ctx.arc(3, -8, 4, 0, Math.PI*2); ctx.fill();
             ctx.restore();
 
             for(let m of enemies) {
@@ -976,28 +1134,28 @@
                 ctx.fillStyle = '#fff'; ctx.fillText(m.value, 0, 0);
                 ctx.restore();
             }
-        } 
-        
+        }
+
         // --- ציור מצב ים ---
         else if (gameMode === 'underwater') {
             ctx.save();
             ctx.translate(player.x, player.y);
-            ctx.fillStyle = '#eab308'; 
+            ctx.fillStyle = '#eab308';
             ctx.beginPath(); ctx.ellipse(0, 10, 40, 25, 0, 0, Math.PI * 2); ctx.fill();
             ctx.strokeStyle = '#a16207'; ctx.lineWidth = 3; ctx.stroke();
             ctx.fillStyle = '#eab308'; ctx.beginPath(); ctx.rect(-15, -25, 30, 25); ctx.fill(); ctx.stroke();
             ctx.beginPath(); ctx.moveTo(0, -25); ctx.lineTo(0, -40); ctx.lineTo(15, -40); ctx.lineWidth = 6; ctx.stroke();
-            ctx.fillStyle = '#3b82f6'; 
+            ctx.fillStyle = '#3b82f6';
             ctx.beginPath(); ctx.arc(-15, 10, 8, 0, Math.PI*2); ctx.fill();
             ctx.beginPath(); ctx.arc(15, 10, 8, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = '#713f12'; ctx.translate(-45, 10); ctx.rotate(Date.now() / 100); 
+            ctx.fillStyle = '#713f12'; ctx.translate(-45, 10); ctx.rotate(Date.now() / 100);
             ctx.fillRect(-2, -15, 4, 30);
             ctx.restore();
 
             for(let m of enemies) {
                 ctx.save();
                 ctx.translate(m.x, m.y);
-                ctx.fillStyle = 'rgba(236, 72, 153, 0.8)'; 
+                ctx.fillStyle = 'rgba(236, 72, 153, 0.8)';
                 ctx.beginPath(); ctx.arc(0, -10, m.radius, Math.PI, 0); ctx.fill();
                 ctx.strokeStyle = 'rgba(236, 72, 153, 0.6)'; ctx.lineWidth = 4; ctx.lineCap = 'round';
                 for(let i=-2; i<=2; i++) {
@@ -1018,11 +1176,11 @@
         else if (gameMode === 'racing') {
             ctx.save();
             ctx.translate(player.x, player.y);
-            ctx.fillStyle = '#dc2626'; 
+            ctx.fillStyle = '#dc2626';
             ctx.fillRect(-20, -35, 40, 70);
-            ctx.fillStyle = '#1e293b'; 
+            ctx.fillStyle = '#1e293b';
             ctx.fillRect(-15, -10, 30, 20);
-            ctx.fillStyle = '#991b1b'; 
+            ctx.fillStyle = '#991b1b';
             ctx.fillRect(-22, 25, 44, 10);
             ctx.fillStyle = 'black';
             ctx.fillRect(-24, -30, 6, 15); ctx.fillRect(18, -30, 6, 15);
@@ -1035,7 +1193,7 @@
             for(let m of enemies) {
                 ctx.save();
                 ctx.translate(m.x, m.y);
-                ctx.rotate(m.rotation * 0.5); 
+                ctx.rotate(m.rotation * 0.5);
                 ctx.fillStyle = '#facc15'; ctx.beginPath(); ctx.arc(0, 0, m.radius, 0, Math.PI * 2); ctx.fill();
                 ctx.fillStyle = '#eab308'; ctx.beginPath(); ctx.arc(0, 0, m.radius - 5, 0, Math.PI * 2); ctx.fill();
                 ctx.strokeStyle = '#a16207'; ctx.lineWidth = 3; ctx.stroke();
@@ -1044,20 +1202,20 @@
                 ctx.restore();
             }
         }
-        
+
         // --- ציור מצב כדורגל ---
         else if (gameMode === 'soccer') {
             ctx.save();
             ctx.translate(player.x, player.y);
-            
+
             // שוער
             // חולצה
-            ctx.fillStyle = '#ef4444'; 
+            ctx.fillStyle = '#ef4444';
             ctx.beginPath(); ctx.moveTo(0, -30); ctx.lineTo(25, 0); ctx.lineTo(20, 30); ctx.lineTo(-20, 30); ctx.lineTo(-25, 0); ctx.fill();
             // ראש
             ctx.fillStyle = '#fca5a5'; ctx.beginPath(); ctx.arc(0, -40, 12, 0, Math.PI*2); ctx.fill();
             // כפפות
-            ctx.fillStyle = '#fbbf24'; 
+            ctx.fillStyle = '#fbbf24';
             ctx.beginPath(); ctx.arc(-30, -10, 12, 0, Math.PI*2); ctx.fill();
             ctx.beginPath(); ctx.arc(30, -10, 12, 0, Math.PI*2); ctx.fill();
             ctx.restore();
@@ -1078,52 +1236,52 @@
                 ctx.restore();
             }
         }
-        
+
         // --- ציור מצב חד קרן ---
         else if (gameMode === 'unicorn') {
             ctx.save();
             ctx.translate(player.x, player.y);
-            
+
             // גוף (לבן עם הצללה ורדרדה)
-            ctx.fillStyle = '#fff0f5'; 
+            ctx.fillStyle = '#fff0f5';
             // גוף מעוגל יותר
             ctx.beginPath(); ctx.ellipse(0, 15, 40, 25, 0, 0, Math.PI*2); ctx.fill();
-            
+
             // רגליים
             ctx.fillStyle = '#fff0f5';
             ctx.beginPath(); ctx.roundRect(-20, 30, 8, 25, 4); ctx.fill();
             ctx.beginPath(); ctx.roundRect(10, 30, 8, 25, 4); ctx.fill();
-            
+
             // צוואר וראש
             ctx.beginPath(); ctx.ellipse(-15, -15, 15, 25, -0.3, 0, Math.PI*2); ctx.fill(); // צוואר
             ctx.beginPath(); ctx.ellipse(0, -35, 22, 18, 0, 0, Math.PI*2); ctx.fill(); // ראש
             ctx.beginPath(); ctx.ellipse(10, -32, 12, 10, 0, 0, Math.PI*2); ctx.fill(); // אף
-            
+
             // רעמה צבעונית
             ctx.fillStyle = '#ec4899'; ctx.beginPath(); ctx.arc(-15, -45, 8, 0, Math.PI*2); ctx.fill();
             ctx.fillStyle = '#a855f7'; ctx.beginPath(); ctx.arc(-20, -30, 8, 0, Math.PI*2); ctx.fill();
             ctx.fillStyle = '#3b82f6'; ctx.beginPath(); ctx.arc(-22, -15, 8, 0, Math.PI*2); ctx.fill();
-            
+
             // זנב צבעוני
             ctx.fillStyle = '#ec4899'; ctx.beginPath(); ctx.arc(-40, 15, 8, 0, Math.PI*2); ctx.fill();
             ctx.fillStyle = '#a855f7'; ctx.beginPath(); ctx.arc(-45, 25, 8, 0, Math.PI*2); ctx.fill();
 
             // קרן קסם (זוהרת)
             ctx.shadowColor = '#facc15'; ctx.shadowBlur = 10;
-            ctx.fillStyle = '#facc15'; 
+            ctx.fillStyle = '#facc15';
             ctx.beginPath(); ctx.moveTo(5, -45); ctx.lineTo(15, -75); ctx.lineTo(15, -45); ctx.fill();
             ctx.shadowBlur = 0;
-            
+
             // עין חמודה
             ctx.fillStyle = 'black'; ctx.beginPath(); ctx.arc(5, -38, 2.5, 0, Math.PI*2); ctx.fill();
-            
+
             ctx.restore();
 
             // יריות כוכב קסם
             if (arrow.active) {
                 ctx.save();
                 ctx.translate(arrow.x, arrow.y);
-                ctx.fillStyle = '#facc15'; 
+                ctx.fillStyle = '#facc15';
                 ctx.shadowColor = '#fff'; ctx.shadowBlur = 10;
                 // ציור כוכב
                 ctx.beginPath();
@@ -1138,28 +1296,28 @@
 
             // מטרות עננים
             for (let t of targets) {
-                if (t.hit && t.radius < 5) continue; 
+                if (t.hit && t.radius < 5) continue;
 
                 ctx.save();
-                ctx.translate(t.x, t.y + Math.sin(t.wobble)*5); 
-                ctx.scale(t.scale, t.scale); 
-                
+                ctx.translate(t.x, t.y + Math.sin(t.wobble)*5);
+                ctx.scale(t.scale, t.scale);
+
                 // ענן לבן עם מסגרת ורודה דקה
                 ctx.shadowColor = 'rgba(236, 72, 153, 0.3)'; ctx.shadowBlur = 15;
                 ctx.fillStyle = 'white';
-                ctx.beginPath(); 
-                ctx.arc(0, 0, t.radius, 0, Math.PI*2); 
+                ctx.beginPath();
+                ctx.arc(0, 0, t.radius, 0, Math.PI*2);
                 ctx.arc(-25, 10, t.radius*0.6, 0, Math.PI*2);
                 ctx.arc(25, 10, t.radius*0.6, 0, Math.PI*2);
                 ctx.arc(0, -20, t.radius*0.8, 0, Math.PI*2);
                 ctx.fill();
                 ctx.strokeStyle = '#fce7f3'; ctx.lineWidth = 2; ctx.stroke();
                 ctx.shadowBlur = 0;
-                
+
                 // מספר
                 if (!t.hit) {
-                    ctx.fillStyle = '#db2777'; 
-                    ctx.font = '900 35px "Rubik"'; 
+                    ctx.fillStyle = '#db2777';
+                    ctx.font = '900 35px "Rubik"';
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                     ctx.fillText(t.value, 0, 0);
                 }
@@ -1175,15 +1333,15 @@
             ctx.strokeStyle = '#854d0e'; ctx.lineWidth = 6; ctx.lineCap = 'round';
             ctx.beginPath(); ctx.arc(-10, 0, 45, -Math.PI/2, Math.PI/2, false); ctx.stroke();
             ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.moveTo(-10, -45); 
-            if (arrow.active) ctx.lineTo(-10, 45); 
-            else ctx.lineTo(-35, 0); 
+            ctx.beginPath(); ctx.moveTo(-10, -45);
+            if (arrow.active) ctx.lineTo(-10, 45);
+            else ctx.lineTo(-35, 0);
             if (!arrow.active) ctx.lineTo(-10, 45);
             ctx.stroke();
 
             if (!arrow.active) {
-                ctx.fillStyle = '#78350f'; ctx.fillRect(-35, -3, 50, 6); 
-                ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(15, 0); ctx.lineTo(5, -8); ctx.lineTo(5, 8); ctx.fill(); 
+                ctx.fillStyle = '#78350f'; ctx.fillRect(-35, -3, 50, 6);
+                ctx.fillStyle = '#ef4444'; ctx.beginPath(); ctx.moveTo(15, 0); ctx.lineTo(5, -8); ctx.lineTo(5, 8); ctx.fill();
             }
             ctx.restore();
 
@@ -1197,27 +1355,27 @@
 
             // מטרות
             for (let t of targets) {
-                if (t.hit && t.radius < 5) continue; 
+                if (t.hit && t.radius < 5) continue;
 
                 ctx.save();
-                ctx.translate(t.x, t.y + Math.sin(t.wobble)*5); 
-                ctx.scale(t.scale, t.scale); 
-                
+                ctx.translate(t.x, t.y + Math.sin(t.wobble)*5);
+                ctx.scale(t.scale, t.scale);
+
                 ctx.shadowColor = 'rgba(0,0,0,0.2)'; ctx.shadowBlur = 10; ctx.shadowOffsetY = 5;
-                ctx.fillStyle = '#dc2626'; ctx.beginPath(); ctx.arc(0, 0, t.radius, 0, Math.PI*2); ctx.fill(); 
+                ctx.fillStyle = '#dc2626'; ctx.beginPath(); ctx.arc(0, 0, t.radius, 0, Math.PI*2); ctx.fill();
                 ctx.shadowColor = 'transparent';
-                ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, t.radius * 0.7, 0, Math.PI*2); ctx.fill(); 
-                ctx.fillStyle = '#dc2626'; ctx.beginPath(); ctx.arc(0, 0, t.radius * 0.4, 0, Math.PI*2); ctx.fill(); 
-                
+                ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(0, 0, t.radius * 0.7, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#dc2626'; ctx.beginPath(); ctx.arc(0, 0, t.radius * 0.4, 0, Math.PI*2); ctx.fill();
+
                 if (!t.hit) {
-                    ctx.fillStyle = '#fff'; 
-                    ctx.font = '900 30px "Rubik"'; 
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '900 30px "Rubik"';
                     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                     ctx.strokeStyle = 'black'; ctx.lineWidth = 4;
                     ctx.strokeText(t.value, 0, 0);
                     ctx.fillText(t.value, 0, 0);
                 }
-                
+
                 ctx.restore();
             }
         }
@@ -1235,22 +1393,22 @@
             ctx.save();
             ctx.translate(ft.x, ft.y);
             ctx.scale(ft.scale, ft.scale);
-            ctx.rotate((Math.random()-0.5)*0.2); 
-            
+            ctx.rotate((Math.random()-0.5)*0.2);
+
             ctx.font = '900 50px "Rubik"';
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            
+
             ctx.strokeStyle = 'black';
             ctx.lineWidth = 8;
             ctx.strokeText(ft.text, 0, 0);
-            
+
             ctx.fillStyle = ft.color;
             ctx.fillText(ft.text, 0, 0);
-            
+
             ctx.fillStyle = 'rgba(255,255,255,0.5)';
             ctx.fillText(ft.text, -2, -2);
-            
+
             ctx.restore();
         }
     }
@@ -1262,49 +1420,49 @@
     }
 
     function updateLives() {
-        let hearts = ''; for(let i=0; i<lives; i++) hearts += '❤️'; 
+        let hearts = ''; for(let i=0; i<lives; i++) hearts += '❤️';
         livesDisplay.textContent = 'חיים: ' + hearts;
     }
 
     function startGame() {
-        score = 0; lives = 3; 
-        
+        score = 0; lives = 3;
+
         if (config.startLevel === 'archery') score = 5;
         else if (config.startLevel === 'underwater') score = 10;
         else if (config.startLevel === 'racing') score = 15;
         else if (config.startLevel === 'soccer') score = 20;
         else if (config.startLevel === 'unicorn') score = 25;
-        
-        gameMode = 'space'; 
+
+        gameMode = 'space';
         correctStreak = 0;
         launchState = 'idle';
-        document.body.className = ''; 
-        
-        enemies = []; targets = []; currentQuestion = null; 
+        document.body.className = '';
+
+        enemies = []; targets = []; currentQuestion = null;
         feedbackTexts = [];
         scoreDisplay.textContent = 'ניקוד: ' + score;
         updateLives();
-        
+
         questionDisplay.textContent = '?';
         startScreen.classList.add('hidden'); gameOverScreen.classList.add('hidden');
-        gameState = 'playing'; 
-        
+        gameState = 'playing';
+
         if (score >= LEVEL_6_THRESHOLD) switchGameMode('unicorn');
         else if (score >= LEVEL_5_THRESHOLD) switchGameMode('soccer');
         else if (score >= LEVEL_4_THRESHOLD) switchGameMode('racing');
         else if (score >= LEVEL_3_THRESHOLD) switchGameMode('underwater');
         else if (score >= LEVEL_2_THRESHOLD) switchGameMode('archery');
         else switchGameMode('space');
-        
+
         resize();
 
         // הגדרת ברירת מחדל אם לא שונה
-        if(!config.operations) config.operations = 'add_sub'; 
+        if(!config.operations) config.operations = 'add_sub';
     }
 
     function endGame() {
-        gameState = 'gameover'; 
-        finalScoreDisplay.textContent = 'ניקוד סופי: ' + score; 
+        gameState = 'gameover';
+        finalScoreDisplay.textContent = 'ניקוד סופי: ' + score;
         gameOverScreen.classList.remove('hidden');
     }
 
@@ -1316,6 +1474,823 @@
     initRoad();
     requestAnimationFrame(gameLoop);
 
+    // ==========================================
+    //           FRACTIONS ACADEMY MODULE
+    // ==========================================
+
+    // Fractions Persistent Stats State
+    let fracXP = parseInt(localStorage.getItem('fracXP') || '0');
+    let fracStreak = parseInt(localStorage.getItem('fracStreak') || '0');
+    let fracUnlocks = JSON.parse(localStorage.getItem('fracUnlocks') || '[1]');
+
+    // Current Lesson/Play session state
+    let fracActiveSection = 'space'; // 'space' or 'fractions'
+    let fracCurrentLevel = 1;
+    let fracQuestionIndex = 0;
+    let fracLivesVal = 3;
+    let fracQuestionsList = [];
+    let fracSelectedSlices = [];
+    let fracActiveComparisonSide = null; // 'A' or 'B'
+
+    const fractionCanvas = document.getElementById('fractionCanvas');
+    const fractionCtx = fractionCanvas ? fractionCanvas.getContext('2d') : null;
+
+    // Direct Web Audio Synthesizer sound effects
+    function playSynthSound(type) {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (type === 'correct') {
+                // Cheerful major chord arpeggio: C4, E4, G4
+                const freqs = [261.63, 329.63, 392.00];
+                freqs.forEach((f, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+                    const start = audioCtx.currentTime + idx * 0.08;
+                    gain.gain.setValueAtTime(0, start);
+                    gain.gain.linearRampToValueAtTime(0.15, start + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, start + 0.6);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(start);
+                    osc.stop(start + 0.6);
+                });
+            } else if (type === 'incorrect') {
+                // Dissonant descending glide
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.4);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.45);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.5);
+            } else if (type === 'complete') {
+                // Celebration arpeggio chord
+                const freqs = [261.63, 329.63, 392.00, 523.25];
+                freqs.forEach((f, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(f, audioCtx.currentTime);
+                    const start = audioCtx.currentTime + idx * 0.1;
+                    gain.gain.setValueAtTime(0, start);
+                    gain.gain.linearRampToValueAtTime(0.2, start + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, start + 0.8);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(start);
+                    osc.stop(start + 0.8);
+                });
+            }
+        } catch (e) {
+            console.warn("Audio Context not supported or allowed by policy", e);
+        }
+    }
+
+    // Toggle Section tabs
+    const switchSpaceBtn = document.getElementById('switchSpaceBtn');
+    const switchFracBtn = document.getElementById('switchFracBtn');
+    const spaceHomeSection = document.getElementById('spaceHomeSection');
+    const fractionsHomeSection = document.getElementById('fractionsHomeSection');
+
+    function updateSectionTabs() {
+        const hud = document.getElementById('hud');
+        const qDisp = document.getElementById('questionDisplay');
+        if (fracActiveSection === 'space') {
+            switchSpaceBtn.className = "px-6 py-2.5 rounded-full text-lg font-black transition duration-200 bg-yellow-400 text-black shadow-md";
+            switchFracBtn.className = "px-6 py-2.5 rounded-full text-lg font-black transition duration-200 text-gray-300 hover:text-white";
+            spaceHomeSection.classList.remove('hidden');
+            fractionsHomeSection.classList.add('hidden');
+            if (hud) hud.classList.remove('hidden');
+            if (qDisp) qDisp.classList.remove('hidden');
+        } else {
+            switchSpaceBtn.className = "px-6 py-2.5 rounded-full text-lg font-black transition duration-200 text-gray-300 hover:text-white";
+            switchFracBtn.className = "px-6 py-2.5 rounded-full text-lg font-black transition duration-200 bg-emerald-500 text-white shadow-md";
+            spaceHomeSection.classList.add('hidden');
+            fractionsHomeSection.classList.remove('hidden');
+            if (hud) hud.classList.add('hidden');
+            if (qDisp) qDisp.classList.add('hidden');
+            updateFractionsMapUI();
+        }
+    }
+
+    if (switchSpaceBtn && switchFracBtn) {
+        switchSpaceBtn.addEventListener('click', () => {
+            fracActiveSection = 'space';
+            updateSectionTabs();
+        });
+        switchFracBtn.addEventListener('click', () => {
+            fracActiveSection = 'fractions';
+            updateSectionTabs();
+        });
+    }
+
+    // Update the visual progressive learning map nodes
+    function updateFractionsMapUI() {
+        document.getElementById('fracStreakText').textContent = `🔥 רצף יומי: ${fracStreak} ימים`;
+        document.getElementById('fracXPText').textContent = `🏆 נקודות XP: ${fracXP}`;
+
+        for (let lvl = 1; lvl <= 10; lvl++) {
+            const btn = document.getElementById(`node${lvl}`);
+            if (!btn) continue;
+
+            const isUnlocked = fracUnlocks.includes(lvl);
+            const isNextToPlay = isUnlocked && (lvl === 1 || !fracUnlocks.includes(lvl + 1));
+
+            btn.className = "w-16 h-16 rounded-full border-4 text-white font-extrabold text-2xl flex items-center justify-center shadow-lg active:scale-95 transition-transform relative pointer-events-auto";
+
+            if (isUnlocked) {
+                if (lvl < Math.max(...fracUnlocks)) {
+                    // Completed Node style
+                    btn.classList.add('bg-emerald-600', 'border-emerald-700', 'hover:bg-emerald-500');
+                } else {
+                    // Active unlocked Node style
+                    btn.classList.add('bg-emerald-400', 'border-emerald-500', 'animate-pulse', 'shadow-[0_0_15px_rgba(52,211,153,0.6)]');
+                }
+                // Bind click event cleanly
+                btn.onclick = () => {
+                    startFractionsLesson(lvl);
+                };
+            } else {
+                // Locked Node style
+                btn.classList.add('bg-slate-800/80', 'border-slate-700/50', 'text-slate-500', 'pointer-events-none');
+                btn.onclick = null;
+            }
+        }
+    }
+
+    // Fractions Question generation engine
+    function generateFractionsQuestions(level) {
+        const list = [];
+        if (level === 1) {
+            list.push({
+                type: 'multiple_choice',
+                theme: 'pizza',
+                denominator: 4,
+                highlighted: 1,
+                prompt: "איזה שבר מייצג את החלק המודגש בפיצה?",
+                options: ["1/4", "2/4", "3/4", "1/2"],
+                correctAnswer: "1/4"
+            });
+            list.push({
+                type: 'multiple_choice',
+                theme: 'cake',
+                denominator: 6,
+                highlighted: 3,
+                prompt: "איזה שבר מייצג את החלק המודגש בעוגת השוקולד?",
+                options: ["1/6", "3/6", "5/6", "4/6"],
+                correctAnswer: "3/6"
+            });
+            list.push({
+                type: 'multiple_choice',
+                theme: 'pie',
+                denominator: 3,
+                highlighted: 2,
+                prompt: "איזה שבר מייצג את החלק המודגש בפאי הדובדבנים?",
+                options: ["1/3", "2/3", "3/3", "1/2"],
+                correctAnswer: "2/3"
+            });
+            list.push({
+                type: 'multiple_choice',
+                theme: 'pizza',
+                denominator: 8,
+                highlighted: 5,
+                prompt: "איזה שבר מייצג את החלק המודגש בפיצה המשפחתית?",
+                options: ["3/8", "5/8", "7/8", "1/2"],
+                correctAnswer: "5/8"
+            });
+            list.push({
+                type: 'multiple_choice',
+                theme: 'cake',
+                denominator: 5,
+                highlighted: 4,
+                prompt: "איזה שבר מייצג את החלק המודגש בעוגת יום ההולדת?",
+                options: ["2/5", "3/5", "4/5", "1/5"],
+                correctAnswer: "4/5"
+            });
+        } else if (level === 2) {
+            list.push({
+                type: 'slice_tap',
+                theme: 'pizza',
+                denominator: 8,
+                targetNum: 3,
+                prompt: "הרכב את השבר 3/8 על ידי לחיצה על 3 פרוסות פיצה!"
+            });
+            list.push({
+                type: 'slice_tap',
+                theme: 'cake',
+                denominator: 6,
+                targetNum: 2,
+                prompt: "עזור לחתוך עוגה! סמן 2 מתוך 6 פרוסות כדי להרכיב 2/6."
+            });
+            list.push({
+                type: 'slice_tap',
+                theme: 'pie',
+                denominator: 4,
+                targetNum: 1,
+                prompt: "הדגש פרוסה אחת (1/4) מתוך פאי הדובדבנים הטעים!"
+            });
+            list.push({
+                type: 'slice_tap',
+                theme: 'pizza',
+                denominator: 6,
+                targetNum: 5,
+                prompt: "הרכב 5/6 מהפיצה על ידי סימון 5 פרוסות!"
+            });
+            list.push({
+                type: 'slice_tap',
+                theme: 'cake',
+                denominator: 8,
+                targetNum: 4,
+                prompt: "הדגש 4 פרוסות של עוגת השוקולד כדי ליצור שבר שקול לחצי (4/8)."
+            });
+        } else if (level === 3) {
+            list.push({
+                type: 'comparison',
+                theme: 'pizza',
+                compData: { numA: 1, denA: 2, numB: 1, denB: 4 }, // 1/2 vs 1/4
+                prompt: "איזה שבר גדול יותר: 1/2 או 1/4?",
+                options: ["אפשרות א׳ (1/2)", "אפשרות ב׳ (1/4)"],
+                correctAnswer: "אפשרות א׳ (1/2)"
+            });
+            list.push({
+                type: 'comparison',
+                theme: 'cake',
+                compData: { numA: 2, denA: 4, numB: 3, denB: 4 }, // 2/4 vs 3/4
+                prompt: "איזה שבר גדול יותר: 2/4 או 3/4?",
+                options: ["אפשרות א׳ (2/4)", "אפשרות ב׳ (3/4)"],
+                correctAnswer: "אפשרות ב׳ (3/4)"
+            });
+            list.push({
+                type: 'comparison',
+                theme: 'pie',
+                compData: { numA: 1, denA: 3, numB: 2, denB: 3 }, // 1/3 vs 2/3
+                prompt: "איזה שבר קטן יותר: 1/3 או 2/3?",
+                options: ["אפשרות א׳ (1/3)", "אפשרות ב׳ (2/3)"],
+                correctAnswer: "אפשרות א׳ (1/3)"
+            });
+            list.push({
+                type: 'comparison',
+                theme: 'pizza',
+                compData: { numA: 5, denA: 8, numB: 3, denB: 8 }, // 5/8 vs 3/8
+                prompt: "איזה שבר גדול יותר: 5/8 או 3/8?",
+                options: ["אפשרות א׳ (5/8)", "אפשרות ב׳ (3/8)"],
+                correctAnswer: "אפשרות א׳ (5/8)"
+            });
+            list.push({
+                type: 'comparison',
+                theme: 'cake',
+                compData: { numA: 1, denA: 2, numB: 5, denB: 8 }, // 1/2 (4/8) vs 5/8
+                prompt: "איזה שבר גדול יותר: 1/2 או 5/8?",
+                options: ["אפשרות א׳ (1/2)", "אפשרות ב׳ (5/8)"],
+                correctAnswer: "אפשרות ב׳ (5/8)"
+            });
+        } else if (level === 4) {
+            list.push({
+                type: 'equivalent',
+                theme: 'pizza',
+                denominator: 2,
+                highlighted: 1,
+                eqTargetDenom: 4,
+                prompt: "השלם את השבר השקול: חצי פיצה (1/2) שווה לכמה מתוך 4?",
+                options: ["1", "2", "3", "4"],
+                correctAnswer: "2"
+            });
+            list.push({
+                type: 'equivalent',
+                theme: 'cake',
+                denominator: 3,
+                highlighted: 2,
+                eqTargetDenom: 6,
+                prompt: "השלם את השבר השקול: 2/3 מעוגת השוקולד שווה לכמה מתוך 6?",
+                options: ["2", "3", "4", "5"],
+                correctAnswer: "4"
+            });
+            list.push({
+                type: 'equivalent',
+                theme: 'pie',
+                denominator: 4,
+                highlighted: 2,
+                eqTargetDenom: 2,
+                prompt: "השלם את השבר השקול: 2/4 מפאי הדובדבנים שווה לכמה מתוך 2?",
+                options: ["1", "2", "3", "4"],
+                correctAnswer: "1"
+            });
+            list.push({
+                type: 'multiple_choice',
+                theme: 'pizza',
+                denominator: 4,
+                highlighted: 2,
+                prompt: "איזה שבר פשוט שווה בדיוק ל-2/4 מהפיצה?",
+                options: ["1/4", "2/4", "3/4", "1/2"],
+                correctAnswer: "1/2"
+            });
+            list.push({
+                type: 'equivalent',
+                theme: 'cake',
+                denominator: 8,
+                highlighted: 4,
+                eqTargetDenom: 2,
+                prompt: "השלם את השבר השקול: 4/8 מעוגת השוקולד שווה לכמה מתוך 2?",
+                options: ["1", "2", "3", "4"],
+                correctAnswer: "1"
+            });
+        } else if (level === 5) {
+            list.push({
+                type: 'blank_input',
+                theme: 'pizza',
+                denominator: 4,
+                highlighted: 3,
+                prompt: "חיבור שברים עם מכנים זהים: 1/4 + 2/4. מצא את המונה והמכנה המשותף!",
+                correctNumerator: 3,
+                correctDenominator: 4
+            });
+            list.push({
+                type: 'blank_input',
+                theme: 'cake',
+                denominator: 8,
+                highlighted: 5,
+                prompt: "חיבור טעים: 2/8 מעוגת שוקולד ועוד 3/8. מהו השבר שנקבל?",
+                correctNumerator: 5,
+                correctDenominator: 8
+            });
+            list.push({
+                type: 'blank_input',
+                theme: 'pie',
+                denominator: 6,
+                highlighted: 3,
+                prompt: "חיסור שברים: היו 5/6 מפאי הדובדבנים ואכלנו 2/6. כמה נשאר?",
+                correctNumerator: 3,
+                correctDenominator: 6
+            });
+            list.push({
+                type: 'blank_input',
+                theme: 'pizza',
+                denominator: 5,
+                highlighted: 3,
+                prompt: "חיבור פיצות: 2/5 + 1/5 = מהו השבר החדש?",
+                correctNumerator: 3,
+                correctDenominator: 5
+            });
+            list.push({
+                type: 'blank_input',
+                theme: 'cake',
+                denominator: 8,
+                highlighted: 4,
+                prompt: "חיסור עוגה: 7/8 מעוגת השוקולד פחות 3/8. מהו שבר השארית?",
+                correctNumerator: 4,
+                correctDenominator: 8
+            });
+        }
+        return list;
+    }
+
+    // Canvas drawing function for delicious food (pizza, cake, cherry pie)
+    function drawFractionVisual(theme, denominator, highlightedCount, selectedSlices, isComparison, activeComparisonSide, isEquivalentOverlay, eqTargetDenom) {
+        if (!fractionCanvas || !fractionCtx) return;
+        const W = fractionCanvas.width;
+        const H = fractionCanvas.height;
+        fractionCtx.clearRect(0, 0, W, H);
+
+        function drawFoodCircle(cx, cy, radius, theme, denom, currentHighlighted, currentSelectedSlices, isEq, eqDenom) {
+            // Shadow plate backing
+            fractionCtx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+            fractionCtx.shadowBlur = 15;
+            fractionCtx.shadowOffsetY = 8;
+            fractionCtx.fillStyle = '#1e293b';
+            fractionCtx.beginPath();
+            fractionCtx.arc(cx, cy, radius + 15, 0, Math.PI * 2);
+            fractionCtx.fill();
+            fractionCtx.shadowOffsetY = 0;
+            fractionCtx.shadowBlur = 0;
+            fractionCtx.shadowColor = 'transparent';
+
+            // Plate rim
+            fractionCtx.strokeStyle = '#475569';
+            fractionCtx.lineWidth = 4;
+            fractionCtx.beginPath();
+            fractionCtx.arc(cx, cy, radius + 15, 0, Math.PI * 2);
+            fractionCtx.stroke();
+
+            const sliceAngle = (Math.PI * 2) / denom;
+
+            for (let i = 0; i < denom; i++) {
+                const startAngle = i * sliceAngle - Math.PI / 2;
+                const endAngle = (i + 1) * sliceAngle - Math.PI / 2;
+
+                let isHighlighted = false;
+                if (currentSelectedSlices && currentSelectedSlices.length > 0) {
+                    isHighlighted = currentSelectedSlices.includes(i);
+                } else {
+                    isHighlighted = i < currentHighlighted;
+                }
+
+                fractionCtx.beginPath();
+                fractionCtx.moveTo(cx, cy);
+                fractionCtx.arc(cx, cy, radius, startAngle, endAngle);
+                fractionCtx.closePath();
+
+                if (isHighlighted) {
+                    if (theme === 'pizza') {
+                        fractionCtx.fillStyle = '#f59e0b'; // golden cheese
+                    } else if (theme === 'cake') {
+                        fractionCtx.fillStyle = '#7c2d12'; // chocolate brown
+                    } else {
+                        fractionCtx.fillStyle = '#b91c1c'; // cherry pie red
+                    }
+                } else {
+                    fractionCtx.fillStyle = 'rgba(51, 65, 85, 0.4)'; // empty/baked crust outlined
+                }
+                fractionCtx.fill();
+
+                // Crust border
+                fractionCtx.beginPath();
+                fractionCtx.arc(cx, cy, radius, startAngle, endAngle);
+                if (theme === 'pizza') {
+                    fractionCtx.strokeStyle = '#d97706';
+                    fractionCtx.lineWidth = 10;
+                } else if (theme === 'cake') {
+                    fractionCtx.strokeStyle = '#451a03';
+                    fractionCtx.lineWidth = 10;
+                } else {
+                    fractionCtx.strokeStyle = '#d97706';
+                    fractionCtx.lineWidth = 10;
+                }
+                fractionCtx.stroke();
+
+                // Toppings for highlighted slices
+                if (isHighlighted) {
+                    fractionCtx.save();
+                    const midAngle = startAngle + sliceAngle / 2;
+                    const tx = cx + Math.cos(midAngle) * (radius * 0.55);
+                    const ty = cy + Math.sin(midAngle) * (radius * 0.55);
+
+                    if (theme === 'pizza') {
+                        // Pepperoni circles
+                        fractionCtx.fillStyle = '#dc2626';
+                        fractionCtx.beginPath();
+                        fractionCtx.arc(tx, ty, radius * 0.12, 0, Math.PI * 2);
+                        fractionCtx.fill();
+                        fractionCtx.fillStyle = '#991b1b';
+                        fractionCtx.beginPath();
+                        fractionCtx.arc(tx - 2, ty - 2, 2, 0, Math.PI * 2);
+                        fractionCtx.arc(tx + 2, ty + 2, 1.5, 0, Math.PI * 2);
+                        fractionCtx.fill();
+                    } else if (theme === 'cake') {
+                        // Chocolate sprinkles
+                        fractionCtx.fillStyle = '#fbbf24';
+                        fractionCtx.fillRect(tx - 4, ty - 2, 8, 3);
+                        fractionCtx.fillStyle = '#ec4899';
+                        fractionCtx.fillRect(tx + 2, ty + 4, 3, 8);
+                        fractionCtx.fillStyle = '#3b82f6';
+                        fractionCtx.fillRect(tx - 3, ty + 3, 7, 3);
+                    } else {
+                        // Cherries
+                        fractionCtx.fillStyle = '#7f1d1d';
+                        fractionCtx.beginPath();
+                        fractionCtx.arc(tx, ty, radius * 0.14, 0, Math.PI * 2);
+                        fractionCtx.fill();
+                        fractionCtx.strokeStyle = '#15803d';
+                        fractionCtx.lineWidth = 2;
+                        fractionCtx.beginPath();
+                        fractionCtx.moveTo(tx, ty - radius * 0.05);
+                        fractionCtx.quadraticCurveTo(tx + 5, ty - radius * 0.2, tx + 10, ty - radius * 0.18);
+                        fractionCtx.stroke();
+                    }
+                    fractionCtx.restore();
+                }
+
+                // Separating radial partition lines
+                fractionCtx.strokeStyle = '#1e293b';
+                fractionCtx.lineWidth = 3;
+                fractionCtx.beginPath();
+                fractionCtx.moveTo(cx, cy);
+                fractionCtx.lineTo(cx + Math.cos(startAngle) * radius, cy + Math.sin(startAngle) * radius);
+                fractionCtx.stroke();
+            }
+
+            // Equivalent dashed lines overlay
+            if (isEq && eqDenom) {
+                fractionCtx.save();
+                fractionCtx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                fractionCtx.lineWidth = 2.5;
+                fractionCtx.setLineDash([6, 6]);
+                const eqAngle = (Math.PI * 2) / eqDenom;
+                for (let j = 0; j < eqDenom; j++) {
+                    const ang = j * eqAngle - Math.PI / 2;
+                    fractionCtx.beginPath();
+                    fractionCtx.moveTo(cx, cy);
+                    fractionCtx.lineTo(cx + Math.cos(ang) * radius, cy + Math.sin(ang) * radius);
+                    fractionCtx.stroke();
+                }
+                fractionCtx.restore();
+            }
+
+            // Center plate cap
+            fractionCtx.fillStyle = '#334155';
+            fractionCtx.beginPath();
+            fractionCtx.arc(cx, cy, 12, 0, Math.PI * 2);
+            fractionCtx.fill();
+            fractionCtx.strokeStyle = '#64748b';
+            fractionCtx.lineWidth = 2;
+            fractionCtx.beginPath();
+            fractionCtx.arc(cx, cy, 12, 0, Math.PI * 2);
+            fractionCtx.stroke();
+        }
+
+        if (isComparison) {
+            const rComp = 55;
+            const cy = H / 2;
+            const cxLeft = W / 4;
+            const cxRight = (3 * W) / 4;
+
+            // Highlight side selection on visual display
+            fractionCtx.fillStyle = activeComparisonSide === 'A' ? '#fbbf24' : '#ffffff';
+            fractionCtx.font = '900 24px "Rubik"';
+            fractionCtx.textAlign = 'center';
+            fractionCtx.textBaseline = 'middle';
+            fractionCtx.fillText('אפשרות א׳', cxLeft, cy - rComp - 35);
+
+            drawFoodCircle(cxLeft, cy, rComp, theme, highlightedCount.denA, highlightedCount.numA, null, false, 0);
+
+            fractionCtx.fillStyle = activeComparisonSide === 'B' ? '#fbbf24' : '#ffffff';
+            fractionCtx.font = '900 24px "Rubik"';
+            fractionCtx.fillText('אפשרות ב׳', cxRight, cy - rComp - 35);
+
+            drawFoodCircle(cxRight, cy, rComp, theme, highlightedCount.denB, highlightedCount.numB, null, false, 0);
+
+        } else {
+            drawFoodCircle(W / 2, H / 2, 100, theme, denominator, highlightedCount, selectedSlices, isEquivalentOverlay, eqTargetDenom);
+        }
+    }
+
+    // Start a lesson for a specific level
+    function startFractionsLesson(level) {
+        fracCurrentLevel = level;
+        fracQuestionIndex = 0;
+        fracLivesVal = 3;
+        fracQuestionsList = generateFractionsQuestions(level);
+
+        gameState = 'fractions_play';
+        startScreen.classList.add('hidden');
+        document.getElementById('fractionPlayScreen').classList.remove('hidden');
+
+        const hud = document.getElementById('hud');
+        const qDisp = document.getElementById('questionDisplay');
+        if (hud) hud.classList.add('hidden');
+        if (qDisp) qDisp.classList.add('hidden');
+
+        loadFractionsQuestion();
+    }
+
+    // Load active question
+    function loadFractionsQuestion() {
+        const q = fracQuestionsList[fracQuestionIndex];
+        if (!q) {
+            completeFractionsLevel();
+            return;
+        }
+
+        document.getElementById('fracProgressBar').style.width = `${(fracQuestionIndex / fracQuestionsList.length) * 100}%`;
+        document.getElementById('fracLives').textContent = '❤️'.repeat(fracLivesVal);
+        document.getElementById('fracPrompt').textContent = q.prompt;
+
+        // Hide all input layouts initially
+        document.getElementById('mcContainer').classList.add('hidden');
+        document.getElementById('tapTargetInfo').classList.add('hidden');
+        document.getElementById('blankContainer').classList.add('hidden');
+
+        // Reset variables
+        fracSelectedSlices = [];
+        fracActiveComparisonSide = null;
+
+        // Visual helper hints
+        document.getElementById('visualHelperText').textContent = '';
+
+        if (q.type === 'multiple_choice' || q.type === 'equivalent' || q.type === 'comparison') {
+            const mc = document.getElementById('mcContainer');
+            mc.classList.remove('hidden');
+            mc.innerHTML = '';
+
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "frac-btn-option bg-slate-800/90 border-2 border-slate-700 border-b-[5px] text-white font-black text-xl p-3.5 rounded-xl transition transform active:scale-95 hover:bg-slate-700 hover:text-white";
+                btn.textContent = opt;
+                btn.onclick = () => {
+                    // Highlight selected MC button
+                    const siblings = mc.getElementsByTagName('button');
+                    for (let s of siblings) {
+                        s.classList.remove('selected', 'bg-emerald-500', 'border-emerald-600', 'hover:bg-emerald-400');
+                        s.classList.add('bg-slate-800/90', 'border-slate-700', 'hover:bg-slate-700');
+                    }
+                    btn.classList.add('selected', 'bg-emerald-500', 'border-emerald-600', 'hover:bg-emerald-400');
+                    btn.classList.remove('bg-slate-800/90', 'border-slate-700', 'hover:bg-slate-700');
+
+                    if (q.type === 'comparison') {
+                        fracActiveComparisonSide = opt.includes('א׳') ? 'A' : 'B';
+                        // Re-render side views
+                        drawFractionVisual(q.theme, 0, q.compData, [], true, fracActiveComparisonSide, false, 0);
+                    }
+                };
+                mc.appendChild(btn);
+            });
+
+            if (q.type === 'comparison') {
+                drawFractionVisual(q.theme, 0, q.compData, [], true, null, false, 0);
+            } else if (q.type === 'equivalent') {
+                drawFractionVisual(q.theme, q.denominator, q.highlighted, [], false, null, true, q.eqTargetDenom);
+                document.getElementById('visualHelperText').textContent = "קו המכנה המקווקו מראה את השברים השקולים!";
+            } else {
+                drawFractionVisual(q.theme, q.denominator, q.highlighted, [], false, null, false, 0);
+            }
+
+        } else if (q.type === 'slice_tap') {
+            document.getElementById('tapTargetInfo').classList.remove('hidden');
+            document.getElementById('tapCount').textContent = '0';
+            document.getElementById('tapTotal').textContent = q.targetNum;
+
+            drawFractionVisual(q.theme, q.denominator, 0, [], false, null, false, 0);
+
+        } else if (q.type === 'blank_input') {
+            document.getElementById('blankContainer').classList.remove('hidden');
+            document.getElementById('blankNumerator').value = '';
+            document.getElementById('blankDenominator').value = '';
+
+            drawFractionVisual(q.theme, q.denominator, q.highlighted, [], false, null, false, 0);
+        }
+    }
+
+    // Click inside fractionCanvas to toggle selected slices (Level 2)
+    if (fractionCanvas) {
+        fractionCanvas.addEventListener('click', (e) => {
+            const q = fracQuestionsList[fracQuestionIndex];
+            if (!q || q.type !== 'slice_tap') return;
+
+            const rect = fractionCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const cx = fractionCanvas.width / 2;
+            const cy = fractionCanvas.height / 2;
+            const radius = 100;
+
+            const dist = Math.sqrt((x - cx) ** 2 + (y - cy) ** 2);
+            if (dist <= radius + 15) {
+                // Determine polar slice angle
+                let theta = Math.atan2(y - cy, x - cx) + Math.PI / 2;
+                if (theta < 0) theta += Math.PI * 2;
+
+                const sliceAngle = (Math.PI * 2) / q.denominator;
+                const clickedSlice = Math.floor(theta / sliceAngle) % q.denominator;
+
+                const index = fracSelectedSlices.indexOf(clickedSlice);
+                if (index === -1) {
+                    fracSelectedSlices.push(clickedSlice);
+                } else {
+                    fracSelectedSlices.splice(index, 1);
+                }
+
+                // Re-render
+                drawFractionVisual(q.theme, q.denominator, 0, fracSelectedSlices, false, null, false, 0);
+
+                // Update label count
+                document.getElementById('tapCount').textContent = fracSelectedSlices.length;
+            }
+        });
+    }
+
+    // Answer Validation & Check button
+    const fracCheckBtn = document.getElementById('fracCheckBtn');
+    if (fracCheckBtn) {
+        fracCheckBtn.addEventListener('click', () => {
+            const q = fracQuestionsList[fracQuestionIndex];
+            if (!q) return;
+
+            let isCorrect = false;
+
+            if (q.type === 'multiple_choice' || q.type === 'equivalent' || q.type === 'comparison') {
+                const mc = document.getElementById('mcContainer');
+                const selectedBtn = mc.querySelector('button.selected');
+                if (!selectedBtn) {
+                    alert("נא לבחור אחת מהאפשרויות!");
+                    return;
+                }
+                isCorrect = (selectedBtn.textContent === q.correctAnswer);
+
+            } else if (q.type === 'slice_tap') {
+                isCorrect = (fracSelectedSlices.length === q.targetNum);
+
+            } else if (q.type === 'blank_input') {
+                const numVal = parseInt(document.getElementById('blankNumerator').value);
+                const denVal = parseInt(document.getElementById('blankDenominator').value);
+
+                if (isNaN(numVal) || isNaN(denVal)) {
+                    alert("נא למלא את שני השדות (מונה ומכנה)!");
+                    return;
+                }
+
+                isCorrect = (numVal === q.correctNumerator && denVal === q.correctDenominator);
+            }
+
+            // Trigger visual and audio feedback
+            if (isCorrect) {
+                playSynthSound('correct');
+                fracQuestionIndex++;
+
+                // Visual bounce notification inside Prompt
+                const prompt = document.getElementById('fracPrompt');
+                prompt.textContent = "מצוין! תשובה נכונה. 🎉";
+                prompt.className = "text-lg font-black text-emerald-400 scale-110 transition-all";
+
+                setTimeout(() => {
+                    prompt.className = "text-lg font-bold";
+                    loadFractionsQuestion();
+                }, 1000);
+
+            } else {
+                playSynthSound('incorrect');
+                fracLivesVal--;
+                document.getElementById('fracLives').textContent = '❤️'.repeat(fracLivesVal);
+
+                // Red flash overlay feedback
+                const flash = document.getElementById('flashOverlay');
+                if (flash) {
+                    flash.style.animation = 'flashRed 0.3s';
+                    setTimeout(() => flash.style.animation = 'none', 300);
+                }
+
+                const prompt = document.getElementById('fracPrompt');
+                prompt.textContent = "אופס! תשובה שגויה, נסה שוב. 🤔";
+                prompt.className = "text-lg font-black text-rose-400 scale-105 transition-all";
+
+                setTimeout(() => {
+                    prompt.className = "text-lg font-bold text-white";
+                }, 1200);
+
+                if (fracLivesVal <= 0) {
+                    alert("נגמרו הלבבות! נסה את השיעור מהתחלה.");
+                    abortFractionsPlay();
+                }
+            }
+        });
+    }
+
+    // Abort active fractions play
+    const closeFracPlayBtn = document.getElementById('closeFracPlayBtn');
+    if (closeFracPlayBtn) {
+        closeFracPlayBtn.addEventListener('click', abortFractionsPlay);
+    }
+
+    function abortFractionsPlay() {
+        gameState = 'start';
+        document.getElementById('fractionPlayScreen').classList.add('hidden');
+        startScreen.classList.remove('hidden');
+        updateFractionsMapUI();
+    }
+
+    // Complete fractions level celebration
+    function completeFractionsLevel() {
+        playSynthSound('complete');
+
+        // Award XP and increment unlocks
+        fracXP += 15;
+        if (!fracUnlocks.includes(fracCurrentLevel + 1) && fracCurrentLevel < 5) {
+            fracUnlocks.push(fracCurrentLevel + 1);
+        }
+
+        // Daily streak increment (always ensures at least 1 day streak)
+        if (fracStreak === 0) fracStreak = 1;
+
+        // Persist progress
+        localStorage.setItem('fracXP', fracXP.toString());
+        localStorage.setItem('fracStreak', fracStreak.toString());
+        localStorage.setItem('fracUnlocks', JSON.stringify(fracUnlocks));
+
+        document.getElementById('fractionPlayScreen').classList.add('hidden');
+        document.getElementById('fracCompleteScreen').classList.remove('hidden');
+        document.getElementById('completeStreakVal').textContent = `🔥 ${fracStreak}`;
+    }
+
+    // Complete celebration continue button
+    const fracCompleteContinueBtn = document.getElementById('fracCompleteContinueBtn');
+    if (fracCompleteContinueBtn) {
+        fracCompleteContinueBtn.addEventListener('click', () => {
+            document.getElementById('fracCompleteScreen').classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            gameState = 'start';
+            updateSectionTabs();
+            updateFractionsMapUI();
+        });
+    }
+
+    // Init Fractions Map UI on load
+    updateSectionTabs();
+    updateFractionsMapUI();
 </script>
 </body>
 </html>
