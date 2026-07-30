@@ -1358,30 +1358,14 @@
             const baseOptions = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
             const targetWeight = baseOptions[Math.floor(Math.random() * baseOptions.length)];
 
-            // Choose a nice set of pre-placed weights on the left side that sum up to targetWeight
-            let remaining = targetWeight;
-            const preplaced = [];
-            while (remaining > 0) {
-                if (remaining >= 5 && Math.random() > 0.4) {
-                    preplaced.push(5);
-                    remaining -= 5;
-                } else if (remaining >= 2 && Math.random() > 0.3) {
-                    preplaced.push(2);
-                    remaining -= 2;
-                } else {
-                    preplaced.push(1);
-                    remaining -= 1;
-                }
-            }
-
-            state.scalesLeftWeights = preplaced;
+            state.scalesLeftWeights = [];
             state.scalesRightWeights = [];
             state.scalesRequiredSum = targetWeight;
 
             document.getElementById('scales-challenge-text').innerHTML = `
                 עליכם לאזן את מאזני הצעצועים והמתנות! 🧸🚗🎁 <br>
-                על המגש השמאלי הונחו צעצועים במשקל כולל של <span class="text-indigo-600 font-black">${targetWeight} ק"ג</span>. <br>
-                הוסיפו צעצועים ומתנות למגש הימני כדי להגיע ל<b>איזון מושלם</b>!
+                על המגש השמאלי מונחת <b>מתנת פתעה ענקית</b> 🎁 שמשקלה הכולל הוא <span class="text-indigo-600 font-black">${targetWeight} ק"ג</span>. <br>
+                הניחו צעצועים ומתנות שונות על המגש הימני כדי להגיע ל<b>איזון מושלם</b>!
             `;
 
             document.getElementById('scales-required-weight').innerText = `${targetWeight} ק"ג`;
@@ -1422,7 +1406,7 @@
             if (!svg) return;
             svg.innerHTML = '';
 
-            const leftSum = getSum(state.scalesLeftWeights);
+            const leftSum = state.scalesRequiredSum;
             const rightSum = getSum(state.scalesRightWeights);
             document.getElementById('scales-placed-weight').innerText = `${rightSum} ק"ג`;
 
@@ -1496,40 +1480,37 @@
             rpan.setAttribute('stroke-width', '2');
             group.appendChild(rpan);
 
-            // Render weights (toys/gifts) on the left pan
-            // Position base around x=60, y=170
-            state.scalesLeftWeights.forEach((w, idx) => {
-                const ox = 38 + (idx % 3) * 18;
-                const oy = 168 - Math.floor(idx / 3) * 22;
-                const emoji = w === 5 ? '🎁' : w === 2 ? '🚗' : '🧸';
+            // Render a single beautiful, large "mystery gift box" 🎁 on the left pan representing the target weight!
+            const oxLeft = 60; // centered on the left pan
+            const oyLeft = 168;
 
-                // Render Emoji Toy
-                const emojiText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                emojiText.setAttribute('x', ox.toString());
-                emojiText.setAttribute('y', oy.toString());
-                emojiText.setAttribute('font-size', '18px');
-                emojiText.setAttribute('text-anchor', 'middle');
-                emojiText.textContent = emoji;
-                group.appendChild(emojiText);
+            const leftGiftText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            leftGiftText.setAttribute('x', oxLeft.toString());
+            leftGiftText.setAttribute('y', oyLeft.toString());
+            leftGiftText.setAttribute('font-size', '34px'); // Larger and prominent!
+            leftGiftText.setAttribute('text-anchor', 'middle');
+            leftGiftText.textContent = '🎁';
+            group.appendChild(leftGiftText);
 
-                // Render circular weight badge in top-right of toy
-                const badgeCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                badgeCircle.setAttribute('cx', (ox + 8).toString());
-                badgeCircle.setAttribute('cy', (oy - 12).toString());
-                badgeCircle.setAttribute('r', '5');
-                badgeCircle.setAttribute('fill', w === 5 ? '#3b82f6' : w === 2 ? '#8b5cf6' : '#10b981');
-                group.appendChild(badgeCircle);
+            // Add a beautiful golden badge displaying the total target weight!
+            const goldBadge = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            goldBadge.setAttribute('cx', (oxLeft + 12).toString());
+            goldBadge.setAttribute('cy', (oyLeft - 22).toString());
+            goldBadge.setAttribute('r', '9');
+            goldBadge.setAttribute('fill', '#D97706'); // golden orange
+            goldBadge.setAttribute('stroke', '#F59E0B'); // bright gold
+            goldBadge.setAttribute('stroke-width', '1.5');
+            group.appendChild(goldBadge);
 
-                const badgeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                badgeText.setAttribute('x', (ox + 8).toString());
-                badgeText.setAttribute('y', (oy - 9).toString());
-                badgeText.setAttribute('fill', '#ffffff');
-                badgeText.setAttribute('font-size', '6.5px');
-                badgeText.setAttribute('font-weight', 'black');
-                badgeText.setAttribute('text-anchor', 'middle');
-                badgeText.textContent = w.toString();
-                group.appendChild(badgeText);
-            });
+            const goldBadgeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            goldBadgeText.setAttribute('x', (oxLeft + 12).toString());
+            goldBadgeText.setAttribute('y', (oyLeft - 17).toString());
+            goldBadgeText.setAttribute('fill', '#ffffff');
+            goldBadgeText.setAttribute('font-size', '9px');
+            goldBadgeText.setAttribute('font-weight', 'black');
+            goldBadgeText.setAttribute('text-anchor', 'middle');
+            goldBadgeText.textContent = leftSum.toString();
+            group.appendChild(goldBadgeText);
 
             // Render weights (toys/gifts) on the right pan
             // Position base around x=240, y=170
@@ -1589,7 +1570,7 @@
         }
 
         function checkScalesOrder() {
-            const leftSum = getSum(state.scalesLeftWeights);
+            const leftSum = state.scalesRequiredSum;
             const rightSum = getSum(state.scalesRightWeights);
 
             const feedback = document.getElementById('scales-feedback');
