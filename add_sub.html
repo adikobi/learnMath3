@@ -427,8 +427,18 @@
                 <div class="text-4xl">👨‍🍳</div>
             </div>
 
+            <!-- Sub-tabs within Game Section -->
+            <div class="flex gap-2 justify-center bg-slate-100 p-1.5 rounded-2xl max-w-md mx-auto">
+                <button id="subtab-pizza" onclick="switchSubGame('pizza')" class="flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm">
+                    🍕 פיצריית פיצי
+                </button>
+                <button id="subtab-scales" onclick="switchSubGame('scales')" class="flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
+                    ⚖️ מאזני הצעצועים
+                </button>
+            </div>
+
             <!-- Pizza Game Board -->
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 grid md:grid-cols-2 gap-8 items-center">
+            <div id="game-pizza-container" class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 grid md:grid-cols-2 gap-8 items-center">
                 <!-- Customer Order Card -->
                 <div class="space-y-4">
                     <div class="bg-amber-50 border-2 border-amber-200 p-4 rounded-2xl relative">
@@ -483,6 +493,62 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Scales Game Board -->
+            <div id="game-scales-container" class="hidden bg-white rounded-3xl p-6 shadow-sm border border-slate-100 grid md:grid-cols-2 gap-8 items-center">
+                <!-- Scales Challenge Card -->
+                <div class="space-y-4">
+                    <div class="bg-indigo-50 border-2 border-indigo-200 p-4 rounded-2xl relative">
+                        <div class="text-xs font-bold text-indigo-700 mb-1">📋 האתגר במאזניים:</div>
+                        <div id="scales-challenge-text" class="text-lg font-extrabold text-slate-800 leading-relaxed">
+                            בטעינה...
+                        </div>
+                    </div>
+
+                    <!-- Interactive Weight selection buttons -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <span class="text-xs font-bold text-slate-500 block">בחר משקולת להנחה על המגש הימני:</span>
+                        <div class="grid grid-cols-3 gap-2" dir="ltr">
+                            <button onclick="addWeight(1)" class="py-2.5 px-3 bg-white border-2 border-slate-200 hover:border-amber-400 text-slate-800 font-extrabold text-sm rounded-xl transition-all shadow-xs flex flex-col items-center gap-0.5">
+                                <span class="text-base">⚖️</span>
+                                <span>1 ק"ג</span>
+                            </button>
+                            <button onclick="addWeight(2)" class="py-2.5 px-3 bg-white border-2 border-slate-200 hover:border-amber-400 text-slate-800 font-extrabold text-sm rounded-xl transition-all shadow-xs flex flex-col items-center gap-0.5">
+                                <span class="text-base">⚖️</span>
+                                <span>2 ק"ג</span>
+                            </button>
+                            <button onclick="addWeight(5)" class="py-2.5 px-3 bg-white border-2 border-slate-200 hover:border-amber-400 text-slate-800 font-extrabold text-sm rounded-xl transition-all shadow-xs flex flex-col items-center gap-0.5">
+                                <span class="text-base">⚖️</span>
+                                <span>5 ק"ג</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Current weights state list -->
+                    <div class="bg-slate-50 p-3 rounded-xl font-bold text-xs text-slate-700 flex justify-between items-center flex-wrap gap-2">
+                        <span>משקל נדרש (שמאל): <span id="scales-required-weight" class="text-indigo-600 font-black text-sm">0 ק"ג</span></span>
+                        <span>משקל שהנחת (ימין): <span id="scales-placed-weight" class="text-amber-600 font-black text-sm">0 ק"ג</span></span>
+                        <button onclick="clearWeights()" class="text-[10px] bg-rose-50 text-rose-600 border border-rose-200 px-2 py-0.5 rounded hover:bg-rose-100 transition-all">
+                            🧹 רוקן מגש ימין
+                        </button>
+                    </div>
+
+                    <div id="scales-feedback" class="hidden p-3 rounded-xl font-bold text-center text-sm"></div>
+
+                    <button onclick="checkScalesOrder()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-200 transition-all text-lg">
+                        בדוק איזון! ⚖️
+                    </button>
+                </div>
+
+                <!-- Dynamic SVG Balance Scale Visualizer -->
+                <div class="flex justify-center items-center py-4">
+                    <div class="relative w-80 h-80 flex items-center justify-center">
+                        <svg id="scales-svg" viewBox="0 0 300 300" class="w-full h-full drop-shadow-xl">
+                            <!-- Dynamically drawn and rotated SVG components -->
+                        </svg>
+                    </div>
+                </div>
+            </div>
         </section>
 
     </main>
@@ -498,10 +564,17 @@
             totalLessonSteps: 4,
             difficulty: 'simple-add',
             currentQuestion: null,
+            // Sub game tracker
+            activeSubGame: 'pizza', // 'pizza' or 'scales'
+            // Pizza Game state
             pizzaTargetOlives: 3,
             pizzaTargetCorn: 4,
             pizzaSelectedTopping: 'olive', // 'olive' or 'corn'
-            pizzaSlices: Array.from({length: 10}, () => ({ olive: false, corn: false }))
+            pizzaSlices: Array.from({length: 10}, () => ({ olive: false, corn: false })),
+            // Scales Game state
+            scalesLeftWeights: [], // pre-placed weights e.g. [5, 2]
+            scalesRightWeights: [], // placed by the user
+            scalesRequiredSum: 0
         };
 
         // Web Audio API Audio Synthesizer
@@ -578,7 +651,43 @@
             if (tabName === 'practice' && !state.currentQuestion) {
                 generateNewQuestion();
             } else if (tabName === 'game') {
+                initGameTab();
+            }
+        }
+
+        function switchSubGame(subGame) {
+            playSound('click');
+            state.activeSubGame = subGame;
+
+            const btnPizza = document.getElementById('subtab-pizza');
+            const btnScales = document.getElementById('subtab-scales');
+            const conPizza = document.getElementById('game-pizza-container');
+            const conScales = document.getElementById('game-scales-container');
+
+            if (subGame === 'pizza') {
+                btnPizza.className = "flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm";
+                btnScales.className = "flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white";
+                conPizza.classList.remove('hidden');
+                conPizza.classList.add('grid');
+                conScales.classList.add('hidden');
+                conScales.classList.remove('grid');
                 initPizzaGame();
+            } else {
+                btnPizza.className = "flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white";
+                btnScales.className = "flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm";
+                conPizza.classList.add('hidden');
+                conPizza.classList.remove('grid');
+                conScales.classList.remove('hidden');
+                conScales.classList.add('grid');
+                initScalesGame();
+            }
+        }
+
+        function initGameTab() {
+            if (state.activeSubGame === 'pizza') {
+                switchSubGame('pizza');
+            } else {
+                switchSubGame('scales');
             }
         }
 
@@ -1239,6 +1348,271 @@
                 if (feedback) {
                     feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-rose-100 text-rose-800 border border-rose-200';
                     feedback.innerText = `לא לגמרי מדויק! הנחתם ${olivesCount} זיתים ו-${cornCount} תירס, אך הלקוח ביקש ${state.pizzaTargetOlives} זיתים ו-${state.pizzaTargetCorn} תירס. חשבו את התרגיל ונסו שוב!`;
+                    feedback.classList.remove('hidden');
+                }
+            }
+        }
+
+        function initScalesGame() {
+            // Generate a scale balancing puzzle
+            const baseOptions = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+            const targetWeight = baseOptions[Math.floor(Math.random() * baseOptions.length)];
+
+            // Choose a nice set of pre-placed weights on the left side that sum up to targetWeight
+            let remaining = targetWeight;
+            const preplaced = [];
+            while (remaining > 0) {
+                if (remaining >= 5 && Math.random() > 0.4) {
+                    preplaced.push(5);
+                    remaining -= 5;
+                } else if (remaining >= 2 && Math.random() > 0.3) {
+                    preplaced.push(2);
+                    remaining -= 2;
+                } else {
+                    preplaced.push(1);
+                    remaining -= 1;
+                }
+            }
+
+            state.scalesLeftWeights = preplaced;
+            state.scalesRightWeights = [];
+            state.scalesRequiredSum = targetWeight;
+
+            document.getElementById('scales-challenge-text').innerHTML = `
+                עליכם לאזן את מאזני הצעצועים! 🧸 <br>
+                על המגש השמאלי הונחו משקולות במשקל כולל של <span class="text-indigo-600 font-black">${targetWeight} ק"ג</span>. <br>
+                הוסיפו משקולות למגש הימני כדי להגיע ל<b>איזון מושלם</b>!
+            `;
+
+            document.getElementById('scales-required-weight').innerText = `${targetWeight} ק"ג`;
+
+            const feedback = document.getElementById('scales-feedback');
+            if (feedback) feedback.classList.add('hidden');
+
+            renderScales();
+        }
+
+        function addWeight(weight) {
+            playSound('click');
+            // Allow up to 10 weights to prevent clutter
+            if (state.scalesRightWeights.length < 10) {
+                state.scalesRightWeights.push(weight);
+            }
+            renderScales();
+        }
+
+        function removeRightWeight(index) {
+            playSound('click');
+            state.scalesRightWeights.splice(index, 1);
+            renderScales();
+        }
+
+        function clearWeights() {
+            playSound('click');
+            state.scalesRightWeights = [];
+            renderScales();
+        }
+
+        function getSum(arr) {
+            return arr.reduce((sum, val) => sum + val, 0);
+        }
+
+        function renderScales() {
+            const svg = document.getElementById('scales-svg');
+            if (!svg) return;
+            svg.innerHTML = '';
+
+            const leftSum = getSum(state.scalesLeftWeights);
+            const rightSum = getSum(state.scalesRightWeights);
+            document.getElementById('scales-placed-weight').innerText = `${rightSum} ק"ג`;
+
+            // Calculate rotation angle in degrees based on difference (bounded to +/- 15 deg)
+            const diff = rightSum - leftSum;
+            let angle = diff * 2.5; // 2.5 degrees per kg difference
+            if (angle > 15) angle = 15;
+            if (angle < -15) angle = -15;
+
+            const cx = 150;
+            const cy = 200; // pivot base center
+
+            // Draw Scale Base / Pillar (fixed)
+            const basePlate = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            basePlate.setAttribute('d', 'M 110 260 L 190 260 L 170 200 L 130 200 Z');
+            basePlate.setAttribute('fill', '#475569');
+            svg.appendChild(basePlate);
+
+            const pillar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            pillar.setAttribute('x', '142');
+            pillar.setAttribute('y', '100');
+            pillar.setAttribute('width', '16');
+            pillar.setAttribute('height', '100');
+            pillar.setAttribute('rx', '4');
+            pillar.setAttribute('fill', '#64748b');
+            svg.appendChild(pillar);
+
+            // Create Rotatable Group for the main lever arm
+            const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            group.setAttribute('transform', `rotate(${angle}, ${cx}, 100)`);
+
+            // Main horizontal bar
+            const bar = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            bar.setAttribute('x', '40');
+            bar.setAttribute('y', '92');
+            bar.setAttribute('width', '220');
+            bar.setAttribute('height', '16');
+            bar.setAttribute('rx', '6');
+            bar.setAttribute('fill', '#D97706');
+            bar.setAttribute('stroke', '#B45309');
+            bar.setAttribute('stroke-width', '2');
+            group.appendChild(bar);
+
+            // Left strings & pan hanging (offset left from center = -90)
+            const lstrings = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            lstrings.setAttribute('d', 'M 60 100 L 35 170 L 85 170 Z');
+            lstrings.setAttribute('fill', 'none');
+            lstrings.setAttribute('stroke', '#94a3b8');
+            lstrings.setAttribute('stroke-width', '2.5');
+            group.appendChild(lstrings);
+
+            const lpan = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            lpan.setAttribute('d', 'M 25 170 L 95 170 L 85 185 L 35 185 Z');
+            lpan.setAttribute('fill', '#cbd5e1');
+            lpan.setAttribute('stroke', '#94a3b8');
+            lpan.setAttribute('stroke-width', '2');
+            group.appendChild(lpan);
+
+            // Right strings & pan hanging (offset right from center = +90)
+            const rstrings = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            rstrings.setAttribute('d', 'M 240 100 L 215 170 L 265 170 Z');
+            rstrings.setAttribute('fill', 'none');
+            rstrings.setAttribute('stroke', '#94a3b8');
+            rstrings.setAttribute('stroke-width', '2.5');
+            group.appendChild(rstrings);
+
+            const rpan = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            rpan.setAttribute('d', 'M 205 170 L 275 170 L 265 185 L 215 185 Z');
+            rpan.setAttribute('fill', '#fde047');
+            rpan.setAttribute('stroke', '#ca8a04');
+            rpan.setAttribute('stroke-width', '2');
+            group.appendChild(rpan);
+
+            // Render weights on the left pan
+            // Position base around x=60, y=170
+            state.scalesLeftWeights.forEach((w, idx) => {
+                const ox = 42 + (idx % 3) * 12;
+                const oy = 170 - Math.floor(idx / 3) * 14;
+                const weightRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                weightRect.setAttribute('x', ox.toString());
+                weightRect.setAttribute('y', (oy - 12).toString());
+                weightRect.setAttribute('width', '14');
+                weightRect.setAttribute('height', '12');
+                weightRect.setAttribute('rx', '2.5');
+                weightRect.setAttribute('fill', w === 5 ? '#3b82f6' : w === 2 ? '#8b5cf6' : '#10b981');
+                group.appendChild(weightRect);
+
+                // weight text
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', (ox + 7).toString());
+                text.setAttribute('y', (oy - 3).toString());
+                text.setAttribute('fill', '#ffffff');
+                text.setAttribute('font-size', '8px');
+                text.setAttribute('font-weight', 'bold');
+                text.setAttribute('text-anchor', 'middle');
+                text.textContent = w.toString();
+                group.appendChild(text);
+            });
+
+            // Render weights on the right pan
+            // Position base around x=240, y=170
+            state.scalesRightWeights.forEach((w, idx) => {
+                const ox = 217 + (idx % 3) * 14;
+                const oy = 170 - Math.floor(idx / 3) * 14;
+
+                const weightGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                weightGroup.setAttribute('class', 'cursor-pointer hover:opacity-80');
+                weightGroup.onclick = (e) => {
+                    e.stopPropagation();
+                    removeRightWeight(idx);
+                };
+
+                const weightRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                weightRect.setAttribute('x', ox.toString());
+                weightRect.setAttribute('y', (oy - 12).toString());
+                weightRect.setAttribute('width', '14');
+                weightRect.setAttribute('height', '12');
+                weightRect.setAttribute('rx', '2.5');
+                weightRect.setAttribute('fill', w === 5 ? '#3b82f6' : w === 2 ? '#8b5cf6' : '#10b981');
+                weightGroup.appendChild(weightRect);
+
+                // weight text
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', (ox + 7).toString());
+                text.setAttribute('y', (oy - 3).toString());
+                text.setAttribute('fill', '#ffffff');
+                text.setAttribute('font-size', '8px');
+                text.setAttribute('font-weight', 'bold');
+                text.setAttribute('text-anchor', 'middle');
+                text.textContent = w.toString();
+                weightGroup.appendChild(text);
+
+                group.appendChild(weightGroup);
+            });
+
+            svg.appendChild(group);
+
+            // Pivot center cap (fixed)
+            const pivot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            pivot.setAttribute('cx', cx.toString());
+            pivot.setAttribute('cy', '100');
+            pivot.setAttribute('r', '8');
+            pivot.setAttribute('fill', '#334155');
+            pivot.setAttribute('stroke', '#1e293b');
+            pivot.setAttribute('stroke-width', '2.5');
+            svg.appendChild(pivot);
+        }
+
+        function checkScalesOrder() {
+            const leftSum = getSum(state.scalesLeftWeights);
+            const rightSum = getSum(state.scalesRightWeights);
+
+            const feedback = document.getElementById('scales-feedback');
+
+            if (leftSum === rightSum) {
+                playSound('correct');
+                if (window.confetti) {
+                    confetti({ particleCount: 65, spread: 75, origin: { y: 0.7 } });
+                }
+
+                state.stars += 20;
+                state.streak += 1;
+                updateGamificationUI();
+
+                if (feedback) {
+                    feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-emerald-100 text-emerald-800 border border-emerald-200';
+                    feedback.innerText = `איזון מושלם! שני הצדדים שוקלים בדיוק ${leftSum} ק"ג! 🧸⭐ (+20 נקודות)`;
+                    feedback.classList.remove('hidden');
+                }
+
+                setTimeout(() => {
+                    initScalesGame();
+                }, 1800);
+
+            } else {
+                playSound('wrong');
+                state.streak = 0;
+                updateGamificationUI();
+
+                const diff = Math.abs(rightSum - leftSum);
+                let errorMsg = `המאזניים אינם מאוזנים! <br> הצד השמאלי שוקל ${leftSum} ק"ג, והצד הימני שוקל ${rightSum} ק"ג. <br>`;
+                if (rightSum > leftSum) {
+                    errorMsg += `הצד הימני כבד יותר ב-${diff} ק"ג. הסירו משקולות!`;
+                } else {
+                    errorMsg += `הצד הימני קל יותר ב-${diff} ק"ג. הוסיפו משקולות!`;
+                }
+
+                if (feedback) {
+                    feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-rose-100 text-rose-800 border border-rose-200';
+                    feedback.innerHTML = errorMsg;
                     feedback.classList.remove('hidden');
                 }
             }

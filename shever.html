@@ -457,8 +457,18 @@
                 <div class="text-4xl">👨‍🍳</div>
             </div>
 
+            <!-- Sub-tabs within Game Section -->
+            <div class="flex gap-2 justify-center bg-slate-100 p-1.5 rounded-2xl max-w-md mx-auto">
+                <button id="subtab-pizza" onclick="switchSubGame('pizza')" class="flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm">
+                    🍕 פיצריית פיצי
+                </button>
+                <button id="subtab-cashier" onclick="switchSubGame('cashier')" class="flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
+                    💰 קופת הפיצרייה
+                </button>
+            </div>
+
             <!-- Pizza Game Board -->
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 grid md:grid-cols-2 gap-8 items-center">
+            <div id="game-pizza-container" class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 grid md:grid-cols-2 gap-8 items-center">
                 <!-- Customer Order Card -->
                 <div class="space-y-4">
                     <div class="bg-amber-50 border-2 border-amber-200 p-4 rounded-2xl relative">
@@ -517,6 +527,70 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Cashier Game Board -->
+            <div id="game-cashier-container" class="hidden bg-white rounded-3xl p-6 shadow-sm border border-slate-100 grid md:grid-cols-2 gap-8 items-center">
+                <!-- Cashier Order Card -->
+                <div class="space-y-4">
+                    <div class="bg-indigo-50 border-2 border-indigo-200 p-4 rounded-2xl relative">
+                        <div class="text-xs font-bold text-indigo-700 mb-1">📋 המשימה בקופה:</div>
+                        <div id="cashier-order-text" class="text-lg font-extrabold text-slate-800 leading-relaxed">
+                            בטעינה...
+                        </div>
+                    </div>
+
+                    <!-- Selected Money / Tray area -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                        <span class="text-xs font-bold text-slate-500 block">הכסף שהנחת על הדלפק:</span>
+                        <div id="cashier-placed-money" class="flex flex-wrap gap-2 min-h-[50px] items-center justify-center bg-white border border-dashed border-slate-300 rounded-xl p-2" dir="ltr">
+                            <!-- coins added by clicking -->
+                        </div>
+                        <div class="flex justify-between items-center font-bold text-sm text-slate-700">
+                            <span>סך הכל שהנחת: <span id="cashier-current-sum" class="text-indigo-600 font-black text-lg">₪0.00</span></span>
+                            <button onclick="clearPlacedMoney()" class="text-xs bg-rose-50 text-rose-600 border border-rose-200 px-2.5 py-1 rounded-lg hover:bg-rose-100 transition-all font-bold">
+                                🧹 נקה דלפק
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="cashier-feedback" class="hidden p-3 rounded-xl font-bold text-center text-sm"></div>
+
+                    <button onclick="checkCashierOrder()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold rounded-xl shadow-lg shadow-indigo-200 transition-all text-lg">
+                        אישור וביצוע תשלום! 💰
+                    </button>
+                </div>
+
+                <!-- Interactive Coins Palette -->
+                <div class="bg-slate-50 p-6 rounded-3xl border border-slate-200 text-center space-y-4">
+                    <h4 class="font-extrabold text-slate-700">לחצו על המטבעות והשטרות כדי להוסיף אותם:</h4>
+
+                    <div class="grid grid-cols-2 gap-4" dir="ltr">
+                        <!-- 10 Shekels (Tens) -->
+                        <div onclick="addMoney(10)" class="cursor-pointer bg-white p-3 rounded-2xl border-2 border-slate-200 hover:border-amber-400 hover:shadow-md transition-all flex flex-col items-center gap-1">
+                            <div class="w-16 h-10 bg-blue-100 rounded border-2 border-blue-400 flex items-center justify-center font-black text-blue-800 text-sm shadow-xs">שטר ₪10</div>
+                            <span class="text-xs font-bold text-slate-500">עשרות (10)</span>
+                        </div>
+
+                        <!-- 1 Shekel (Ones) -->
+                        <div onclick="addMoney(1)" class="cursor-pointer bg-white p-3 rounded-2xl border-2 border-slate-200 hover:border-amber-400 hover:shadow-md transition-all flex flex-col items-center gap-1">
+                            <div class="w-12 h-12 bg-amber-100 rounded-full border-2 border-amber-400 flex items-center justify-center font-black text-amber-800 text-base shadow-xs">₪1</div>
+                            <span class="text-xs font-bold text-slate-500">אחדות (1)</span>
+                        </div>
+
+                        <!-- 10 Agorot / 0.1 Shekel (Tenths) -->
+                        <div onclick="addMoney(0.1)" class="cursor-pointer bg-white p-3 rounded-2xl border-2 border-slate-200 hover:border-amber-400 hover:shadow-md transition-all flex flex-col items-center gap-1">
+                            <div class="w-10 h-10 bg-yellow-50 rounded-full border-2 border-yellow-400 flex items-center justify-center font-black text-yellow-700 text-xs shadow-xs">10 אג׳</div>
+                            <span class="text-xs font-bold text-slate-500">עשיריות (0.1)</span>
+                        </div>
+
+                        <!-- 1 Agora / 0.01 Shekel (Hundredths) -->
+                        <div onclick="addMoney(0.01)" class="cursor-pointer bg-white p-3 rounded-2xl border-2 border-slate-200 hover:border-amber-400 hover:shadow-md transition-all flex flex-col items-center gap-1">
+                            <div class="w-8 h-8 bg-orange-50 rounded-full border-2 border-orange-300 flex items-center justify-center font-black text-orange-700 text-[10px] shadow-xs">1 אג׳</div>
+                            <span class="text-xs font-bold text-slate-500">מאיות (0.01)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
     </main>
@@ -533,6 +607,8 @@
             difficulty: 'easy',
             currentQuestion: null,
             showHardVisual: false,
+            // Sub game tracker
+            activeSubGame: 'pizza', // 'pizza' or 'cashier'
             // Pizza Game enhanced state properties
             pizzaStreak: 0,
             pizzaActiveTopping: 'olives', // 'olives', 'corn', 'erase'
@@ -543,7 +619,10 @@
             },
             pizzaSelectedToppings: [], // Array of objects: { olives: boolean, corn: boolean }
             pizzaTargetTenths: 6, // preserved legacy fallback
-            pizzaSelectedSlices: new Array(10).fill(false) // preserved legacy fallback
+            pizzaSelectedSlices: new Array(10).fill(false), // preserved legacy fallback
+            // Cashier Game state properties
+            cashierPlacedCoins: [], // Array of float amounts: 10, 1, 0.1, 0.01
+            cashierTargetSum: 0.00
         };
 
         // Web Audio API Audio Synthesizer
@@ -624,7 +703,43 @@
             if (tabName === 'practice' && !state.currentQuestion) {
                 generateNewQuestion();
             } else if (tabName === 'game') {
+                initGameTab();
+            }
+        }
+
+        function switchSubGame(subGame) {
+            playSound('click');
+            state.activeSubGame = subGame;
+
+            const btnPizza = document.getElementById('subtab-pizza');
+            const btnCashier = document.getElementById('subtab-cashier');
+            const conPizza = document.getElementById('game-pizza-container');
+            const conCashier = document.getElementById('game-cashier-container');
+
+            if (subGame === 'pizza') {
+                btnPizza.className = "flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm";
+                btnCashier.className = "flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white";
+                conPizza.classList.remove('hidden');
+                conPizza.classList.add('grid');
+                conCashier.classList.add('hidden');
+                conCashier.classList.remove('grid');
                 initPizzaGame();
+            } else {
+                btnPizza.className = "flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white";
+                btnCashier.className = "flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm";
+                conPizza.classList.add('hidden');
+                conPizza.classList.remove('grid');
+                conCashier.classList.remove('hidden');
+                conCashier.classList.add('grid');
+                initCashierGame();
+            }
+        }
+
+        function initGameTab() {
+            if (state.activeSubGame === 'pizza') {
+                switchSubGame('pizza');
+            } else {
+                switchSubGame('cashier');
             }
         }
 
@@ -1765,6 +1880,138 @@
                 if (feedback) {
                     feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-rose-100 text-rose-800 border border-rose-200';
                     feedback.innerHTML = errorMsg;
+                    feedback.classList.remove('hidden');
+                }
+            }
+        }
+
+        function initCashierGame() {
+            // Pick a randomized challenge
+            const isChangeTask = Math.random() > 0.5;
+            const ones = Math.floor(Math.random() * 8) + 1; // 1 to 8 NIS
+            const tens = Math.floor(Math.random() * 2) * 10; // 0 or 10 NIS
+            const tenths = Math.floor(Math.random() * 9) + 1; // 1 to 9 (0.1 NIS each)
+            const hundredths = Math.floor(Math.random() * 9) + 1; // 1 to 9 (0.01 NIS each)
+
+            const price = parseFloat((tens + ones + tenths * 0.1 + hundredths * 0.01).toFixed(2));
+            state.cashierPlacedCoins = [];
+
+            const feedback = document.getElementById('cashier-feedback');
+            if (feedback) feedback.classList.add('hidden');
+
+            if (isChangeTask) {
+                // Return change from a larger sum
+                const paid = tens + ones >= 10 ? 20 : 10;
+                const change = parseFloat((paid - price).toFixed(2));
+                state.cashierTargetSum = change;
+
+                document.getElementById('cashier-order-text').innerHTML = `
+                    שולחן 4 סיים לאכול פיצה טעימה! 🍕 <br>
+                    החשבון שלהם יצא <span class="text-indigo-600 font-black">₪${price.toFixed(2)}</span>. <br>
+                    הם שילמו לכם בשטר של <span class="text-amber-600 font-black">₪${paid}</span>. <br>
+                    כמה <b>עודף עשרוני</b> מדויק עליכם להחזיר להם לקופה?
+                `;
+            } else {
+                // Pay exact price
+                state.cashierTargetSum = price;
+                document.getElementById('cashier-order-text').innerHTML = `
+                    הלקוח הזמין מגש פיצה חמה ושתייה קרה! 🥤🍕 <br>
+                    סך הכל לתשלום: <span class="text-indigo-600 font-black text-xl">₪${price.toFixed(2)}</span>. <br>
+                    הניחו על דלפק הקופה את המטבעות והשטרות המדויקים כדי לשלם!
+                `;
+            }
+
+            renderPlacedMoney();
+        }
+
+        function addMoney(amount) {
+            playSound('click');
+            state.cashierPlacedCoins.push(amount);
+            renderPlacedMoney();
+        }
+
+        function clearPlacedMoney() {
+            playSound('click');
+            state.cashierPlacedCoins = [];
+            renderPlacedMoney();
+        }
+
+        function renderPlacedMoney() {
+            const container = document.getElementById('cashier-placed-money');
+            if (!container) return;
+            container.innerHTML = '';
+
+            let total = 0;
+            state.cashierPlacedCoins.sort((a,b) => b-a).forEach((coin, idx) => {
+                total += coin;
+                const el = document.createElement('div');
+                el.className = "flex items-center justify-center transition-all animate-bounce-gentle";
+
+                if (coin === 10) {
+                    el.innerHTML = `<div onclick="removeCoin(${idx})" class="w-12 h-8 bg-blue-100 border-2 border-blue-400 rounded flex items-center justify-center font-black text-blue-800 text-[10px] cursor-pointer shadow-xs">₪10</div>`;
+                } else if (coin === 1) {
+                    el.innerHTML = `<div onclick="removeCoin(${idx})" class="w-10 h-10 bg-amber-100 border-2 border-amber-400 rounded-full flex items-center justify-center font-black text-amber-800 text-xs cursor-pointer shadow-xs">₪1</div>`;
+                } else if (coin === 0.1) {
+                    el.innerHTML = `<div onclick="removeCoin(${idx})" class="w-8 h-8 bg-yellow-50 border-2 border-yellow-400 rounded-full flex items-center justify-center font-black text-yellow-700 text-[10px] cursor-pointer shadow-xs">10 אג׳</div>`;
+                } else if (coin === 0.01) {
+                    el.innerHTML = `<div onclick="removeCoin(${idx})" class="w-7 h-7 bg-orange-50 border-2 border-orange-300 rounded-full flex items-center justify-center font-black text-orange-700 text-[8px] cursor-pointer shadow-xs">1 אג׳</div>`;
+                }
+
+                container.appendChild(el);
+            });
+
+            if (state.cashierPlacedCoins.length === 0) {
+                container.innerHTML = `<span class="text-slate-400 text-xs italic font-bold">הדלפק ריק... לחצו על מטבעות כדי להניח</span>`;
+            }
+
+            document.getElementById('cashier-current-sum').innerText = `₪${total.toFixed(2)}`;
+        }
+
+        function removeCoin(index) {
+            playSound('click');
+            state.cashierPlacedCoins.splice(index, 1);
+            renderPlacedMoney();
+        }
+
+        function checkCashierOrder() {
+            let currentTotal = 0;
+            state.cashierPlacedCoins.forEach(coin => {
+                currentTotal += coin;
+            });
+            currentTotal = parseFloat(currentTotal.toFixed(2));
+
+            const target = state.cashierTargetSum;
+            const isCorrect = (Math.abs(currentTotal - target) < 0.001);
+            const feedback = document.getElementById('cashier-feedback');
+
+            if (isCorrect) {
+                playSound('correct');
+                if (window.confetti) {
+                    confetti({ particleCount: 65, spread: 75, origin: { y: 0.7 } });
+                }
+
+                state.stars += 20;
+                state.streak += 1;
+                updateGamificationUI();
+
+                if (feedback) {
+                    feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-emerald-100 text-emerald-800 border border-emerald-200';
+                    feedback.innerText = `מעולה! שילמתם ₪${currentTotal.toFixed(2)} בדיוק כמו שנדרש! 💰⭐ (+20 נקודות)`;
+                    feedback.classList.remove('hidden');
+                }
+
+                setTimeout(() => {
+                    initCashierGame();
+                }, 2000);
+
+            } else {
+                playSound('wrong');
+                state.streak = 0;
+                updateGamificationUI();
+
+                if (feedback) {
+                    feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-rose-100 text-rose-800 border border-rose-200';
+                    feedback.innerHTML = `לא מדויק! הנחתם על הדלפק <b>₪${currentTotal.toFixed(2)}</b>, אבל הסכום הנדרש הוא <b>₪${target.toFixed(2)}</b>. <br>חשבו שוב ונסו להחליף או לנקות את המטבעות!`;
                     feedback.classList.remove('hidden');
                 }
             }

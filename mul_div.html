@@ -415,8 +415,18 @@
                 <div class="text-4xl">👨‍🍳</div>
             </div>
 
+            <!-- Sub-tabs within Game Section -->
+            <div class="flex gap-2 justify-center bg-slate-100 p-1.5 rounded-2xl max-w-md mx-auto">
+                <button id="subtab-pizza" onclick="switchSubGame('pizza')" class="flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm">
+                    🍕 פיצריית פיצי
+                </button>
+                <button id="subtab-bakery" onclick="switchSubGame('bakery')" class="flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
+                    🍰 קונדיטוריית העוגות
+                </button>
+            </div>
+
             <!-- Pizza Game Board -->
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 grid md:grid-cols-2 gap-8 items-center">
+            <div id="game-pizza-container" class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 grid md:grid-cols-2 gap-8 items-center">
                 <!-- Customer Order Card -->
                 <div class="space-y-4">
                     <div class="bg-amber-50 border-2 border-amber-200 p-4 rounded-2xl relative">
@@ -471,6 +481,64 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Bakery Game Board -->
+            <div id="game-bakery-container" class="hidden bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col gap-6">
+                <!-- Customer Order Card -->
+                <div class="bg-indigo-50 border-2 border-indigo-200 p-5 rounded-2xl relative w-full">
+                    <div class="text-xs font-bold text-indigo-700 mb-1">📋 הזמנת הקונדיטוריה:</div>
+                    <div id="bakery-order-text" class="text-lg font-extrabold text-slate-800 leading-relaxed">
+                        בטעינה...
+                    </div>
+                </div>
+
+                <!-- Cakes Display Grid & Toppings Control -->
+                <div class="grid md:grid-cols-2 gap-8 items-center w-full">
+                    <!-- Instruction and Stats -->
+                    <div class="space-y-4">
+                        <!-- Topping Selection Buttons -->
+                        <div class="space-y-2">
+                            <span class="text-xs font-bold text-slate-500 block">בחר תוספת לקישוט העוגות:</span>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button id="bakery-btn-cherry" onclick="setBakeryTopping('cherry')" class="py-2.5 px-3 rounded-xl font-bold text-sm transition-all border-2 border-rose-600 bg-rose-50 text-rose-800 flex items-center justify-center gap-2 shadow-xs">
+                                    🍒 דובדבנים מתוקים
+                                </button>
+                                <button id="bakery-btn-strawberry" onclick="setBakeryTopping('strawberry')" class="py-2.5 px-3 rounded-xl font-bold text-sm transition-all border-2 border-slate-200 bg-white text-slate-700 hover:bg-rose-50 flex items-center justify-center gap-2 shadow-xs">
+                                    🍓 תותי שדה
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="text-slate-600 text-sm space-y-1.5">
+                            <p>👉 <strong>בחרו תוספת</strong> מלמעלה, ואז לחצו על העוגות כדי להוסיף או להסיר את הקישוטים!</p>
+                            <p>👉 פתרו את שאלת הכפל/חילוק כדי לדעת כמה קישוטים לשים על כל עוגה.</p>
+                        </div>
+
+                        <div class="bg-slate-50 p-3 rounded-xl font-bold text-xs text-slate-700 space-y-1">
+                            <div class="flex justify-between">
+                                <span>סה"כ דובדבנים שהנחת: <span id="bakery-cherries-total" class="text-rose-600 font-extrabold text-sm">0</span></span>
+                                <span>נדרש: <span id="bakery-cherries-req" class="text-slate-500">0</span></span>
+                            </div>
+                            <div class="h-px bg-slate-200 my-1"></div>
+                            <div class="flex justify-between">
+                                <span>סה"כ תותים שהנחת: <span id="bakery-strawberries-total" class="text-red-500 font-extrabold text-sm">0</span></span>
+                                <span>נדרש: <span id="bakery-strawberries-req" class="text-slate-500">0</span></span>
+                            </div>
+                        </div>
+
+                        <div id="bakery-feedback" class="hidden p-3 rounded-xl font-bold text-center text-sm"></div>
+
+                        <button onclick="checkBakeryOrder()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-200 transition-all text-lg">
+                            הגש עוגות מקושטות! 🍰
+                        </button>
+                    </div>
+
+                    <!-- Interactive Cakes Canvas/SVGs container -->
+                    <div id="bakery-cakes-container" class="flex flex-wrap gap-4 justify-center py-4 bg-slate-50 rounded-2xl border border-slate-200 min-h-[220px]">
+                        <!-- Cakes generated dynamically by JS -->
+                    </div>
+                </div>
+            </div>
         </section>
 
     </main>
@@ -486,10 +554,19 @@
             totalLessonSteps: 4,
             difficulty: 'simple-mul',
             currentQuestion: null,
+            // Sub game tracker
+            activeSubGame: 'pizza', // 'pizza' or 'bakery'
+            // Pizza Game state
             pizzaTargetOlives: 3,
             pizzaTargetCorn: 3,
             pizzaSelectedTopping: 'olive', // 'olive' or 'corn'
-            pizzaSlices: Array.from({length: 10}, () => ({ olive: false, corn: false }))
+            pizzaSlices: Array.from({length: 10}, () => ({ olive: false, corn: false })),
+            // Bakery Game state
+            bakeryCakesCount: 3, // 1 to 4 cakes on screen
+            bakeryTargetCherries: 0, // total required cherries across all cakes
+            bakeryTargetStrawberries: 0, // total required strawberries across all cakes
+            bakerySelectedTopping: 'cherry', // 'cherry' or 'strawberry'
+            bakeryCakes: [] // Array of objects: { cherry: 0, strawberry: 0 }
         };
 
         // Web Audio API Audio Synthesizer
@@ -566,7 +643,43 @@
             if (tabName === 'practice' && !state.currentQuestion) {
                 generateNewQuestion();
             } else if (tabName === 'game') {
+                initGameTab();
+            }
+        }
+
+        function switchSubGame(subGame) {
+            playSound('click');
+            state.activeSubGame = subGame;
+
+            const btnPizza = document.getElementById('subtab-pizza');
+            const btnBakery = document.getElementById('subtab-bakery');
+            const conPizza = document.getElementById('game-pizza-container');
+            const conBakery = document.getElementById('game-bakery-container');
+
+            if (subGame === 'pizza') {
+                btnPizza.className = "flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm";
+                btnBakery.className = "flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white";
+                conPizza.classList.remove('hidden');
+                conPizza.classList.add('grid');
+                conBakery.classList.add('hidden');
+                conBakery.classList.remove('flex');
                 initPizzaGame();
+            } else {
+                btnPizza.className = "flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white";
+                btnBakery.className = "flex-1 py-2 px-3 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-sm";
+                conPizza.classList.add('hidden');
+                conPizza.classList.remove('grid');
+                conBakery.classList.remove('hidden');
+                conBakery.classList.add('flex');
+                initBakeryGame();
+            }
+        }
+
+        function initGameTab() {
+            if (state.activeSubGame === 'pizza') {
+                switchSubGame('pizza');
+            } else {
+                switchSubGame('bakery');
             }
         }
 
@@ -1232,6 +1345,227 @@
                 if (feedback) {
                     feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-rose-100 text-rose-800 border border-rose-200';
                     feedback.innerText = `לא לגמרי מדויק! הנחתם ${olivesCount} זיתים ו-${cornCount} תירס, אך הלקוח ביקש ${state.pizzaTargetOlives} זיתים ו-${state.pizzaTargetCorn} תירס. חשבו את התרגיל ונסו שוב!`;
+                    feedback.classList.remove('hidden');
+                }
+            }
+        }
+
+        function initBakeryGame() {
+            // Pick standard or advanced level multiplication/division puzzles
+            const isMul = Math.random() > 0.5;
+            const cakesCount = Math.floor(Math.random() * 3) + 2; // 2, 3, or 4 cakes on screen
+
+            state.bakeryCakesCount = cakesCount;
+            state.bakeryCakes = Array.from({ length: cakesCount }, () => ({ cherry: 0, strawberry: 0 }));
+
+            if (isMul) {
+                // Multiplication challenge
+                const cherriesPerCake = Math.floor(Math.random() * 3) + 2; // 2 to 4 cherries each
+                const strawberriesPerCake = Math.floor(Math.random() * 3) + 1; // 1 to 3 strawberries each
+
+                state.bakeryTargetCherries = cherriesPerCake * cakesCount;
+                state.bakeryTargetStrawberries = strawberriesPerCake * cakesCount;
+
+                document.getElementById('bakery-order-text').innerHTML = `
+                    לכבוד מסיבת יום ההולדת, הלקוח הזמין סדרה של <span class="text-indigo-600 font-black">${cakesCount} עוגות קצפת</span>! 🍰 <br>
+                    הוא ביקש שתקשטו אותן כך שעל <b>כל עוגה ועוגה</b> יהיו בדיוק: <br>
+                    • <span class="text-rose-600 font-black">${cherriesPerCake} דובדבנים</span> 🍒 <br>
+                    • <span class="text-red-500 font-black">${strawberriesPerCake} תותים</span> 🍓 <br>
+                    חשבו כמה קישוטים סך הכל יונחו על כל העוגות ביחד!
+                `;
+            } else {
+                // Division challenge (Total quantity to divide evenly)
+                const cherriesPerCake = Math.floor(Math.random() * 3) + 2; // 2 to 4 cherries each
+                const strawberriesPerCake = Math.floor(Math.random() * 3) + 1; // 1 to 3 strawberries each
+
+                const totalCherries = cherriesPerCake * cakesCount;
+                const totalStrawberries = strawberriesPerCake * cakesCount;
+
+                state.bakeryTargetCherries = totalCherries;
+                state.bakeryTargetStrawberries = totalStrawberries;
+
+                document.getElementById('bakery-order-text').innerHTML = `
+                    שלום שף! יש לנו במטבח קערה מיוחדת ובה: <br>
+                    • סך הכל <span class="text-rose-600 font-black">${totalCherries} דובדבנים</span> 🍒 <br>
+                    • סך הכל <span class="text-red-500 font-black">${totalStrawberries} תותים</span> 🍓 <br>
+                    עליכם <b>לחלק את כל הקישוטים שווה בשווה</b> בין <span class="text-indigo-600 font-black">${cakesCount} העוגות</span> שעל הדלפק!
+                `;
+            }
+
+            document.getElementById('bakery-cherries-req').innerText = state.bakeryTargetCherries;
+            document.getElementById('bakery-strawberries-req').innerText = state.bakeryTargetStrawberries;
+
+            const feedback = document.getElementById('bakery-feedback');
+            if (feedback) feedback.classList.add('hidden');
+
+            setBakeryTopping('cherry');
+            renderBakeryCakes();
+        }
+
+        function setBakeryTopping(topping) {
+            playSound('click');
+            state.bakerySelectedTopping = topping;
+
+            const btnCherry = document.getElementById('bakery-btn-cherry');
+            const btnStrawberry = document.getElementById('bakery-btn-strawberry');
+
+            if (topping === 'cherry') {
+                btnCherry.className = 'py-2.5 px-3 rounded-xl font-bold text-sm transition-all border-2 border-rose-600 bg-rose-50 text-rose-800 flex items-center justify-center gap-2 shadow-xs';
+                btnStrawberry.className = 'py-2.5 px-3 rounded-xl font-bold text-sm transition-all border-2 border-slate-200 bg-white text-slate-700 hover:bg-rose-50 flex items-center justify-center gap-2 shadow-xs';
+            } else {
+                btnCherry.className = 'py-2.5 px-3 rounded-xl font-bold text-sm transition-all border-2 border-slate-200 bg-white text-slate-700 hover:bg-rose-50 flex items-center justify-center gap-2 shadow-xs';
+                btnStrawberry.className = 'py-2.5 px-3 rounded-xl font-bold text-sm transition-all border-2 border-amber-500 bg-amber-50 text-amber-800 flex items-center justify-center gap-2 shadow-xs';
+            }
+        }
+
+        function toggleBakeryCakeTopping(cakeIndex) {
+            playSound('click');
+            const topping = state.bakerySelectedTopping;
+
+            // Increment count per cake up to 10
+            if (topping === 'cherry') {
+                if (state.bakeryCakes[cakeIndex].cherry >= 8) {
+                    state.bakeryCakes[cakeIndex].cherry = 0;
+                } else {
+                    state.bakeryCakes[cakeIndex].cherry++;
+                }
+            } else {
+                if (state.bakeryCakes[cakeIndex].strawberry >= 8) {
+                    state.bakeryCakes[cakeIndex].strawberry = 0;
+                } else {
+                    state.bakeryCakes[cakeIndex].strawberry++;
+                }
+            }
+
+            renderBakeryCakes();
+        }
+
+        function renderBakeryCakes() {
+            const container = document.getElementById('bakery-cakes-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            let totalCherries = 0;
+            let totalStrawberries = 0;
+
+            state.bakeryCakes.forEach((cake, idx) => {
+                totalCherries += cake.cherry;
+                totalStrawberries += cake.strawberry;
+
+                // Create a container with click handler for cake
+                const card = document.createElement('div');
+                card.className = "flex flex-col items-center bg-white border border-slate-200 p-3 rounded-2xl shadow-xs cursor-pointer hover:border-indigo-300 transition-all select-none w-28";
+                card.onclick = () => toggleBakeryCakeTopping(idx);
+
+                // Cake SVG Visualizer
+                let svgHTML = `
+                    <svg viewBox="0 0 100 100" class="w-20 h-20 drop-shadow-sm">
+                        <!-- Plate -->
+                        <ellipse cx="50" cy="80" rx="36" ry="10" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1.5" />
+                        <!-- Cake Body -->
+                        <path d="M 18 55 L 18 72 A 32 8 0 0 0 82 72 L 82 55 A 32 8 0 0 1 18 55 Z" fill="#7c2d12" />
+                        <!-- Cake Frosting top -->
+                        <ellipse cx="50" cy="55" rx="32" ry="8" fill="#fdf2f8" stroke="#fbcfe8" stroke-width="1.5" />
+                `;
+
+                // Render cherries inside SVG
+                for (let c = 0; c < cake.cherry; c++) {
+                    const angle = (c * (360 / Math.max(1, cake.cherry)) - 90) * (Math.PI / 180);
+                    const rx = 50 + 16 * Math.cos(angle);
+                    const ry = 55 + 4 * Math.sin(angle);
+                    svgHTML += `<circle cx="${rx}" cy="${ry}" r="4" fill="#be123c" />`;
+                    // Green stem
+                    svgHTML += `<path d="M ${rx} ${ry} Q ${rx+4} ${ry-10} ${rx+6} ${ry-8}" fill="none" stroke="#16a34a" stroke-width="0.8" />`;
+                }
+
+                // Render strawberries inside SVG
+                for (let s = 0; s < cake.strawberry; s++) {
+                    const angle = (s * (360 / Math.max(1, cake.strawberry)) - 180) * (Math.PI / 180);
+                    const rx = 50 + 8 * Math.cos(angle);
+                    const ry = 55 + 3 * Math.sin(angle);
+                    // Draw a strawberry wedge (triangle/path)
+                    svgHTML += `<path d="M ${rx} ${ry} L ${rx-3} ${ry+5} L ${rx+3} ${ry+5} Z" fill="#ef4444" stroke="#b91c1c" stroke-width="0.5" />`;
+                }
+
+                svgHTML += `</svg>`;
+
+                card.innerHTML = `
+                    <span class="text-[10px] text-slate-400 font-extrabold block mb-1">עוגה מספר ${idx+1}</span>
+                    ${svgHTML}
+                    <div class="flex gap-2 text-xs font-bold mt-2">
+                        <span class="text-rose-600">🍒 ${cake.cherry}</span>
+                        <span class="text-red-500">🍓 ${cake.strawberry}</span>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            document.getElementById('bakery-cherries-total').innerText = totalCherries;
+            document.getElementById('bakery-strawberries-total').innerText = totalStrawberries;
+        }
+
+        function checkBakeryOrder() {
+            let totalCherries = 0;
+            let totalStrawberries = 0;
+            let allCakesMatch = true;
+
+            const reqCherriesPerCake = state.bakeryTargetCherries / state.bakeryCakesCount;
+            const reqStrawberriesPerCake = state.bakeryTargetStrawberries / state.bakeryCakesCount;
+
+            state.bakeryCakes.forEach(cake => {
+                totalCherries += cake.cherry;
+                totalStrawberries += cake.strawberry;
+                if (cake.cherry !== reqCherriesPerCake || cake.strawberry !== reqStrawberriesPerCake) {
+                    allCakesMatch = false;
+                }
+            });
+
+            const feedback = document.getElementById('bakery-feedback');
+
+            const cherriesCorrect = (totalCherries === state.bakeryTargetCherries);
+            const strawberriesCorrect = (totalStrawberries === state.bakeryTargetStrawberries);
+
+            if (cherriesCorrect && strawberriesCorrect && allCakesMatch) {
+                playSound('correct');
+                if (window.confetti) {
+                    confetti({ particleCount: 65, spread: 75, origin: { y: 0.7 } });
+                }
+
+                state.stars += 20;
+                state.streak += 1;
+                updateGamificationUI();
+
+                if (feedback) {
+                    feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-emerald-100 text-emerald-800 border border-emerald-200';
+                    feedback.innerText = `עבודה מדהימה! כל ${state.bakeryCakesCount} העוגות קושטו בצורה שווה ומדויקת להזמנה! 🍰⭐ (+20 נקודות)`;
+                    feedback.classList.remove('hidden');
+                }
+
+                setTimeout(() => {
+                    initBakeryGame();
+                }, 2000);
+
+            } else {
+                playSound('wrong');
+                state.streak = 0;
+                updateGamificationUI();
+
+                let errorMsg = "אופס! משהו בקישוט העוגות אינו נכון: <br>";
+                if (!cherriesCorrect) {
+                    errorMsg += `• סך הכל <b>הדובדבנים</b> אינו מדויק! 🍒 <br>`;
+                }
+                if (!strawberriesCorrect) {
+                    errorMsg += `• סך הכל <b>התותים</b> אינו מדויק! 🍓 <br>`;
+                }
+                if (cherriesCorrect && strawberriesCorrect && !allCakesMatch) {
+                    errorMsg += `• הקישוטים צריכים להיות מפוזרים <b>שווה בשווה</b> בין כל העוגות! <br>`;
+                }
+                errorMsg += "תקנו את הקישוטים על ידי לחיצה חוזרת על העוגות ונסו שוב!";
+
+                if (feedback) {
+                    feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-rose-100 text-rose-800 border border-rose-200';
+                    feedback.innerHTML = errorMsg;
                     feedback.classList.remove('hidden');
                 }
             }
