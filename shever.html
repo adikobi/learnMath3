@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>עולם השברים העשרוניים 🌟</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Friendly Hebrew Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Varela+Round&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti for rewards -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#6C5CE7',
+                            lightPurple: '#A29BFE',
+                            pink: '#FD79A8',
+                            yellow: '#FFEAA7',
+                            orange: '#FAB1A0',
+                            teal: '#00CEC9',
+                            mint: '#55E6C1',
+                            dark: '#2D3436'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Rubik', 'Varela Round', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Rubik', 'Varela Round', sans-serif;
+            background: linear-gradient(135deg, #f6f8fd 0%, #e9effd 100%);
+            min-height: 100vh;
+        }
+
+        .bounce-gentle {
+            animation: bounceGentle 2s infinite;
+        }
+        @keyframes bounceGentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .pulse-subtle {
+            animation: pulseSubtle 1.5s infinite alternate;
+        }
+        @keyframes pulseSubtle {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.03); }
+        }
+
+        .grid-cell {
+            transition: all 0.2s ease;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #A29BFE;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-brand-pink selection:text-white pb-12">
+
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-indigo-100">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+            <!-- App Logo / Title -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('learn')">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-purple to-brand-pink flex items-center justify-center text-white text-xl font-bold shadow-md shadow-indigo-200">
+                    0.1
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold text-indigo-950 leading-tight">שברים עשרוניים</h1>
+                    <p class="text-xs text-indigo-500 font-medium">לומדים בקלות ובכיף! ✨</p>
+                </div>
+            </div>
+
+            <!-- Header Gamification Bar (Stars, Streak, Level) -->
+            <div class="flex items-center gap-4 bg-indigo-50/80 px-4 py-1.5 rounded-full border border-indigo-100">
+                <div class="flex items-center gap-1.5" title="כוכבים שצבאת">
+                    <span class="text-xl">⭐</span>
+                    <span id="stars-count" class="font-bold text-indigo-900 text-lg">0</span>
+                </div>
+                <div class="w-px h-5 bg-indigo-200"></div>
+                <div class="flex items-center gap-1.5" title="רצף תשובות נכונות">
+                    <span class="text-xl">🔥</span>
+                    <span id="streak-count" class="font-bold text-orange-600 text-lg">0</span>
+                </div>
+                <div class="w-px h-5 bg-indigo-200"></div>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-semibold px-2 py-0.5 bg-brand-purple text-white rounded-full" id="user-level">רמה 1: מתחילים</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Navigation Tabs -->
+        <nav class="max-w-5xl mx-auto px-4 mt-1 flex gap-2 justify-center border-t border-indigo-50 pt-2 flex-wrap">
+            <button id="tab-learn" onclick="switchTab('learn')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-md shadow-indigo-200">
+                <span>📚</span> לומדים שלב-שלב
+            </button>
+            <button id="tab-practice" onclick="switchTab('practice')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-white text-slate-600 hover:bg-indigo-50">
+                <span>🎯</span> מחולל תרגילים
+            </button>
+            <button id="tab-game" onclick="switchTab('game')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-white text-slate-600 hover:bg-indigo-50">
+                <span>🍕</span> אתגר הפיצרייה
+            </button>
+            <div class="h-8 w-px bg-indigo-100 self-center mx-1"></div>
+            <button id="tab-back-space" onclick="window.location.href='index.html?section=space'" class="px-4 py-2.5 rounded-xl font-bold text-sm bg-yellow-400 hover:bg-yellow-500 text-black shadow-md flex items-center gap-1.5 transition-all">
+                <span>🚀</span> חזרה לחלל
+            </button>
+            <button id="tab-back-fractions" onclick="window.location.href='index.html?section=fractions'" class="px-4 py-2.5 rounded-xl font-bold text-sm bg-emerald-500 hover:bg-emerald-600 text-white shadow-md flex items-center gap-1.5 transition-all">
+                <span>🍕</span> חזרה לשברים
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 mt-6">
+
+        <!-- SECTION 1: LEARN (Step-by-step) -->
+        <section id="sec-learn" class="space-y-6">
+            <!-- Welcome Header Card -->
+            <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+                <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
+                <div class="relative z-10 max-w-xl">
+                    <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md text-white text-xs font-bold rounded-full mb-2">ברוכים הבאים לשיעור האינטראקטיבי! 👋</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold mb-2">מה זה בעצם שבר עשרוני?</h2>
+                    <p class="text-indigo-100 text-sm md:text-base leading-relaxed">
+                        שבר עשרוני הוא פשוט דרך מיוחדת לכתוב חלק שמקבלים כשהשלם מחולק ל-10 חלקים שווים (עשיריות) או ל-100 חלקים שווים (מאיות)!
+                    </p>
+                </div>
+            </div>
+
+            <!-- Step Navigation Controls -->
+            <div class="flex items-center justify-between bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
+                <button onclick="prevLessonStep()" id="btn-prev-step" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">
+                    ➡️ השלב הקודם
+                </button>
+                <div class="flex gap-2" id="step-dots">
+                    <!-- Dots generated dynamically -->
+                </div>
+                <button onclick="nextLessonStep()" id="btn-next-step" class="px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 shadow-sm">
+                    השלב הבא ⬅️
+                </button>
+            </div>
+
+            <!-- LESSON STEP 0: Understanding Tenths & Visual Grid -->
+            <div id="lesson-step-0" class="lesson-card bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center">1</span>
+                    <h3 class="text-xl font-bold text-slate-800">הכרות עם העשירית (0.1)</h3>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 items-center">
+                    <div class="space-y-4 text-slate-600">
+                        <p class="text-base leading-relaxed">
+                            תארו לעצמכם שוקולד המחולק ל-**10 קוביות שוות**.
+                            כל קובייה אחת היא **עשירית**
+                            <span class="inline-flex flex-col items-center justify-center align-middle mx-1 font-extrabold text-indigo-700 text-xs bg-indigo-50 px-2 py-1 rounded border border-indigo-200">
+                                <span>1</span>
+                                <span class="border-t border-indigo-400 w-full text-center">10</span>
+                            </span>.
+                        </p>
+                        <div class="p-4 bg-indigo-50/70 rounded-2xl border border-indigo-100 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-700">כתיב שברים:</span>
+                                <span class="text-lg font-bold text-indigo-600 flex items-center gap-1">
+                                    <span class="inline-flex flex-col items-center font-bold text-sm bg-white px-2 py-0.5 rounded border border-indigo-200">
+                                        <span>1</span>
+                                        <span class="border-t border-indigo-300 w-full text-center">10</span>
+                                    </span>
+                                    (עשירית אחת)
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-700">כתיב עשרוני:</span>
+                                <span class="text-xl font-black text-purple-600 bg-white px-3 py-1 rounded-lg border border-purple-200">0.1</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500">
+                            💡 **שימו לב:** הנקודה בין ה-0 ל-1 נקראת **נקודה עשרונית**. היא מפרידה בין המספר השלם לחלק העשרוני!
+                        </p>
+                    </div>
+
+                    <!-- Interactive Tenths Visualizer -->
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center space-y-4">
+                        <h4 class="font-bold text-slate-700">נסו בעצמכם! הזיזו את הסרגל:</h4>
+
+                        <!-- 10 Block Visualizer -->
+                        <div class="flex h-12 rounded-xl overflow-hidden border-2 border-indigo-300 shadow-inner bg-white" id="tenths-bar-container">
+                            <!-- Filled dynamically by JS -->
+                        </div>
+
+                        <div class="flex items-center justify-between gap-4">
+                            <label for="tenths-slider" class="text-sm font-semibold text-slate-600">כמות קוביות:</label>
+                            <input type="range" id="tenths-slider" min="0" max="10" value="3" class="w-full accent-indigo-600 cursor-pointer" oninput="updateTenthsVisualizer(this.value)">
+                            <span id="tenths-val-display" class="font-black text-indigo-600 text-lg min-w-[30px]">3</span>
+                        </div>
+
+                        <div class="bg-white p-3 rounded-xl border border-indigo-100 flex justify-around items-center">
+                            <div>
+                                <span class="text-xs text-slate-400 block">שבר פשוט</span>
+                                <span id="tenths-fraction-text" class="font-extrabold text-indigo-600 text-lg">3/10</span>
+                            </div>
+                            <div class="text-2xl text-slate-300">=</div>
+                            <div>
+                                <span class="text-xs text-slate-400 block">שבר עשרוני</span>
+                                <span id="tenths-decimal-text" class="font-extrabold text-purple-600 text-2xl">0.3</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LESSON STEP 1: Place Value Chart -->
+            <div id="lesson-step-1" class="lesson-card hidden bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center">2</span>
+                    <h3 class="text-xl font-bold text-slate-800">לוח ערך מקומי - איפה כל ספרה עומדת?</h3>
+                </div>
+
+                <p class="text-slate-600 mb-6">
+                    כמו שיש לנו אחדות, עשרות ומאות, מימין לנקודה העשרונית יש לנו **עשיריות** ו**מאיות**!
+                </p>
+
+                <!-- Interactive Place Value Chart - Strict Left to Right Math Layout -->
+                <div dir="ltr" class="grid grid-cols-4 text-center border-2 border-indigo-200 rounded-2xl overflow-hidden bg-white shadow-sm mb-6">
+                    <div class="bg-indigo-50 p-3 font-extrabold text-indigo-900 border-r border-indigo-100">אחדות (1)</div>
+                    <div class="bg-pink-100 p-3 font-extrabold text-pink-900 border-r border-indigo-100">⚫ נקודה</div>
+                    <div class="bg-purple-50 p-3 font-extrabold text-purple-900 border-r border-indigo-100">עשיריות (1/10)</div>
+                    <div class="bg-teal-50 p-3 font-extrabold text-teal-900">מאיות (1/100)</div>
+
+                    <!-- Values Row -->
+                    <div class="p-4 text-3xl font-black text-indigo-600 border-r border-t border-indigo-100" id="pv-ones">2</div>
+                    <div class="p-4 text-3xl font-black text-pink-600 border-r border-t border-indigo-100">.</div>
+                    <div class="p-4 text-3xl font-black text-purple-600 border-r border-t border-indigo-100" id="pv-tenths">5</div>
+                    <div class="p-4 text-3xl font-black text-teal-600 border-t border-indigo-100" id="pv-hundredths">4</div>
+                </div>
+
+                <!-- Digit Control Playground -->
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-4">
+                    <h4 class="font-bold text-slate-700 text-center">שנו את הספרות וראו את המספר שנוצר:</h4>
+                    <div dir="ltr" class="flex justify-center items-center gap-4 flex-wrap">
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs text-slate-500 mb-1">אחדות</span>
+                            <input type="number" id="inp-ones" min="0" max="9" value="2" class="w-14 h-12 text-center text-xl font-bold rounded-xl border border-slate-300 focus:ring-2 focus:ring-indigo-400 outline-none" oninput="updatePVDisplay()">
+                        </div>
+                        <span class="text-3xl font-black text-pink-500 self-end mb-2">.</span>
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs text-slate-500 mb-1">עשיריות</span>
+                            <input type="number" id="inp-tenths" min="0" max="9" value="5" class="w-14 h-12 text-center text-xl font-bold rounded-xl border border-slate-300 focus:ring-2 focus:ring-purple-400 outline-none" oninput="updatePVDisplay()">
+                        </div>
+                        <div class="flex flex-col items-center">
+                            <span class="text-xs text-slate-500 mb-1">מאיות</span>
+                            <input type="number" id="inp-hundredths" min="0" max="9" value="4" class="w-14 h-12 text-center text-xl font-bold rounded-xl border border-slate-300 focus:ring-2 focus:ring-teal-400 outline-none" oninput="updatePVDisplay()">
+                        </div>
+                    </div>
+
+                    <div class="text-center bg-white p-3 rounded-xl border border-slate-200 font-bold text-slate-700">
+                        קוראים את המספר הזה כך: <span id="pv-words-display" class="text-indigo-600 font-extrabold">שני שלמים, חמישים וארבע מאיות</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LESSON STEP 2: Number Line -->
+            <div id="lesson-step-2" class="lesson-card hidden bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center">3</span>
+                    <h3 class="text-xl font-bold text-slate-800">שברים עשרוניים על ציר המספרים 📏</h3>
+                </div>
+
+                <p class="text-slate-600 mb-6">
+                    השברים העשרוניים נמצאים **בין המספרים השלמים**! ראו איך הרווח בין 0 ל-1 מחולק ל-10 עשיריות שוות:
+                </p>
+
+                <!-- Dynamic Interactive Number Line -->
+                <div class="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100 space-y-6">
+                    <div class="relative py-8 px-4">
+                        <!-- Main Line -->
+                        <div class="h-2 bg-indigo-200 rounded-full w-full relative">
+                            <!-- Slider track overlay -->
+                            <div id="numline-progress" class="h-full bg-indigo-600 rounded-full w-[40%] transition-all"></div>
+                        </div>
+
+                        <!-- Ticks Container -->
+                        <div class="flex justify-between relative -mt-3" id="numline-ticks">
+                            <!-- JS will build ticks 0.0 to 1.0 -->
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-indigo-100">
+                        <div>
+                            <span class="text-xs text-slate-400 block font-semibold">המיקום שנבחר:</span>
+                            <span id="numline-val-display" class="text-2xl font-black text-indigo-600">0.4</span>
+                        </div>
+                        <input type="range" id="numline-slider" min="0" max="10" value="4" step="1" class="w-1/2 accent-indigo-600 cursor-pointer" oninput="updateNumberLine(this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- LESSON STEP 3: Real Life Applications -->
+            <div id="lesson-step-3" class="lesson-card hidden bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center">4</span>
+                    <h3 class="text-xl font-bold text-slate-800">איפה פוגשים שברים עשרוניים בחיים? 💰</h3>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 items-center">
+                    <div class="space-y-4">
+                        <p class="text-slate-600 leading-relaxed">
+                            כמעט בכל פעם שאנחנו קונים משהו בחנות או משלמים בכסף, אנחנו משתמשים בשברים עשרוניים!
+                        </p>
+                        <div class="space-y-2">
+                            <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between">
+                                <span class="font-bold text-emerald-900">₪3.50 (שלושה שקלים וחצי)</span>
+                                <span class="text-sm bg-white px-2 py-1 rounded text-emerald-700 font-semibold shadow-xs">3 שקלים + 50 אגורות</span>
+                            </div>
+                            <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between">
+                                <span class="font-bold text-emerald-900">₪0.10 (עשר אגורות)</span>
+                                <span class="text-sm bg-white px-2 py-1 rounded text-emerald-700 font-semibold shadow-xs">עשירית השקל!</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 p-6 rounded-2xl border border-amber-200 text-center space-y-3">
+                        <span class="text-4xl">🛍️</span>
+                        <h4 class="font-bold text-amber-900">טיפ זהב לזכור!</h4>
+                        <p class="text-sm text-amber-800 leading-relaxed">
+                            עשירית
+                            <span class="inline-flex flex-col items-center justify-center align-middle mx-1 font-bold text-amber-900 text-xs bg-white px-1.5 py-0.5 rounded border border-amber-300">
+                                <span>1</span>
+                                <span class="border-t border-amber-400 w-full text-center">10</span>
+                            </span>
+                            היא כמו <b>10 אגורות</b>. <br>
+                            מאית
+                            <span class="inline-flex flex-col items-center justify-center align-middle mx-1 font-bold text-amber-900 text-xs bg-white px-1.5 py-0.5 rounded border border-amber-300">
+                                <span>1</span>
+                                <span class="border-t border-amber-400 w-full text-center">100</span>
+                            </span>
+                            היא כמו <b>אגורה אחת</b>!
+                        </p>
+                        <button onclick="switchTab('practice')" class="w-full mt-2 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-extrabold rounded-xl shadow-md hover:brightness-105 transition-all">
+                            מוכנים לתרגל? לעבר המחולל! 🚀
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: PRACTICE (Question Generator) -->
+        <section id="sec-practice" class="hidden space-y-6">
+            <!-- Practice Controls & Difficulty Selection -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-800">🎯 מחולל התרגילים האישי</h2>
+                    <p class="text-sm text-slate-500">בחרו נושא ותרגלו שברים פשוטים, עשרוניים וחיבור!</p>
+                </div>
+
+                <!-- Difficulty & Topic Selector Buttons -->
+                <div class="flex flex-wrap gap-2 bg-slate-100 p-1.5 rounded-2xl justify-center">
+                    <button onclick="setDifficulty('simple')" id="diff-simple" class="diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
+                        🍰 שברים פשוטים
+                    </button>
+                    <button onclick="setDifficulty('easy')" id="diff-easy" class="diff-btn active px-3 py-2 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-xs">
+                        🌱 עשיריות
+                    </button>
+                    <button onclick="setDifficulty('medium')" id="diff-medium" class="diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
+                        🌿 מאיות
+                    </button>
+                    <button onclick="setDifficulty('calc')" id="diff-calc" class="diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
+                        ➕ חיבור וחיסור
+                    </button>
+                    <button onclick="setDifficulty('hard')" id="diff-hard" class="diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
+                        ⚖️ השוואה ואתגר
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question Card Container -->
+            <div class="bg-white rounded-3xl p-8 shadow-md border border-slate-100 text-center relative overflow-hidden">
+                <!-- Visual Question Badge -->
+                <span id="question-category-tag" class="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full mb-4">
+                    תרגיל זיהוי
+                </span>
+
+                <!-- Question Prompt -->
+                <div id="question-prompt" class="text-2xl md:text-3xl font-black text-slate-800 mb-6 flex flex-col items-center justify-center gap-2">
+                    בטעינה...
+                </div>
+
+                <!-- Interactive Visual Helper (Rendered dynamically) -->
+                <div id="question-visual-helper" class="mb-6 flex justify-center min-h-[40px] items-center">
+                    <!-- Dynamic Grid / Visuals -->
+                </div>
+
+                <!-- Answer Options Grid -->
+                <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg mx-auto mb-6">
+                    <!-- Option Buttons dynamically generated -->
+                </div>
+
+                <!-- Feedback Banner -->
+                <div id="practice-feedback" class="hidden mb-4 p-3 rounded-2xl font-bold text-sm"></div>
+
+                <!-- Hint Toggle Button & Text -->
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                    <button onclick="toggleHint()" class="text-xs text-indigo-500 hover:text-indigo-700 font-semibold flex items-center justify-center gap-1 mx-auto">
+                        <span>💡</span> <span id="hint-btn-text">צריכה רמז?</span>
+                    </button>
+                    <p id="hint-box" class="hidden mt-2 text-xs bg-amber-50 text-amber-800 p-2.5 rounded-xl border border-amber-200 max-w-md mx-auto">
+                        רמז יופיע כאן...
+                    </p>
+                </div>
+            </div>
+
+            <!-- Streak & Score Mini Footer -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-100 text-center">
+                    <span class="text-xs font-bold text-emerald-700 block">תשובות נכונות בסך הכל</span>
+                    <span id="total-correct-display" class="text-2xl font-black text-emerald-800">0</span>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-2xl border border-purple-100 text-center">
+                    <span class="text-xs font-bold text-purple-700 block">רצף נוכחי</span>
+                    <span id="streak-practice-display" class="text-2xl font-black text-purple-800">0 🔥</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: PIZZA GAME -->
+        <section id="sec-game" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-3xl p-6 text-white shadow-xl flex justify-between items-center">
+                <div>
+                    <span class="px-3 py-1 bg-white/20 text-white text-xs font-bold rounded-full mb-1 inline-block">משחקון חווייתי 🍕</span>
+                    <h2 class="text-2xl font-black">הפיצרייה העשרונית של פיצי!</h2>
+                    <p class="text-xs md:text-sm text-amber-100">הכינו ללקוחות את תוספות הפיצה בדיוק לפי השבר העשרוני המבוקש!</p>
+                </div>
+                <div class="text-4xl">👨‍🍳</div>
+            </div>
+
+            <!-- Pizza Game Board -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 grid md:grid-cols-2 gap-8 items-center">
+                <!-- Customer Order Card -->
+                <div class="space-y-4">
+                    <div class="bg-amber-50 border-2 border-amber-200 p-4 rounded-2xl relative">
+                        <div class="text-xs font-bold text-amber-700 mb-1">📋 ההזמנה של הלקוח:</div>
+                        <div id="pizza-order-text" class="text-lg font-extrabold text-slate-800">
+                            "אני רוצה פיצה ש- <span class="text-indigo-600 font-black">0.6</span> ממנה מכוסה בתוספת זיתים!"
+                        </div>
+                    </div>
+
+                    <div class="text-slate-600 text-sm space-y-2">
+                        <p>👉 לחצו על משולשי הפיצה כדי להוסיף או להסיר זיתים.</p>
+                        <p>👉 כל 10 המשולשים שווים בגודלם בדיוק! ספרו כמה משולשים דרושים.</p>
+                    </div>
+
+                    <div class="bg-slate-50 p-3 rounded-xl flex items-center justify-between font-bold text-sm">
+                        <span>משולשים מסומנים: <span id="pizza-count-display" class="text-indigo-600 font-black text-lg">0</span> / 10</span>
+                        <span>שבר עשרוני: <span id="pizza-decimal-display" class="text-purple-600 font-black text-lg">0.0</span></span>
+                    </div>
+
+                    <div id="pizza-feedback" class="hidden p-3 rounded-xl font-bold text-center text-sm"></div>
+
+                    <button onclick="checkPizzaOrder()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-200 transition-all text-lg">
+                        הגש הזמנה ללקוח! 🍕
+                    </button>
+                </div>
+
+                <!-- SVG Equal Slices Pizza Container -->
+                <div class="flex justify-center items-center py-4">
+                    <div class="relative w-72 h-72 flex items-center justify-center">
+                        <svg id="pizza-svg" viewBox="0 0 300 300" class="w-full h-full drop-shadow-xl cursor-pointer">
+                            <!-- Pizza slices rendered dynamically via JS -->
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Global Application State
+        const state = {
+            stars: 0,
+            streak: 0,
+            totalCorrect: 0,
+            currentTab: 'learn',
+            lessonStep: 0,
+            totalLessonSteps: 4,
+            difficulty: 'easy',
+            currentQuestion: null,
+            pizzaTargetTenths: 6,
+            pizzaSelectedSlices: new Array(10).fill(false)
+        };
+
+        // Web Audio API Audio Synthesizer
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            if (type === 'correct') {
+                // Multi-note cheerful fanfare arpeggio
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.08);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime + idx * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.08 + 0.35);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(audioCtx.currentTime + idx * 0.08);
+                    osc.stop(audioCtx.currentTime + idx * 0.08 + 0.35);
+                });
+            } else if (type === 'wrong') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.25);
+            } else if (type === 'click') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.05);
+            }
+        }
+
+        function switchTab(tabName) {
+            playSound('click');
+            state.currentTab = tabName;
+
+            // Hide all sections
+            document.getElementById('sec-learn').classList.add('hidden');
+            document.getElementById('sec-practice').classList.add('hidden');
+            document.getElementById('sec-game').classList.add('hidden');
+
+            // Reset tab button styles
+            ['learn', 'practice', 'game'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (btn) {
+                    btn.className = 'tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-white text-slate-600 hover:bg-indigo-50';
+                }
+            });
+
+            // Show active section & highlight button
+            const activeSec = document.getElementById(`sec-${tabName}`);
+            if (activeSec) activeSec.classList.remove('hidden');
+
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            if (activeBtn) {
+                activeBtn.className = 'tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-md shadow-indigo-200';
+            }
+
+            if (tabName === 'practice' && !state.currentQuestion) {
+                generateNewQuestion();
+            } else if (tabName === 'game') {
+                initPizzaGame();
+            }
+        }
+
+        function updateLessonStepUI() {
+            // Hide all lesson step cards
+            for (let i = 0; i < state.totalLessonSteps; i++) {
+                const stepCard = document.getElementById(`lesson-step-${i}`);
+                if (stepCard) stepCard.classList.add('hidden');
+            }
+
+            // Show current step card
+            const currentCard = document.getElementById(`lesson-step-${state.lessonStep}`);
+            if (currentCard) currentCard.classList.remove('hidden');
+
+            // Update navigation buttons
+            const prevBtn = document.getElementById('btn-prev-step');
+            const nextBtn = document.getElementById('btn-next-step');
+
+            if (prevBtn) prevBtn.disabled = state.lessonStep === 0;
+            if (nextBtn) {
+                if (state.lessonStep === state.totalLessonSteps - 1) {
+                    nextBtn.innerHTML = 'עבור לתרגול 🎯';
+                } else {
+                    nextBtn.innerHTML = 'השלב הבא ⬅️';
+                }
+            }
+
+            // Update step dots
+            const dotsContainer = document.getElementById('step-dots');
+            if (dotsContainer) {
+                dotsContainer.innerHTML = '';
+                for (let i = 0; i < state.totalLessonSteps; i++) {
+                    const dot = document.createElement('span');
+                    dot.className = `step-dot w-3 h-3 rounded-full cursor-pointer transition-all ${i === state.lessonStep ? 'bg-indigo-600 w-6' : 'bg-slate-200 hover:bg-indigo-300'}`;
+                    dot.onclick = () => {
+                        playSound('click');
+                        state.lessonStep = i;
+                        updateLessonStepUI();
+                    };
+                    dotsContainer.appendChild(dot);
+                }
+            }
+        }
+
+        function prevLessonStep() {
+            if (state.lessonStep > 0) {
+                playSound('click');
+                state.lessonStep--;
+                updateLessonStepUI();
+            }
+        }
+
+        function nextLessonStep() {
+            if (state.lessonStep < state.totalLessonSteps - 1) {
+                playSound('click');
+                state.lessonStep++;
+                updateLessonStepUI();
+            } else {
+                switchTab('practice');
+            }
+        }
+
+        function updateTenthsVisualizer(val) {
+            const container = document.getElementById('tenths-bar-container');
+            const displayVal = document.getElementById('tenths-val-display');
+            const fractionText = document.getElementById('tenths-fraction-text');
+            const decimalText = document.getElementById('tenths-decimal-text');
+
+            if (!container) return;
+
+            const count = parseInt(val);
+            if (displayVal) displayVal.innerText = count;
+            if (fractionText) fractionText.innerText = `${count}/10`;
+            if (decimalText) decimalText.innerText = (count / 10).toFixed(1);
+
+            container.innerHTML = '';
+            for (let i = 0; i < 10; i++) {
+                const block = document.createElement('div');
+                block.className = `flex-1 border-r border-indigo-200 transition-colors duration-200 ${i < count ? 'bg-indigo-600' : 'bg-indigo-50/50'}`;
+                container.appendChild(block);
+            }
+        }
+
+        function updatePVDisplay() {
+            const onesInp = document.getElementById('inp-ones');
+            const tenthsInp = document.getElementById('inp-tenths');
+            const hundredthsInp = document.getElementById('inp-hundredths');
+
+            if (!onesInp || !tenthsInp || !hundredthsInp) return;
+
+            const ones = parseInt(onesInp.value) || 0;
+            const tenths = parseInt(tenthsInp.value) || 0;
+            const hundredths = parseInt(hundredthsInp.value) || 0;
+
+            document.getElementById('pv-ones').innerText = ones;
+            document.getElementById('pv-tenths').innerText = tenths;
+            document.getElementById('pv-hundredths').innerText = hundredths;
+
+            const onesHeb = ["אפס", "אחד", "שני", "שלשה", "ארבעה", "חמישה", "שישה", "שבעה", "שמונה", "תשעה"];
+            const decimalVal = parseInt(tenths.toString() + hundredths.toString());
+
+            let text = `${onesHeb[ones] || ones} שלמים`;
+            if (decimalVal > 0) {
+                text += ` ו-${decimalVal} מאיות`;
+            }
+            document.getElementById('pv-words-display').innerText = text;
+        }
+
+        function buildNumberLineTicks() {
+            const container = document.getElementById('numline-ticks');
+            if (!container) return;
+            container.innerHTML = '';
+
+            for (let i = 0; i <= 10; i++) {
+                const tick = document.createElement('div');
+                tick.className = 'flex flex-col items-center';
+                const decVal = (i / 10).toFixed(1);
+                tick.innerHTML = `
+                    <div class="w-0.5 h-3 bg-indigo-300"></div>
+                    <span class="text-[10px] md:text-xs font-bold text-indigo-800 mt-1">${decVal}</span>
+                `;
+                container.appendChild(tick);
+            }
+        }
+
+        function updateNumberLine(val) {
+            const numVal = parseInt(val);
+            const display = document.getElementById('numline-val-display');
+            const progress = document.getElementById('numline-progress');
+
+            if (display) display.innerText = (numVal / 10).toFixed(1);
+            if (progress) progress.style.width = `${(numVal / 10) * 100}%`;
+        }
+
+        function setDifficulty(diff) {
+            playSound('click');
+            state.difficulty = diff;
+
+            const buttons = document.querySelectorAll('.diff-btn');
+            buttons.forEach(btn => {
+                btn.className = 'diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white';
+            });
+
+            const activeBtn = document.getElementById(`diff-${diff}`);
+            if (activeBtn) {
+                activeBtn.className = 'diff-btn active px-3 py-2 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-xs';
+            }
+
+            generateNewQuestion();
+        }
+
+        function generateDistractors(correctVal, type) {
+            const options = new Set();
+            options.add(correctVal.toString());
+
+            const val = parseFloat(correctVal);
+
+            while (options.size < 4) {
+                let dist;
+                if (type === 'tenths') {
+                    dist = (Math.max(0.1, val + (Math.floor(Math.random() * 5) - 2) * 0.1)).toFixed(1);
+                } else if (type === 'hundredths') {
+                    dist = (Math.max(0.01, val + (Math.floor(Math.random() * 7) - 3) * 0.05)).toFixed(2);
+                } else {
+                    dist = (val + Math.floor(Math.random() * 5) - 2).toString();
+                }
+                options.add(dist);
+            }
+
+            return Array.from(options).sort(() => Math.random() - 0.5);
+        }
+
+        function generateGridVisual(num, total) {
+            let html = `<div class="flex gap-1 bg-slate-100 p-2 rounded-xl border border-slate-200">`;
+            for (let i = 0; i < total; i++) {
+                html += `<div class="w-6 h-8 rounded ${i < num ? 'bg-indigo-600 shadow-xs' : 'bg-white border border-slate-300'}"></div>`;
+            }
+            html += `</div>`;
+            return html;
+        }
+
+        function generateNewQuestion() {
+            const hintBox = document.getElementById('hint-box');
+            if (hintBox) hintBox.classList.add('hidden');
+            const feedback = document.getElementById('practice-feedback');
+            if (feedback) feedback.classList.add('hidden');
+
+            const diff = state.difficulty;
+            let q = {};
+
+            if (diff === 'simple') {
+                const num = Math.floor(Math.random() * 4) + 1;
+                const den = 5;
+                q.tag = "שברים פשוטים 🍰";
+                q.prompt = `איך נקרא השבר
+                    <span class="inline-flex flex-col items-center font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-xl border border-indigo-200 text-xl align-middle mx-1">
+                        <span>${num}</span>
+                        <span class="border-t-2 border-indigo-400 w-full text-center">${den}</span>
+                    </span> ?`;
+                q.correctAnswer = `${num} חמישיות`;
+                q.options = [`${num} חמישיות`, `${num} עשיריות`, `${num} שלישים`, `${num} רבעים`].sort(() => Math.random() - 0.5);
+                q.hint = `המספר למטה (המכנה) מראה למה חילקנו: 5 פירושו חמישיות!`;
+                q.visual = null;
+
+            } else if (diff === 'easy') {
+                const numerator = Math.floor(Math.random() * 9) + 1;
+                const correctDec = (numerator / 10).toFixed(1);
+                q.tag = "שברים עשרוניים (עשיריות)";
+                q.prompt = `איך כותבים
+                    <span class="inline-flex flex-col items-center font-extrabold text-indigo-600 text-sm bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200 align-middle mx-1">
+                        <span>${numerator}</span>
+                        <span class="border-t border-indigo-300 w-full text-center">10</span>
+                    </span> כשבר עשרוני?`;
+                q.correctAnswer = correctDec;
+                q.options = generateDistractors(correctDec, 'tenths');
+                q.hint = `בעשיריות יש ספרה אחת בלבד מימין לנקודה העשרונית!`;
+                q.visual = generateGridVisual(numerator, 10);
+
+            } else if (diff === 'medium') {
+                const numerator = Math.floor(Math.random() * 89) + 10;
+                const correctDec = (numerator / 100).toFixed(2);
+                q.tag = "שברים עשרוניים (מאיות)";
+                q.prompt = `איך כותבים
+                    <span class="inline-flex flex-col items-center font-extrabold text-indigo-600 text-sm bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200 align-middle mx-1">
+                        <span>${numerator}</span>
+                        <span class="border-t border-indigo-300 w-full text-center">100</span>
+                    </span> כשבר עשרוני?`;
+                q.correctAnswer = correctDec;
+                q.options = generateDistractors(correctDec, 'hundredths');
+                q.hint = `במאיות יש 2 ספרות מימין לנקודה העשרונית!`;
+                q.visual = null;
+
+            } else if (diff === 'calc') {
+                const isAdd = Math.random() > 0.5;
+                if (isAdd) {
+                    const a = (Math.floor(Math.random() * 5) + 1) / 10;
+                    const b = (Math.floor(Math.random() * 4) + 1) / 10;
+                    const result = (a + b).toFixed(1);
+                    q.tag = "חיבור עשרוני ➕";
+                    q.prompt = `כמה זה <span dir="ltr" class="inline-block text-indigo-600 font-extrabold mx-1 border-b-2 border-indigo-300">${a.toFixed(1)} + ${b.toFixed(1)}</span> ?`;
+                    q.correctAnswer = result;
+                    q.options = generateDistractors(result, 'tenths');
+                    q.hint = `חברו את העשיריות בדיוק כמו מספרים שלמים!`;
+                } else {
+                    const a = (Math.floor(Math.random() * 5) + 4) / 10;
+                    const b = (Math.floor(Math.random() * 3) + 1) / 10;
+                    const result = (a - b).toFixed(1);
+                    q.tag = "חיסור עשרוני ➖";
+                    q.prompt = `כמה זה <span dir="ltr" class="inline-block text-indigo-600 font-extrabold mx-1 border-b-2 border-indigo-300">${a.toFixed(1)} - ${b.toFixed(1)}</span> ?`;
+                    q.correctAnswer = result;
+                    q.options = generateDistractors(result, 'tenths');
+                    q.hint = `חסרו את העשיריות הקטנות מהעשיריות הגדולות!`;
+                }
+                q.visual = null;
+
+            } else {
+                const num = Math.floor(Math.random() * 8) + 1;
+                const decVal = (Math.floor(Math.random() * 8) + 1) / 10;
+                const fracVal = num / 10;
+
+                let sign = "=";
+                if (fracVal > decVal) sign = ">";
+                if (fracVal < decVal) sign = "<";
+
+                q.tag = "השוואת שברים פשוטים ועשרוניים ⚖️";
+                q.prompt = `איזה סימן מתאים בין השבר הפשוט לשבר העשרוני? <br>
+                    <div class="flex items-center justify-center gap-4 mt-2">
+                        <span class="inline-flex flex-col items-center font-extrabold text-indigo-600 text-lg bg-indigo-50 px-3 py-1 rounded-xl border border-indigo-200">
+                            <span>${num}</span>
+                            <span class="border-t-2 border-indigo-400 w-full text-center">10</span>
+                        </span>
+                        <span class="text-2xl font-bold text-slate-400">❓</span>
+                        <span class="text-2xl font-black text-purple-600 bg-purple-50 px-3 py-1.5 rounded-xl border border-purple-200">${decVal.toFixed(1)}</span>
+                    </div>`;
+                q.correctAnswer = sign;
+                q.options = [">", "<", "="];
+                q.hint = `המירו את השבר הפשוט ${num}/10 לשבר עשרוני (0.${num}) ואז השוו!`;
+                q.visual = null;
+            }
+
+            state.currentQuestion = q;
+            renderQuestionUI(q);
+        }
+
+        function renderQuestionUI(q) {
+            document.getElementById('question-category-tag').innerText = q.tag;
+            document.getElementById('question-prompt').innerHTML = q.prompt;
+
+            const visualHelper = document.getElementById('question-visual-helper');
+            if (visualHelper) {
+                visualHelper.innerHTML = q.visual || '';
+            }
+
+            const grid = document.getElementById('options-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full py-3 px-4 bg-slate-50 hover:bg-indigo-50 border-2 border-slate-200 hover:border-indigo-300 font-extrabold text-slate-700 text-lg rounded-2xl transition-all shadow-xs flex items-center justify-center';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedOpt, btnElement) {
+            const q = state.currentQuestion;
+            if (!q) return;
+
+            const isCorrect = selectedOpt === q.correctAnswer;
+            const feedback = document.getElementById('practice-feedback');
+
+            if (isCorrect) {
+                playSound('correct');
+                if (window.confetti) {
+                    confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+                }
+
+                state.stars += 10;
+                state.streak += 1;
+                state.totalCorrect += 1;
+
+                if (btnElement) {
+                    btnElement.className = 'w-full py-3 px-4 bg-emerald-500 text-white font-extrabold text-lg rounded-2xl shadow-md flex items-center justify-center';
+                }
+
+                if (feedback) {
+                    feedback.className = 'mb-4 p-3 rounded-2xl font-bold text-center text-sm bg-emerald-100 text-emerald-800 border border-emerald-200';
+                    feedback.innerText = 'כל הכבוד! תשובה נכונה! ⭐ +10';
+                    feedback.classList.remove('hidden');
+                }
+
+                updateGamificationUI();
+
+                setTimeout(() => {
+                    generateNewQuestion();
+                }, 1200);
+
+            } else {
+                playSound('wrong');
+                state.streak = 0;
+
+                if (btnElement) {
+                    btnElement.className = 'w-full py-3 px-4 bg-rose-500 text-white font-extrabold text-lg rounded-2xl shadow-md flex items-center justify-center';
+                }
+
+                if (feedback) {
+                    feedback.className = 'mb-4 p-3 rounded-2xl font-bold text-center text-sm bg-rose-100 text-rose-800 border border-rose-200';
+                    feedback.innerText = 'לא מדויק, נסו שוב! 💪';
+                    feedback.classList.remove('hidden');
+                }
+
+                updateGamificationUI();
+            }
+        }
+
+        function toggleHint() {
+            playSound('click');
+            const hintBox = document.getElementById('hint-box');
+            if (hintBox && state.currentQuestion) {
+                hintBox.innerText = state.currentQuestion.hint || 'אין רמז זמין לתרגיל זה.';
+                hintBox.classList.toggle('hidden');
+            }
+        }
+
+        function updateGamificationUI() {
+            document.getElementById('stars-count').innerText = state.stars;
+            document.getElementById('streak-count').innerText = state.streak;
+            document.getElementById('total-correct-display').innerText = state.totalCorrect;
+            document.getElementById('streak-practice-display').innerText = `${state.streak} 🔥`;
+
+            const levelBadge = document.getElementById('user-level');
+            if (levelBadge) {
+                if (state.stars >= 100) levelBadge.innerText = 'רמה 3: אלופים 🏆';
+                else if (state.stars >= 40) levelBadge.innerText = 'רמה 2: מתקדמים 🚀';
+                else levelBadge.innerText = 'רמה 1: מתחילים 🌱';
+            }
+        }
+
+        function initPizzaGame() {
+            state.pizzaTargetTenths = Math.floor(Math.random() * 9) + 1;
+            state.pizzaSelectedSlices = new Array(10).fill(false);
+
+            const dec = (state.pizzaTargetTenths / 10).toFixed(1);
+            document.getElementById('pizza-order-text').innerHTML =
+                `"שלום! אני רוצה פיצה ש- <span class="text-indigo-600 font-black text-xl">${dec}</span> ממנה מכוסה בזיתים!"`;
+
+            const feedback = document.getElementById('pizza-feedback');
+            if (feedback) feedback.classList.add('hidden');
+
+            renderSVGPizza();
+            updatePizzaProgress();
+        }
+
+        function renderSVGPizza() {
+            const svg = document.getElementById('pizza-svg');
+            if (!svg) return;
+            svg.innerHTML = '';
+
+            const cx = 150, cy = 150, r = 135;
+
+            // Crust background
+            const crust = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            crust.setAttribute('cx', cx);
+            crust.setAttribute('cy', cy);
+            crust.setAttribute('r', r);
+            crust.setAttribute('fill', '#D97706');
+            crust.setAttribute('stroke', '#B45309');
+            crust.setAttribute('stroke-width', '6');
+            svg.appendChild(crust);
+
+            // Cheese background
+            const cheese = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            cheese.setAttribute('cx', cx);
+            cheese.setAttribute('cy', cy);
+            cheese.setAttribute('r', r - 12);
+            cheese.setAttribute('fill', '#FDE68A');
+            svg.appendChild(cheese);
+
+            // 10 equal pie slices (36 degrees each)
+            for (let i = 0; i < 10; i++) {
+                const startAngle = (i * 36 - 90) * (Math.PI / 180);
+                const endAngle = ((i + 1) * 36 - 90) * (Math.PI / 180);
+
+                const x1 = cx + (r - 12) * Math.cos(startAngle);
+                const y1 = cy + (r - 12) * Math.sin(startAngle);
+                const x2 = cx + (r - 12) * Math.cos(endAngle);
+                const y2 = cy + (r - 12) * Math.sin(endAngle);
+
+                const slicePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const pathData = `M ${cx} ${cy} L ${x1} ${y1} A ${r - 12} ${r - 12} 0 0 1 ${x2} ${y2} Z`;
+
+                slicePath.setAttribute('d', pathData);
+                slicePath.setAttribute('fill', state.pizzaSelectedSlices[i] ? 'rgba(234, 179, 8, 0.4)' : 'transparent');
+                slicePath.setAttribute('stroke', '#D97706');
+                slicePath.setAttribute('stroke-width', '2');
+                slicePath.setAttribute('class', 'transition-colors hover:fill-amber-300/60 cursor-pointer');
+                slicePath.onclick = () => togglePizzaSlice(i);
+                svg.appendChild(slicePath);
+
+                // If slice is selected, render Olives
+                if (state.pizzaSelectedSlices[i]) {
+                    const midAngle = (startAngle + endAngle) / 2;
+                    const oliveR = r * 0.55;
+                    const ox = cx + oliveR * Math.cos(midAngle);
+                    const oy = cy + oliveR * Math.sin(midAngle);
+
+                    const olive = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    olive.setAttribute('cx', ox);
+                    olive.setAttribute('cy', oy);
+                    olive.setAttribute('r', '9');
+                    olive.setAttribute('fill', '#14532D');
+                    olive.setAttribute('stroke', '#052E16');
+                    olive.setAttribute('stroke-width', '3');
+                    olive.onclick = () => togglePizzaSlice(i);
+                    svg.appendChild(olive);
+                }
+            }
+        }
+
+        function togglePizzaSlice(index) {
+            playSound('click');
+            state.pizzaSelectedSlices[index] = !state.pizzaSelectedSlices[index];
+            renderSVGPizza();
+            updatePizzaProgress();
+        }
+
+        function updatePizzaProgress() {
+            const count = state.pizzaSelectedSlices.filter(Boolean).length;
+            const dec = (count / 10).toFixed(1);
+
+            document.getElementById('pizza-count-display').innerText = count;
+            document.getElementById('pizza-decimal-display').innerText = dec;
+        }
+
+        function checkPizzaOrder() {
+            const count = state.pizzaSelectedSlices.filter(Boolean).length;
+            const feedback = document.getElementById('pizza-feedback');
+
+            if (count === state.pizzaTargetTenths) {
+                playSound('correct');
+                if (window.confetti) {
+                    confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
+                }
+
+                state.stars += 15;
+                state.streak += 1;
+                updateGamificationUI();
+
+                if (feedback) {
+                    feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-emerald-100 text-emerald-800 border border-emerald-200';
+                    feedback.innerText = 'הזמנה מושלמת! הלקוח מרוצה מאוד! 🍕⭐ (+15)';
+                    feedback.classList.remove('hidden');
+                }
+
+                setTimeout(() => {
+                    initPizzaGame();
+                }, 1800);
+
+            } else {
+                playSound('wrong');
+                state.streak = 0;
+                updateGamificationUI();
+
+                if (feedback) {
+                    feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-rose-100 text-rose-800 border border-rose-200';
+                    feedback.innerText = `כמעט! סימנת ${count} משולשים, אבל הלקוח ביקש ${(state.pizzaTargetTenths / 10).toFixed(1)} (${state.pizzaTargetTenths} משולשים).`;
+                    feedback.classList.remove('hidden');
+                }
+            }
+        }
+
+        window.onload = function() {
+            updateTenthsVisualizer(3);
+            updatePVDisplay();
+            buildNumberLineTicks();
+            updateNumberLine(4);
+            updateLessonStepUI();
+        };
+    </script>
+</body>
+</html>
