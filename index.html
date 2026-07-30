@@ -149,6 +149,12 @@
             <button id="switchDecFracBtn" class="px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white">
                 ✨ שברים עשרוניים
             </button>
+            <button id="switchAddSubBtn" class="px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white">
+                ➕➖ חיבור וחיסור
+            </button>
+            <button id="switchMulDivBtn" class="px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white">
+                ✖️➗ כפל וחילוק
+            </button>
         </div>
 
         <!-- Space Game Section -->
@@ -1559,6 +1565,8 @@
     const switchSpaceBtn = document.getElementById('switchSpaceBtn');
     const switchFracBtn = document.getElementById('switchFracBtn');
     const switchDecFracBtn = document.getElementById('switchDecFracBtn');
+    const switchAddSubBtn = document.getElementById('switchAddSubBtn');
+    const switchMulDivBtn = document.getElementById('switchMulDivBtn');
     const spaceHomeSection = document.getElementById('spaceHomeSection');
     const fractionsHomeSection = document.getElementById('fractionsHomeSection');
 
@@ -1569,6 +1577,8 @@
             switchSpaceBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 bg-yellow-400 text-black shadow-md";
             switchFracBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
             switchDecFracBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
+            switchAddSubBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
+            switchMulDivBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
             spaceHomeSection.classList.remove('hidden');
             fractionsHomeSection.classList.add('hidden');
             if (hud) hud.classList.remove('hidden');
@@ -1577,6 +1587,8 @@
             switchSpaceBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
             switchFracBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 bg-emerald-500 text-white shadow-md";
             switchDecFracBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
+            switchAddSubBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
+            switchMulDivBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
             spaceHomeSection.classList.add('hidden');
             fractionsHomeSection.classList.remove('hidden');
             if (hud) hud.classList.add('hidden');
@@ -1586,11 +1598,17 @@
             switchSpaceBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
             switchFracBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
             switchDecFracBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 bg-indigo-600 text-white shadow-md";
+            switchAddSubBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
+            switchMulDivBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
             window.location.href = 'shever.html';
+        } else if (fracActiveSection === 'add_sub') {
+            window.location.href = 'add_sub.html';
+        } else if (fracActiveSection === 'mul_div') {
+            window.location.href = 'mul_div.html';
         }
     }
 
-    if (switchSpaceBtn && switchFracBtn && switchDecFracBtn) {
+    if (switchSpaceBtn && switchFracBtn && switchDecFracBtn && switchAddSubBtn && switchMulDivBtn) {
         switchSpaceBtn.addEventListener('click', () => {
             fracActiveSection = 'space';
             updateSectionTabs();
@@ -1601,6 +1619,14 @@
         });
         switchDecFracBtn.addEventListener('click', () => {
             fracActiveSection = 'dec_fractions';
+            updateSectionTabs();
+        });
+        switchAddSubBtn.addEventListener('click', () => {
+            fracActiveSection = 'add_sub';
+            updateSectionTabs();
+        });
+        switchMulDivBtn.addEventListener('click', () => {
+            fracActiveSection = 'mul_div';
             updateSectionTabs();
         });
     }
