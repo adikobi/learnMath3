@@ -1061,9 +1061,7 @@
 
                         q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
                         q.hint = `במכנים שונים, נמצא מכנה משותף שהוא כפולה של שני המכנים: <br>
-                            השבר הראשון ${pair.numA}/${pair.denA} שווה ל-${equivalentNumA}/${commonDen}. <br>
-                            השבר השני ${pair.numB}/${pair.denB} שווה ל-${equivalentNumB}/${commonDen}. <br>
-                            עכשיו נוכל לחבר: ${equivalentNumA}/${commonDen} + ${equivalentNumB}/${commonDen}!`;
+                            המירו את שני השברים כך שיהיה להם מכנה משותף, ואז חברו את המונים שלהם.`;
                         q.visual = generateFractionBarVisual(equivalentNumA, equivalentNumB, commonDen, 'add', `${pair.numA}/${pair.denA} (${equivalentNumA}/${commonDen})`, `${pair.numB}/${pair.denB} (${equivalentNumB}/${commonDen})`);
                     } else {
                         const resultNum = equivalentNumA - equivalentNumB;
@@ -1094,9 +1092,7 @@
 
                         q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
                         q.hint = `במכנים שונים, נמצא מכנה משותף שהוא כפולה של שני המכנים: <br>
-                            השבר הראשון ${pair.numA}/${pair.denA} שווה ל-${equivalentNumA}/${commonDen}. <br>
-                            השבר השני ${pair.numB}/${pair.denB} שווה ל-${equivalentNumB}/${commonDen}. <br>
-                            עכשיו נוכל לחסר: ${equivalentNumA}/${commonDen} - ${equivalentNumB}/${commonDen}!`;
+                            המירו את שני השברים כך שיהיה להם מכנה משותף, ואז החסירו את המונים שלהם.`;
                         q.visual = generateFractionBarVisual(equivalentNumA, equivalentNumB, commonDen, 'sub', `${pair.numA}/${pair.denA} (${equivalentNumA}/${commonDen})`, `${pair.numB}/${pair.denB} (${equivalentNumB}/${commonDen})`);
                     }
                 }
@@ -1129,7 +1125,7 @@
                             </span> כשבר עשרוני?`;
                             q.correctAnswer = resultDec.toFixed(1);
                             q.options = generateDistractors(q.correctAnswer, 'tenths');
-                            q.hint = `נמיר את השבר ${numA}/10 לשבר עשרוני: 0.${numA}. <br> כעת נחבר: 0.${numA} + ${decVal.toFixed(1)} = ${q.correctAnswer}`;
+                            q.hint = `נמיר את השבר ${numA}/10 לשבר עשרוני. כעת נוכל לחבר את שני השברים העשרוניים בקלות!`;
                         } else {
                             q.prompt = `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr">
                                 <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
@@ -1147,7 +1143,7 @@
                                 optionsSet.add(`${rNum}/${den}`);
                             }
                             q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
-                            q.hint = `נמיר את השבר העשרוני ${decVal.toFixed(1)} לשבר פשוט: ${numB}/10. <br> כעת נחבר את המונים: ${numA}/10 + ${numB}/10 = ${q.correctAnswer}`;
+                            q.hint = `נמיר את השבר העשרוני לשבר פשוט בעל מכנה 10. כעת נוכל לחבר את המונים שלהם!`;
                         }
                         q.visual = generateFractionBarVisual(numA, numB, den, 'add', `${numA}/10`, `${decVal.toFixed(1)} (${numB}/10)`);
                     } else {
@@ -1169,7 +1165,7 @@
                             </span> כשבר עשרוני?`;
                             q.correctAnswer = resultDec.toFixed(1);
                             q.options = generateDistractors(q.correctAnswer, 'tenths');
-                            q.hint = `נמיר את השבר ${numA}/10 לשבר עשרוני: 0.${numA}. <br> כעת נחסר: 0.${numA} - ${decVal.toFixed(1)} = ${q.correctAnswer}`;
+                            q.hint = `נמיר את השבר ${numA}/10 לשבר עשרוני. כעת נוכל לבצע חיסור בין השברים העשרוניים!`;
                         } else {
                             q.prompt = `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr">
                                 <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
@@ -1187,7 +1183,7 @@
                                 optionsSet.add(`${rNum}/${den}`);
                             }
                             q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
-                            q.hint = `נמיר את השבר העשרוני ${decVal.toFixed(1)} לשבר פשוט: ${numB}/10. <br> כעת נחסר את המונים: ${numA}/10 - ${numB}/10 = ${q.correctAnswer}`;
+                            q.hint = `נמיר את השבר העשרוני לשבר פשוט בעל מכנה 10. כעת נוכל לבצע חיסור בין המונים!`;
                         }
                         q.visual = generateFractionBarVisual(numA, numB, den, 'sub', `${numA}/10`, `${decVal.toFixed(1)} (${numB}/10)`);
                     }
@@ -1201,7 +1197,7 @@
                             correctAnswer: '0.75',
                             options: ['0.75', '0.65', '0.55', '0.45'],
                             prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>1</span><span class="border-t border-indigo-300 w-full text-center">4</span></span> <span class="text-indigo-600">+</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.5</span></span> כשבר עשרוני?`,
-                            hint: `זכרו שרבע (1/4) שווה ל-0.25 כשבר עשרוני! <br> לכן: 0.25 + 0.5 = 0.75.`,
+                            hint: `נסו להמיר את רבע (1/4) לשבר עשרוני, ואז חברו אותו ל-0.5.`,
                             numA: 25, numB: 50, den: 100, labelA: '1/4 (0.25)', labelB: '0.5 (0.50)'
                         },
                         {
@@ -1212,7 +1208,7 @@
                             correctAnswer: '3/4',
                             options: ['3/4', '1/4', '2/4', '1/2'],
                             prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>1</span><span class="border-t border-indigo-300 w-full text-center">2</span></span> <span class="text-indigo-600">+</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.25</span></span> כשבר פשוט?`,
-                            hint: `נמיר את השבר העשרוני 0.25 לשבר פשוט: 1/4 (רבע). <br> כעת נרחיב את חצי (1/2) לרבעים: 2/4. <br> נחבר: 2/4 + 1/4 = 3/4.`,
+                            hint: `נסו להמיר את השבר העשרוני 0.25 לשבר פשוט, מצאו מכנה משותף של 4, ואז חברו אותם.`,
                             numA: 2, numB: 1, den: 4, labelA: '1/2 (2/4)', labelB: '0.25 (1/4)'
                         },
                         {
@@ -1223,7 +1219,7 @@
                             correctAnswer: '0.25',
                             options: ['0.25', '0.35', '0.15', '0.45'],
                             prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>3</span><span class="border-t border-indigo-300 w-full text-center">4</span></span> <span class="text-indigo-600">-</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.5</span></span> כשבר עשרוני?`,
-                            hint: `זכרו ששלושת רבעי (3/4) שווים ל-0.75 כשבר עשרוני. <br> לכן: 0.75 - 0.5 = 0.25.`,
+                            hint: `המירו את 3/4 לשבר עשרוני, ואז החסירו ממנו 0.5.`,
                             numA: 75, numB: 50, den: 100, labelA: '3/4 (0.75)', labelB: '0.5 (0.50)'
                         },
                         {
@@ -1234,7 +1230,7 @@
                             correctAnswer: '0.35',
                             options: ['0.35', '0.25', '0.45', '0.15'],
                             prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>1</span><span class="border-t border-indigo-300 w-full text-center">2</span></span> <span class="text-indigo-600">-</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.15</span></span> כשבר עשרוני?`,
-                            hint: `חצי (1/2) שווה ל-0.50 כשבר עשרוני. <br> לכן: 0.50 - 0.15 = 0.35.`,
+                            hint: `זכרו שחצי (1/2) הוא 0.50 כשבר עשרוני, נסו להחסיר 0.15 מתוך 0.50.`,
                             numA: 50, numB: 15, den: 100, labelA: '1/2 (0.50)', labelB: '0.15'
                         },
                         {
@@ -1245,7 +1241,7 @@
                             correctAnswer: '0.75',
                             options: ['0.75', '0.65', '0.55', '0.85'],
                             prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>2</span><span class="border-t border-indigo-300 w-full text-center">5</span></span> <span class="text-indigo-600">+</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.35</span></span> כשבר עשרוני?`,
-                            hint: `נמיר את 2/5 לשבר עשרוני: נרחיב ל-4/10 שזה 0.4 (או 0.40). <br> לכן: 0.40 + 0.35 = 0.75.`,
+                            hint: `הרחיבו את השבר 2/5 למכנה 10 כדי לקבל שבר עשרוני נוח, ואז חברו אותו ל-0.35.`,
                             numA: 40, numB: 35, den: 100, labelA: '2/5 (0.40)', labelB: '0.35'
                         },
                         {
@@ -1256,7 +1252,7 @@
                             correctAnswer: '1/2',
                             options: ['1/2', '1/5', '2/5', '3/5'],
                             prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>4</span><span class="border-t border-indigo-300 w-full text-center">5</span></span> <span class="text-indigo-600">-</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.3</span></span> כשבר פשוט (מוקטן)?`,
-                            hint: `נמיר את 0.3 לשבר פשוט: 3/10. <br> נרחיב את 4/5 למכנה 10: 8/10. <br> נחסר: 8/10 - 3/10 = 5/10. <br> נצמצם את 5/10 ונקבל 1/2!`,
+                            hint: `המירו את 0.3 לשבר פשוט, הרחיבו את 4/5 למכנה משותף של 10, החסירו ואז צמצמו את השבר שקיבלתם.`,
                             numA: 8, numB: 3, den: 10, labelA: '4/5 (8/10)', labelB: '0.3 (3/10)'
                         }
                     ];
@@ -1754,12 +1750,12 @@
 
                 let errorMsg = "אופס! משהו בהזמנה לא מדויק: <br>";
                 if (!olivesCorrect) {
-                    errorMsg += `• זיתים: שמת ${olivesCount} מתוך ${reqOlives} שנדרשו. <br>`;
+                    errorMsg += `• כמות ה<b>זיתים</b> אינה נכונה! 🫒 <br>`;
                 }
                 if (!cornCorrect) {
-                    errorMsg += `• תירס: שמת ${cornCount} מתוך ${reqCorn} שנדרשו. <br>`;
+                    errorMsg += `• כמות ה<b>תירס</b> אינה נכונה! 🌽 <br>`;
                 }
-                errorMsg += "נסו לתקן את התוספות או השתמשו במחק!";
+                errorMsg += "חשבו מחדש, תקנו את התוספות או השתמשו במחק!";
 
                 if (feedback) {
                     feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-rose-100 text-rose-800 border border-rose-200';
