@@ -905,6 +905,10 @@
                 const btn = document.createElement('button');
                 btn.className = 'w-full py-3 px-4 bg-slate-50 hover:bg-indigo-50 border-2 border-slate-200 hover:border-indigo-300 font-extrabold text-slate-700 text-lg rounded-2xl transition-all shadow-xs flex items-center justify-center';
                 btn.innerText = opt;
+                // If option does not contain Hebrew letters, set dir="ltr" to prevent bidi mirroring of math symbols
+                if (!/[\u0590-\u05FF]/.test(opt)) {
+                    btn.setAttribute('dir', 'ltr');
+                }
                 btn.onclick = () => checkAnswer(opt, btn);
                 grid.appendChild(btn);
             });
