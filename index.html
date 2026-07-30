@@ -139,12 +139,15 @@
         <div id="openSettingsBtn" class="settings-btn">⚙️</div>
 
         <!-- Navigation Toggle / Section Switcher -->
-        <div class="flex bg-slate-800/90 p-1 rounded-full mb-6 z-20 border-2 border-slate-700 pointer-events-auto shadow-xl">
-            <button id="switchSpaceBtn" class="px-6 py-2.5 rounded-full text-lg font-black transition duration-200 bg-yellow-400 text-black shadow-md">
+        <div class="flex bg-slate-800/90 p-1 rounded-full mb-6 z-20 border-2 border-slate-700 pointer-events-auto shadow-xl flex-wrap justify-center gap-1">
+            <button id="switchSpaceBtn" class="px-4 py-2 rounded-full text-base font-black transition duration-200 bg-yellow-400 text-black shadow-md">
                 🚀 מסע בחלל
             </button>
-            <button id="switchFracBtn" class="px-6 py-2.5 rounded-full text-lg font-black transition duration-200 text-gray-300 hover:text-white">
+            <button id="switchFracBtn" class="px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white">
                 🍕 אקדמיית השברים
+            </button>
+            <button id="switchDecFracBtn" class="px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white">
+                ✨ שברים עשרוניים
             </button>
         </div>
 
@@ -1555,6 +1558,7 @@
     // Toggle Section tabs
     const switchSpaceBtn = document.getElementById('switchSpaceBtn');
     const switchFracBtn = document.getElementById('switchFracBtn');
+    const switchDecFracBtn = document.getElementById('switchDecFracBtn');
     const spaceHomeSection = document.getElementById('spaceHomeSection');
     const fractionsHomeSection = document.getElementById('fractionsHomeSection');
 
@@ -1562,30 +1566,41 @@
         const hud = document.getElementById('hud');
         const qDisp = document.getElementById('questionDisplay');
         if (fracActiveSection === 'space') {
-            switchSpaceBtn.className = "px-6 py-2.5 rounded-full text-lg font-black transition duration-200 bg-yellow-400 text-black shadow-md";
-            switchFracBtn.className = "px-6 py-2.5 rounded-full text-lg font-black transition duration-200 text-gray-300 hover:text-white";
+            switchSpaceBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 bg-yellow-400 text-black shadow-md";
+            switchFracBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
+            switchDecFracBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
             spaceHomeSection.classList.remove('hidden');
             fractionsHomeSection.classList.add('hidden');
             if (hud) hud.classList.remove('hidden');
             if (qDisp) qDisp.classList.remove('hidden');
-        } else {
-            switchSpaceBtn.className = "px-6 py-2.5 rounded-full text-lg font-black transition duration-200 text-gray-300 hover:text-white";
-            switchFracBtn.className = "px-6 py-2.5 rounded-full text-lg font-black transition duration-200 bg-emerald-500 text-white shadow-md";
+        } else if (fracActiveSection === 'fractions') {
+            switchSpaceBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
+            switchFracBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 bg-emerald-500 text-white shadow-md";
+            switchDecFracBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
             spaceHomeSection.classList.add('hidden');
             fractionsHomeSection.classList.remove('hidden');
             if (hud) hud.classList.add('hidden');
             if (qDisp) qDisp.classList.add('hidden');
             updateFractionsMapUI();
+        } else if (fracActiveSection === 'dec_fractions') {
+            switchSpaceBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
+            switchFracBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 text-gray-300 hover:text-white";
+            switchDecFracBtn.className = "px-4 py-2 rounded-full text-base font-black transition duration-200 bg-indigo-600 text-white shadow-md";
+            window.location.href = 'shever.html';
         }
     }
 
-    if (switchSpaceBtn && switchFracBtn) {
+    if (switchSpaceBtn && switchFracBtn && switchDecFracBtn) {
         switchSpaceBtn.addEventListener('click', () => {
             fracActiveSection = 'space';
             updateSectionTabs();
         });
         switchFracBtn.addEventListener('click', () => {
             fracActiveSection = 'fractions';
+            updateSectionTabs();
+        });
+        switchDecFracBtn.addEventListener('click', () => {
+            fracActiveSection = 'dec_fractions';
             updateSectionTabs();
         });
     }
@@ -2289,6 +2304,11 @@
     }
 
     // Init Fractions Map UI on load
+    const urlParams = new URLSearchParams(window.location.search);
+    const sectionParam = urlParams.get('section');
+    if (sectionParam === 'space' || sectionParam === 'fractions') {
+        fracActiveSection = sectionParam;
+    }
     updateSectionTabs();
     updateFractionsMapUI();
 </script>
