@@ -12,7 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Varela+Round&display=swap" rel="stylesheet">
     <!-- Canvas Confetti for rewards -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
+    
     <script>
         tailwind.config = {
             theme: {
@@ -36,14 +36,14 @@
             }
         }
     </script>
-
+    
     <style>
         body {
             font-family: 'Rubik', 'Varela Round', sans-serif;
             background: linear-gradient(135deg, #f6f8fd 0%, #e9effd 100%);
             min-height: 100vh;
         }
-
+        
         .bounce-gentle {
             animation: bounceGentle 2s infinite;
         }
@@ -111,7 +111,7 @@
         </div>
 
         <!-- Main Navigation Tabs -->
-        <nav class="max-w-5xl mx-auto px-4 mt-1 flex gap-2 justify-center border-t border-indigo-50 pt-2 flex-wrap">
+        <nav class="max-w-5xl mx-auto px-4 mt-1 flex gap-2 justify-center border-t border-indigo-50 pt-2">
             <button id="tab-learn" onclick="switchTab('learn')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-md shadow-indigo-200">
                 <span>📚</span> לומדים שלב-שלב
             </button>
@@ -120,13 +120,6 @@
             </button>
             <button id="tab-game" onclick="switchTab('game')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-white text-slate-600 hover:bg-indigo-50">
                 <span>🍕</span> אתגר הפיצרייה
-            </button>
-            <div class="h-8 w-px bg-indigo-100 self-center mx-1"></div>
-            <button id="tab-back-space" onclick="window.location.href='index.html?section=space'" class="px-4 py-2.5 rounded-xl font-bold text-sm bg-yellow-400 hover:bg-yellow-500 text-black shadow-md flex items-center gap-1.5 transition-all">
-                <span>🚀</span> חזרה לחלל
-            </button>
-            <button id="tab-back-fractions" onclick="window.location.href='index.html?section=fractions'" class="px-4 py-2.5 rounded-xl font-bold text-sm bg-emerald-500 hover:bg-emerald-600 text-white shadow-md flex items-center gap-1.5 transition-all">
-                <span>🍕</span> חזרה לשברים
             </button>
         </nav>
     </header>
@@ -143,7 +136,7 @@
                     <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md text-white text-xs font-bold rounded-full mb-2">ברוכים הבאים לשיעור האינטראקטיבי! 👋</span>
                     <h2 class="text-2xl md:text-3xl font-extrabold mb-2">מה זה בעצם שבר עשרוני?</h2>
                     <p class="text-indigo-100 text-sm md:text-base leading-relaxed">
-                        שבר עשרוני הוא פשוט דרך מיוחדת לכתוב חלק שמקבלים כשהשלם מחולק ל-10 חלקים שווים (עשיריות) או ל-100 חלקים שווים (מאיות)!
+                        שבר עשרוני הוא פשוט דרך מיוחדת לכתוב חלק שמקבלים כשהשלם מחולק ל-10 חלקים שווים (עשיריות) או ל-100 חלקים שווים (מאיות)! 
                     </p>
                 </div>
             </div>
@@ -172,7 +165,7 @@
                     <div class="space-y-4 text-slate-600">
                         <p class="text-base leading-relaxed">
                             תארו לעצמכם שוקולד המחולק ל-**10 קוביות שוות**.
-                            כל קובייה אחת היא **עשירית**
+                            כל קובייה אחת היא **עשירית** 
                             <span class="inline-flex flex-col items-center justify-center align-middle mx-1 font-extrabold text-indigo-700 text-xs bg-indigo-50 px-2 py-1 rounded border border-indigo-200">
                                 <span>1</span>
                                 <span class="border-t border-indigo-400 w-full text-center">10</span>
@@ -185,7 +178,7 @@
                                     <span class="inline-flex flex-col items-center font-bold text-sm bg-white px-2 py-0.5 rounded border border-indigo-200">
                                         <span>1</span>
                                         <span class="border-t border-indigo-300 w-full text-center">10</span>
-                                    </span>
+                                    </span> 
                                     (עשירית אחת)
                                 </span>
                             </div>
@@ -202,7 +195,7 @@
                     <!-- Interactive Tenths Visualizer -->
                     <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center space-y-4">
                         <h4 class="font-bold text-slate-700">נסו בעצמכם! הזיזו את הסרגל:</h4>
-
+                        
                         <!-- 10 Block Visualizer -->
                         <div class="flex h-12 rounded-xl overflow-hidden border-2 border-indigo-300 shadow-inner bg-white" id="tenths-bar-container">
                             <!-- Filled dynamically by JS -->
@@ -343,17 +336,17 @@
                         <span class="text-4xl">🛍️</span>
                         <h4 class="font-bold text-amber-900">טיפ זהב לזכור!</h4>
                         <p class="text-sm text-amber-800 leading-relaxed">
-                            עשירית
+                            עשירית 
                             <span class="inline-flex flex-col items-center justify-center align-middle mx-1 font-bold text-amber-900 text-xs bg-white px-1.5 py-0.5 rounded border border-amber-300">
                                 <span>1</span>
                                 <span class="border-t border-amber-400 w-full text-center">10</span>
-                            </span>
+                            </span> 
                             היא כמו <b>10 אגורות</b>. <br>
-                            מאית
+                            מאית 
                             <span class="inline-flex flex-col items-center justify-center align-middle mx-1 font-bold text-amber-900 text-xs bg-white px-1.5 py-0.5 rounded border border-amber-300">
                                 <span>1</span>
                                 <span class="border-t border-amber-400 w-full text-center">100</span>
-                            </span>
+                            </span> 
                             היא כמו <b>אגורה אחת</b>!
                         </p>
                         <button onclick="switchTab('practice')" class="w-full mt-2 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-extrabold rounded-xl shadow-md hover:brightness-105 transition-all">
@@ -511,7 +504,7 @@
 
         // Web Audio API Audio Synthesizer
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
+        
         function playSound(type) {
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
@@ -688,7 +681,7 @@
 
             const onesHeb = ["אפס", "אחד", "שני", "שלשה", "ארבעה", "חמישה", "שישה", "שבעה", "שמונה", "תשעה"];
             const decimalVal = parseInt(tenths.toString() + hundredths.toString());
-
+            
             let text = `${onesHeb[ones] || ones} שלמים`;
             if (decimalVal > 0) {
                 text += ` ו-${decimalVal} מאיות`;
@@ -782,7 +775,7 @@
                 const num = Math.floor(Math.random() * 4) + 1;
                 const den = 5;
                 q.tag = "שברים פשוטים 🍰";
-                q.prompt = `איך נקרא השבר
+                q.prompt = `איך נקרא השבר 
                     <span class="inline-flex flex-col items-center font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-xl border border-indigo-200 text-xl align-middle mx-1">
                         <span>${num}</span>
                         <span class="border-t-2 border-indigo-400 w-full text-center">${den}</span>
@@ -796,7 +789,7 @@
                 const numerator = Math.floor(Math.random() * 9) + 1;
                 const correctDec = (numerator / 10).toFixed(1);
                 q.tag = "שברים עשרוניים (עשיריות)";
-                q.prompt = `איך כותבים
+                q.prompt = `איך כותבים 
                     <span class="inline-flex flex-col items-center font-extrabold text-indigo-600 text-sm bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200 align-middle mx-1">
                         <span>${numerator}</span>
                         <span class="border-t border-indigo-300 w-full text-center">10</span>
@@ -810,7 +803,7 @@
                 const numerator = Math.floor(Math.random() * 89) + 10;
                 const correctDec = (numerator / 100).toFixed(2);
                 q.tag = "שברים עשרוניים (מאיות)";
-                q.prompt = `איך כותבים
+                q.prompt = `איך כותבים 
                     <span class="inline-flex flex-col items-center font-extrabold text-indigo-600 text-sm bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200 align-middle mx-1">
                         <span>${numerator}</span>
                         <span class="border-t border-indigo-300 w-full text-center">100</span>
@@ -827,7 +820,7 @@
                     const b = (Math.floor(Math.random() * 4) + 1) / 10;
                     const result = (a + b).toFixed(1);
                     q.tag = "חיבור עשרוני ➕";
-                    q.prompt = `כמה זה <span dir="ltr" class="inline-block text-indigo-600 font-extrabold mx-1 border-b-2 border-indigo-300">${a.toFixed(1)} + ${b.toFixed(1)}</span> ?`;
+                    q.prompt = `כמה זה <span class="text-indigo-600 font-extrabold mx-1 border-b-2 border-indigo-300">${a.toFixed(1)} + ${b.toFixed(1)}</span> ?`;
                     q.correctAnswer = result;
                     q.options = generateDistractors(result, 'tenths');
                     q.hint = `חברו את העשיריות בדיוק כמו מספרים שלמים!`;
@@ -836,7 +829,7 @@
                     const b = (Math.floor(Math.random() * 3) + 1) / 10;
                     const result = (a - b).toFixed(1);
                     q.tag = "חיסור עשרוני ➖";
-                    q.prompt = `כמה זה <span dir="ltr" class="inline-block text-indigo-600 font-extrabold mx-1 border-b-2 border-indigo-300">${a.toFixed(1)} - ${b.toFixed(1)}</span> ?`;
+                    q.prompt = `כמה זה <span class="text-indigo-600 font-extrabold mx-1 border-b-2 border-indigo-300">${a.toFixed(1)} - ${b.toFixed(1)}</span> ?`;
                     q.correctAnswer = result;
                     q.options = generateDistractors(result, 'tenths');
                     q.hint = `חסרו את העשיריות הקטנות מהעשיריות הגדולות!`;
@@ -847,13 +840,13 @@
                 const num = Math.floor(Math.random() * 8) + 1;
                 const decVal = (Math.floor(Math.random() * 8) + 1) / 10;
                 const fracVal = num / 10;
-
+                
                 let sign = "=";
                 if (fracVal > decVal) sign = ">";
                 if (fracVal < decVal) sign = "<";
 
                 q.tag = "השוואת שברים פשוטים ועשרוניים ⚖️";
-                q.prompt = `איזה סימן מתאים בין השבר הפשוט לשבר העשרוני? <br>
+                q.prompt = `איזה סימן מתאים בין השבר הפשוט לשבר העשרוני? <br> 
                     <div class="flex items-center justify-center gap-4 mt-2">
                         <span class="inline-flex flex-col items-center font-extrabold text-indigo-600 text-lg bg-indigo-50 px-3 py-1 rounded-xl border border-indigo-200">
                             <span>${num}</span>
@@ -973,7 +966,7 @@
             state.pizzaSelectedSlices = new Array(10).fill(false);
 
             const dec = (state.pizzaTargetTenths / 10).toFixed(1);
-            document.getElementById('pizza-order-text').innerHTML =
+            document.getElementById('pizza-order-text').innerHTML = 
                 `"שלום! אני רוצה פיצה ש- <span class="text-indigo-600 font-black text-xl">${dec}</span> ממנה מכוסה בזיתים!"`;
 
             const feedback = document.getElementById('pizza-feedback');
@@ -989,7 +982,7 @@
             svg.innerHTML = '';
 
             const cx = 150, cy = 150, r = 135;
-
+            
             // Crust background
             const crust = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             crust.setAttribute('cx', cx);
@@ -1020,7 +1013,7 @@
 
                 const slicePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                 const pathData = `M ${cx} ${cy} L ${x1} ${y1} A ${r - 12} ${r - 12} 0 0 1 ${x2} ${y2} Z`;
-
+                
                 slicePath.setAttribute('d', pathData);
                 slicePath.setAttribute('fill', state.pizzaSelectedSlices[i] ? 'rgba(234, 179, 8, 0.4)' : 'transparent');
                 slicePath.setAttribute('stroke', '#D97706');
