@@ -504,6 +504,7 @@
             totalLessonSteps: 4,
             difficulty: 'easy',
             currentQuestion: null,
+            showHardVisual: false,
             pizzaTargetTenths: 6,
             pizzaSelectedSlices: new Array(10).fill(false)
         };
@@ -825,6 +826,7 @@
         }
 
         function generateNewQuestion() {
+            state.showHardVisual = false;
             const hintBox = document.getElementById('hint-box');
             if (hintBox) hintBox.classList.add('hidden');
             const feedback = document.getElementById('practice-feedback');
@@ -977,19 +979,29 @@
                     }
                 } else {
                     const pairs = [
-                        { numA: 1, denA: 2, numB: 1, denB: 4 },
-                        { numA: 1, denA: 2, numB: 1, denB: 8 },
-                        { numA: 3, denA: 4, numB: 1, denB: 8 },
-                        { numA: 1, denA: 2, numB: 3, denB: 8 },
-                        { numA: 1, denA: 3, numB: 1, denB: 6 },
-                        { numA: 2, denA: 3, numB: 1, denB: 6 },
+                        // Multiple denominators
+                        { numA: 1, denA: 2, numB: 1, denB: 4, commonDen: 4, eqNumA: 2, eqNumB: 1 },
+                        { numA: 1, denA: 2, numB: 1, denB: 8, commonDen: 8, eqNumA: 4, eqNumB: 1 },
+                        { numA: 3, denA: 4, numB: 1, denB: 8, commonDen: 8, eqNumA: 6, eqNumB: 1 },
+                        { numA: 1, denA: 2, numB: 3, denB: 8, commonDen: 8, eqNumA: 4, eqNumB: 3 },
+                        { numA: 1, denA: 3, numB: 1, denB: 6, commonDen: 6, eqNumA: 2, eqNumB: 1 },
+                        { numA: 2, denA: 3, numB: 1, denB: 6, commonDen: 6, eqNumA: 4, eqNumB: 1 },
+                        // Non-multiple denominators (finding common denominator)
+                        { numA: 3, denA: 6, numB: 2, denB: 8, commonDen: 24, eqNumA: 12, eqNumB: 6 },
+                        { numA: 1, denA: 3, numB: 1, denB: 4, commonDen: 12, eqNumA: 4, eqNumB: 3 },
+                        { numA: 2, denA: 3, numB: 1, denB: 4, commonDen: 12, eqNumA: 8, eqNumB: 3 },
+                        { numA: 1, denA: 2, numB: 2, denB: 5, commonDen: 10, eqNumA: 5, eqNumB: 4 },
+                        { numA: 3, denA: 4, numB: 1, denB: 3, commonDen: 12, eqNumA: 9, eqNumB: 4 },
+                        { numA: 5, denA: 6, numB: 1, denB: 8, commonDen: 24, eqNumA: 20, eqNumB: 3 },
+                        { numA: 5, denA: 6, numB: 3, denB: 8, commonDen: 24, eqNumA: 20, eqNumB: 9 }
                     ];
                     const pair = pairs[Math.floor(Math.random() * pairs.length)];
-                    const commonDen = pair.denB;
-                    const equivalentNumA = pair.numA * (pair.denB / pair.denA);
+                    const commonDen = pair.commonDen;
+                    const equivalentNumA = pair.eqNumA;
+                    const equivalentNumB = pair.eqNumB;
 
                     if (isAdd) {
-                        const resultNum = equivalentNumA + pair.numB;
+                        const resultNum = equivalentNumA + equivalentNumB;
 
                         q.prompt = `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr">
                             <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
@@ -1005,21 +1017,24 @@
 
                         q.correctAnswer = `${resultNum}/${commonDen}`;
                         const misDist = `${pair.numA + pair.numB}/${pair.denA + pair.denB}`;
-                        const otherDist1 = `${Math.abs(equivalentNumA - pair.numB)}/${commonDen}`;
+                        const otherDist1 = `${Math.abs(equivalentNumA - equivalentNumB)}/${commonDen}`;
                         const otherDist2 = `${(resultNum - 1) || 1}/${commonDen}`;
 
                         const optionsSet = new Set([q.correctAnswer, misDist, otherDist1, otherDist2]);
+                        let offset = 1;
                         while(optionsSet.size < 4) {
-                            optionsSet.add(`${Math.floor(Math.random() * (commonDen - 1)) + 1}/${commonDen}`);
+                            optionsSet.add(`${resultNum + offset}/${commonDen}`);
+                            offset++;
                         }
 
                         q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
-                        q.hint = `במכנים שונים, נרחיב קודם את השבר בעל המכנה הקטן: <br>
-                            ${pair.numA}/${pair.denA} שווה ל-${equivalentNumA}/${pair.denB}. <br>
-                            עכשיו נוכל לחבר: ${equivalentNumA}/${pair.denB} + ${pair.numB}/${pair.denB}!`;
-                        q.visual = generateFractionBarVisual(equivalentNumA, pair.numB, commonDen, 'add', `${pair.numA}/${pair.denA} (${equivalentNumA}/${pair.denB})`);
+                        q.hint = `במכנים שונים, נמצא מכנה משותף שהוא כפולה של שני המכנים: <br>
+                            השבר הראשון ${pair.numA}/${pair.denA} שווה ל-${equivalentNumA}/${commonDen}. <br>
+                            השבר השני ${pair.numB}/${pair.denB} שווה ל-${equivalentNumB}/${commonDen}. <br>
+                            עכשיו נוכל לחבר: ${equivalentNumA}/${commonDen} + ${equivalentNumB}/${commonDen}!`;
+                        q.visual = generateFractionBarVisual(equivalentNumA, equivalentNumB, commonDen, 'add', `${pair.numA}/${pair.denA} (${equivalentNumA}/${commonDen})`, `${pair.numB}/${pair.denB} (${equivalentNumB}/${commonDen})`);
                     } else {
-                        const resultNum = equivalentNumA - pair.numB;
+                        const resultNum = equivalentNumA - equivalentNumB;
 
                         q.prompt = `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr">
                             <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
@@ -1035,19 +1050,22 @@
 
                         q.correctAnswer = `${resultNum}/${commonDen}`;
                         const misDist = `${Math.abs(pair.numA - pair.numB)}/${Math.abs(pair.denB - pair.denA) || 2}`;
-                        const otherDist1 = `${equivalentNumA + pair.numB}/${commonDen}`;
+                        const otherDist1 = `${equivalentNumA + equivalentNumB}/${commonDen}`;
                         const otherDist2 = `${(resultNum + 1)}/${commonDen}`;
 
                         const optionsSet = new Set([q.correctAnswer, misDist, otherDist1, otherDist2]);
+                        let offset = 1;
                         while(optionsSet.size < 4) {
-                            optionsSet.add(`${Math.floor(Math.random() * (commonDen - 1)) + 1}/${commonDen}`);
+                            optionsSet.add(`${Math.abs(resultNum - offset) || (resultNum + offset)}/${commonDen}`);
+                            offset++;
                         }
 
                         q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
-                        q.hint = `במכנים שונים, נרחיב קודם את השבר בעל המכנה הקטן: <br>
-                            ${pair.numA}/${pair.denA} שווה ל-${equivalentNumA}/${pair.denB}. <br>
-                            עכשיו נוכל לחסר: ${equivalentNumA}/${pair.denB} - ${pair.numB}/${pair.denB}!`;
-                        q.visual = generateFractionBarVisual(equivalentNumA, pair.numB, commonDen, 'sub', `${pair.numA}/${pair.denA} (${equivalentNumA}/${pair.denB})`);
+                        q.hint = `במכנים שונים, נמצא מכנה משותף שהוא כפולה של שני המכנים: <br>
+                            השבר הראשון ${pair.numA}/${pair.denA} שווה ל-${equivalentNumA}/${commonDen}. <br>
+                            השבר השני ${pair.numB}/${pair.denB} שווה ל-${equivalentNumB}/${commonDen}. <br>
+                            עכשיו נוכל לחסר: ${equivalentNumA}/${commonDen} - ${equivalentNumB}/${commonDen}!`;
+                        q.visual = generateFractionBarVisual(equivalentNumA, equivalentNumB, commonDen, 'sub', `${pair.numA}/${pair.denA} (${equivalentNumA}/${commonDen})`, `${pair.numB}/${pair.denB} (${equivalentNumB}/${commonDen})`);
                     }
                 }
 
@@ -1247,6 +1265,14 @@
             renderQuestionUI(q);
         }
 
+        function toggleHardVisual() {
+            playSound('click');
+            state.showHardVisual = !state.showHardVisual;
+            if (state.currentQuestion) {
+                renderQuestionUI(state.currentQuestion);
+            }
+        }
+
         function renderQuestionUI(q) {
             let tagHTML = q.tag;
             if (q.difficultyLevel === 'easy') {
@@ -1259,7 +1285,30 @@
 
             const visualHelper = document.getElementById('question-visual-helper');
             if (visualHelper) {
-                visualHelper.innerHTML = q.visual || '';
+                if (q.difficultyLevel === 'hard' && q.visual) {
+                    if (!state.showHardVisual) {
+                        visualHelper.innerHTML = `
+                            <div class="flex flex-col items-center gap-3 p-4 bg-amber-50/80 rounded-2xl border border-amber-200 shadow-xs max-w-sm mx-auto">
+                                <span class="text-2xl">🧠</span>
+                                <p class="text-xs font-bold text-amber-900 leading-relaxed">הגעת לרצף מדהים! נסו לפתור בראש</p>
+                                <button onclick="toggleHardVisual()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-xl shadow-md transition-all">
+                                    👁️ הצג הסבר ויזואלי
+                                </button>
+                            </div>
+                        `;
+                    } else {
+                        visualHelper.innerHTML = `
+                            <div class="flex flex-col items-center gap-2 w-full">
+                                ${q.visual}
+                                <button onclick="toggleHardVisual()" class="mt-2 text-xs text-indigo-500 hover:text-indigo-700 font-bold underline">
+                                    🙈 הסתר הסבר ויזואלי
+                                </button>
+                            </div>
+                        `;
+                    }
+                } else {
+                    visualHelper.innerHTML = q.visual || '';
+                }
             }
 
             const grid = document.getElementById('options-grid');
