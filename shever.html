@@ -380,6 +380,12 @@
                     <button onclick="setDifficulty('calc')" id="diff-calc" class="diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
                         ➕ חיבור וחיסור
                     </button>
+                    <button onclick="setDifficulty('frac-calc')" id="diff-frac-calc" class="diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
+                        🍰 חיבור וחיסור שברים
+                    </button>
+                    <button onclick="setDifficulty('mixed-calc')" id="diff-mixed-calc" class="diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
+                        ✨ חיבור וחיסור מעורב
+                    </button>
                     <button onclick="setDifficulty('hard')" id="diff-hard" class="diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
                         ⚖️ השוואה ואתגר
                     </button>
@@ -785,6 +791,39 @@
             return html;
         }
 
+        function generateFractionBarVisual(numA, numB, den, op, customLabelA, customLabelB) {
+            let html = `<div class="flex flex-col items-center gap-4 w-full max-w-md bg-slate-50 p-4 rounded-2xl border border-slate-200" dir="rtl">`;
+
+            const labelA = customLabelA || `${numA}/${den}`;
+            const labelB = customLabelB || `${numB}/${den}`;
+
+            // First part
+            html += `<div class="flex flex-col items-center w-full">`;
+            html += `<span class="text-xs text-slate-500 font-bold mb-1">איבר ראשון: ${labelA}</span>`;
+            html += `<div class="flex w-full h-8 bg-slate-200 rounded-lg overflow-hidden border border-slate-300 shadow-inner" dir="ltr">`;
+            for (let i = 0; i < den; i++) {
+                const filled = i < numA;
+                html += `<div class="flex-1 transition-colors ${filled ? 'bg-indigo-600 border-r border-indigo-400' : 'border-r border-slate-300'}" style="margin-right: -1px;"></div>`;
+            }
+            html += `</div></div>`;
+
+            // Operator symbol
+            html += `<div class="text-xl font-black text-indigo-600">${op === 'add' ? '➕ ועוד' : '➖ פחות'}</div>`;
+
+            // Second part
+            html += `<div class="flex flex-col items-center w-full">`;
+            html += `<span class="text-xs text-slate-500 font-bold mb-1">איבר שני: ${labelB}</span>`;
+            html += `<div class="flex w-full h-8 bg-slate-200 rounded-lg overflow-hidden border border-slate-300 shadow-inner" dir="ltr">`;
+            for (let i = 0; i < den; i++) {
+                const filled = i < numB;
+                html += `<div class="flex-1 transition-colors ${filled ? 'bg-pink-500 border-r border-pink-400' : 'border-r border-slate-300'}" style="margin-right: -1px;"></div>`;
+            }
+            html += `</div></div>`;
+
+            html += `</div>`;
+            return html;
+        }
+
         function generateNewQuestion() {
             const hintBox = document.getElementById('hint-box');
             if (hintBox) hintBox.classList.add('hidden');
@@ -859,6 +898,326 @@
                 }
                 q.visual = null;
 
+            } else if (diff === 'frac-calc') {
+                const isEasy = state.streak < 3;
+                const isAdd = Math.random() > 0.5;
+                q.tag = "חיבור וחיסור שברים 🍰";
+                q.difficultyLevel = isEasy ? "easy" : "hard";
+
+                if (isEasy) {
+                    const den = [3, 4, 5, 6, 8, 10][Math.floor(Math.random() * 6)];
+                    if (isAdd) {
+                        const numA = Math.floor(Math.random() * (den - 2)) + 1;
+                        const numB = Math.floor(Math.random() * (den - numA - 1)) + 1;
+                        const resultNum = numA + numB;
+
+                        q.prompt = `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr">
+                            <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                                <span>${numA}</span>
+                                <span class="border-t border-indigo-300 w-full text-center">${den}</span>
+                            </span>
+                            <span class="text-indigo-600 text-xl font-black">+</span>
+                            <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                                <span>${numB}</span>
+                                <span class="border-t border-indigo-300 w-full text-center">${den}</span>
+                            </span>
+                        </span> ?`;
+                        q.correctAnswer = `${resultNum}/${den}`;
+
+                        const misDist = `${numA + numB}/${den + den}`;
+                        const optionsSet = new Set([q.correctAnswer, misDist]);
+                        let attempts = 0;
+                        while(optionsSet.size < 4 && attempts < 100) {
+                            attempts++;
+                            const rNum = Math.floor(Math.random() * (den - 1)) + 1;
+                            optionsSet.add(`${rNum}/${den}`);
+                        }
+                        let offset = 1;
+                        while (optionsSet.size < 4) {
+                            optionsSet.add(`${(resultNum + offset)}/${den}`);
+                            offset++;
+                        }
+                        q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
+                        q.hint = `בחיבור שברים בעלי מכנה זהה, מחברים רק את המונים (המספרים למעלה) והמכנה נשאר אותו דבר!`;
+                        q.visual = generateFractionBarVisual(numA, numB, den, 'add');
+                    } else {
+                        const numA = Math.floor(Math.random() * (den - 2)) + 2;
+                        const numB = Math.floor(Math.random() * (numA - 1)) + 1;
+                        const resultNum = numA - numB;
+
+                        q.prompt = `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr">
+                            <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                                <span>${numA}</span>
+                                <span class="border-t border-indigo-300 w-full text-center">${den}</span>
+                            </span>
+                            <span class="text-indigo-600 text-xl font-black">-</span>
+                            <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                                <span>${numB}</span>
+                                <span class="border-t border-indigo-300 w-full text-center">${den}</span>
+                            </span>
+                        </span> ?`;
+                        q.correctAnswer = `${resultNum}/${den}`;
+
+                        const misDist = `${numA}/${den + den}`;
+                        const optionsSet = new Set([q.correctAnswer, misDist]);
+                        let attempts = 0;
+                        while(optionsSet.size < 4 && attempts < 100) {
+                            attempts++;
+                            const rNum = Math.floor(Math.random() * (den - 1)) + 1;
+                            optionsSet.add(`${rNum}/${den}`);
+                        }
+                        let offset = 1;
+                        while (optionsSet.size < 4) {
+                            optionsSet.add(`${(Math.abs(resultNum - offset)) || (resultNum + offset)}/${den}`);
+                            offset++;
+                        }
+                        q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
+                        q.hint = `בחיסור שברים בעלי מכנה זהה, מחסרים רק את המונים (המספרים למעלה) והמכנה נשאר אותו דבר!`;
+                        q.visual = generateFractionBarVisual(numA, numB, den, 'sub');
+                    }
+                } else {
+                    const pairs = [
+                        { numA: 1, denA: 2, numB: 1, denB: 4 },
+                        { numA: 1, denA: 2, numB: 1, denB: 8 },
+                        { numA: 3, denA: 4, numB: 1, denB: 8 },
+                        { numA: 1, denA: 2, numB: 3, denB: 8 },
+                        { numA: 1, denA: 3, numB: 1, denB: 6 },
+                        { numA: 2, denA: 3, numB: 1, denB: 6 },
+                    ];
+                    const pair = pairs[Math.floor(Math.random() * pairs.length)];
+                    const commonDen = pair.denB;
+                    const equivalentNumA = pair.numA * (pair.denB / pair.denA);
+
+                    if (isAdd) {
+                        const resultNum = equivalentNumA + pair.numB;
+
+                        q.prompt = `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr">
+                            <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                                <span>${pair.numA}</span>
+                                <span class="border-t border-indigo-300 w-full text-center">${pair.denA}</span>
+                            </span>
+                            <span class="text-indigo-600 text-xl font-black">+</span>
+                            <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                                <span>${pair.numB}</span>
+                                <span class="border-t border-indigo-300 w-full text-center">${pair.denB}</span>
+                            </span>
+                        </span> ?`;
+
+                        q.correctAnswer = `${resultNum}/${commonDen}`;
+                        const misDist = `${pair.numA + pair.numB}/${pair.denA + pair.denB}`;
+                        const otherDist1 = `${Math.abs(equivalentNumA - pair.numB)}/${commonDen}`;
+                        const otherDist2 = `${(resultNum - 1) || 1}/${commonDen}`;
+
+                        const optionsSet = new Set([q.correctAnswer, misDist, otherDist1, otherDist2]);
+                        while(optionsSet.size < 4) {
+                            optionsSet.add(`${Math.floor(Math.random() * (commonDen - 1)) + 1}/${commonDen}`);
+                        }
+
+                        q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
+                        q.hint = `במכנים שונים, נרחיב קודם את השבר בעל המכנה הקטן: <br>
+                            ${pair.numA}/${pair.denA} שווה ל-${equivalentNumA}/${pair.denB}. <br>
+                            עכשיו נוכל לחבר: ${equivalentNumA}/${pair.denB} + ${pair.numB}/${pair.denB}!`;
+                        q.visual = generateFractionBarVisual(equivalentNumA, pair.numB, commonDen, 'add', `${pair.numA}/${pair.denA} (${equivalentNumA}/${pair.denB})`);
+                    } else {
+                        const resultNum = equivalentNumA - pair.numB;
+
+                        q.prompt = `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr">
+                            <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                                <span>${pair.numA}</span>
+                                <span class="border-t border-indigo-300 w-full text-center">${pair.denA}</span>
+                            </span>
+                            <span class="text-indigo-600 text-xl font-black">-</span>
+                            <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                                <span>${pair.numB}</span>
+                                <span class="border-t border-indigo-300 w-full text-center">${pair.denB}</span>
+                            </span>
+                        </span> ?`;
+
+                        q.correctAnswer = `${resultNum}/${commonDen}`;
+                        const misDist = `${Math.abs(pair.numA - pair.numB)}/${Math.abs(pair.denB - pair.denA) || 2}`;
+                        const otherDist1 = `${equivalentNumA + pair.numB}/${commonDen}`;
+                        const otherDist2 = `${(resultNum + 1)}/${commonDen}`;
+
+                        const optionsSet = new Set([q.correctAnswer, misDist, otherDist1, otherDist2]);
+                        while(optionsSet.size < 4) {
+                            optionsSet.add(`${Math.floor(Math.random() * (commonDen - 1)) + 1}/${commonDen}`);
+                        }
+
+                        q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
+                        q.hint = `במכנים שונים, נרחיב קודם את השבר בעל המכנה הקטן: <br>
+                            ${pair.numA}/${pair.denA} שווה ל-${equivalentNumA}/${pair.denB}. <br>
+                            עכשיו נוכל לחסר: ${equivalentNumA}/${pair.denB} - ${pair.numB}/${pair.denB}!`;
+                        q.visual = generateFractionBarVisual(equivalentNumA, pair.numB, commonDen, 'sub', `${pair.numA}/${pair.denA} (${equivalentNumA}/${pair.denB})`);
+                    }
+                }
+
+            } else if (diff === 'mixed-calc') {
+                const isEasy = state.streak < 3;
+                q.tag = "חיבור וחיסור מעורב ✨";
+                q.difficultyLevel = isEasy ? "easy" : "hard";
+
+                if (isEasy) {
+                    const isAdd = Math.random() > 0.5;
+                    const ansType = Math.random() > 0.5 ? 'decimal' : 'fraction';
+                    const den = 10;
+
+                    if (isAdd) {
+                        const numA = Math.floor(Math.random() * 6) + 1; // 1 to 6
+                        const numB = Math.floor(Math.random() * (9 - numA)) + 1; // 1 to 9-numA
+                        const decVal = numB / 10;
+                        const resultNum = numA + numB;
+                        const resultDec = (numA / 10) + decVal;
+
+                        if (ansType === 'decimal') {
+                            q.prompt = `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr">
+                                <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                                    <span>${numA}</span>
+                                    <span class="border-t border-indigo-300 w-full text-center">10</span>
+                                </span>
+                                <span class="text-indigo-600 text-xl font-black">+</span>
+                                <span class="bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-200 text-lg">${decVal.toFixed(1)}</span>
+                            </span> כשבר עשרוני?`;
+                            q.correctAnswer = resultDec.toFixed(1);
+                            q.options = generateDistractors(q.correctAnswer, 'tenths');
+                            q.hint = `נמיר את השבר ${numA}/10 לשבר עשרוני: 0.${numA}. <br> כעת נחבר: 0.${numA} + ${decVal.toFixed(1)} = ${q.correctAnswer}`;
+                        } else {
+                            q.prompt = `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr">
+                                <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                                    <span>${numA}</span>
+                                    <span class="border-t border-indigo-300 w-full text-center">10</span>
+                                </span>
+                                <span class="text-indigo-600 text-xl font-black">+</span>
+                                <span class="bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-200 text-lg">${decVal.toFixed(1)}</span>
+                            </span> כשבר פשוט?`;
+                            q.correctAnswer = `${resultNum}/${den}`;
+
+                            const optionsSet = new Set([q.correctAnswer]);
+                            while(optionsSet.size < 4) {
+                                const rNum = Math.floor(Math.random() * 9) + 1;
+                                optionsSet.add(`${rNum}/${den}`);
+                            }
+                            q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
+                            q.hint = `נמיר את השבר העשרוני ${decVal.toFixed(1)} לשבר פשוט: ${numB}/10. <br> כעת נחבר את המונים: ${numA}/10 + ${numB}/10 = ${q.correctAnswer}`;
+                        }
+                        q.visual = generateFractionBarVisual(numA, numB, den, 'add', `${numA}/10`, `${decVal.toFixed(1)} (${numB}/10)`);
+                    } else {
+                        // Subtraction
+                        const numA = Math.floor(Math.random() * 6) + 4; // 4 to 9
+                        const numB = Math.floor(Math.random() * (numA - 2)) + 1; // 1 to numA-2
+                        const decVal = numB / 10;
+                        const resultNum = numA - numB;
+                        const resultDec = (numA / 10) - decVal;
+
+                        if (ansType === 'decimal') {
+                            q.prompt = `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr">
+                                <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                                    <span>${numA}</span>
+                                    <span class="border-t border-indigo-300 w-full text-center">10</span>
+                                </span>
+                                <span class="text-indigo-600 text-xl font-black">-</span>
+                                <span class="bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-200 text-lg">${decVal.toFixed(1)}</span>
+                            </span> כשבר עשרוני?`;
+                            q.correctAnswer = resultDec.toFixed(1);
+                            q.options = generateDistractors(q.correctAnswer, 'tenths');
+                            q.hint = `נמיר את השבר ${numA}/10 לשבר עשרוני: 0.${numA}. <br> כעת נחסר: 0.${numA} - ${decVal.toFixed(1)} = ${q.correctAnswer}`;
+                        } else {
+                            q.prompt = `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr">
+                                <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
+                                    <span>${numA}</span>
+                                    <span class="border-t border-indigo-300 w-full text-center">10</span>
+                                </span>
+                                <span class="text-indigo-600 text-xl font-black">-</span>
+                                <span class="bg-purple-50 px-2.5 py-1 rounded-lg border border-purple-200 text-lg">${decVal.toFixed(1)}</span>
+                            </span> כשבר פשוט?`;
+                            q.correctAnswer = `${resultNum}/${den}`;
+
+                            const optionsSet = new Set([q.correctAnswer]);
+                            while(optionsSet.size < 4) {
+                                const rNum = Math.floor(Math.random() * 9) + 1;
+                                optionsSet.add(`${rNum}/${den}`);
+                            }
+                            q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
+                            q.hint = `נמיר את השבר העשרוני ${decVal.toFixed(1)} לשבר פשוט: ${numB}/10. <br> כעת נחסר את המונים: ${numA}/10 - ${numB}/10 = ${q.correctAnswer}`;
+                        }
+                        q.visual = generateFractionBarVisual(numA, numB, den, 'sub', `${numA}/10`, `${decVal.toFixed(1)} (${numB}/10)`);
+                    }
+                } else {
+                    const hardTemplates = [
+                        {
+                            type: 'add',
+                            fracNum: 1, fracDen: 4,
+                            decVal: 0.5,
+                            ansType: 'decimal',
+                            correctAnswer: '0.75',
+                            options: ['0.75', '0.65', '0.55', '0.45'],
+                            prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>1</span><span class="border-t border-indigo-300 w-full text-center">4</span></span> <span class="text-indigo-600">+</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.5</span></span> כשבר עשרוני?`,
+                            hint: `זכרו שרבע (1/4) שווה ל-0.25 כשבר עשרוני! <br> לכן: 0.25 + 0.5 = 0.75.`,
+                            numA: 25, numB: 50, den: 100, labelA: '1/4 (0.25)', labelB: '0.5 (0.50)'
+                        },
+                        {
+                            type: 'add',
+                            fracNum: 1, fracDen: 2,
+                            decVal: 0.25,
+                            ansType: 'fraction',
+                            correctAnswer: '3/4',
+                            options: ['3/4', '1/4', '2/4', '1/2'],
+                            prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>1</span><span class="border-t border-indigo-300 w-full text-center">2</span></span> <span class="text-indigo-600">+</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.25</span></span> כשבר פשוט?`,
+                            hint: `נמיר את השבר העשרוני 0.25 לשבר פשוט: 1/4 (רבע). <br> כעת נרחיב את חצי (1/2) לרבעים: 2/4. <br> נחבר: 2/4 + 1/4 = 3/4.`,
+                            numA: 2, numB: 1, den: 4, labelA: '1/2 (2/4)', labelB: '0.25 (1/4)'
+                        },
+                        {
+                            type: 'sub',
+                            fracNum: 3, fracDen: 4,
+                            decVal: 0.5,
+                            ansType: 'decimal',
+                            correctAnswer: '0.25',
+                            options: ['0.25', '0.35', '0.15', '0.45'],
+                            prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>3</span><span class="border-t border-indigo-300 w-full text-center">4</span></span> <span class="text-indigo-600">-</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.5</span></span> כשבר עשרוני?`,
+                            hint: `זכרו ששלושת רבעי (3/4) שווים ל-0.75 כשבר עשרוני. <br> לכן: 0.75 - 0.5 = 0.25.`,
+                            numA: 75, numB: 50, den: 100, labelA: '3/4 (0.75)', labelB: '0.5 (0.50)'
+                        },
+                        {
+                            type: 'sub',
+                            fracNum: 1, fracDen: 2,
+                            decVal: 0.15,
+                            ansType: 'decimal',
+                            correctAnswer: '0.35',
+                            options: ['0.35', '0.25', '0.45', '0.15'],
+                            prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>1</span><span class="border-t border-indigo-300 w-full text-center">2</span></span> <span class="text-indigo-600">-</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.15</span></span> כשבר עשרוני?`,
+                            hint: `חצי (1/2) שווה ל-0.50 כשבר עשרוני. <br> לכן: 0.50 - 0.15 = 0.35.`,
+                            numA: 50, numB: 15, den: 100, labelA: '1/2 (0.50)', labelB: '0.15'
+                        },
+                        {
+                            type: 'add',
+                            fracNum: 2, fracDen: 5,
+                            decVal: 0.35,
+                            ansType: 'decimal',
+                            correctAnswer: '0.75',
+                            options: ['0.75', '0.65', '0.55', '0.85'],
+                            prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>2</span><span class="border-t border-indigo-300 w-full text-center">5</span></span> <span class="text-indigo-600">+</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.35</span></span> כשבר עשרוני?`,
+                            hint: `נמיר את 2/5 לשבר עשרוני: נרחיב ל-4/10 שזה 0.4 (או 0.40). <br> לכן: 0.40 + 0.35 = 0.75.`,
+                            numA: 40, numB: 35, den: 100, labelA: '2/5 (0.40)', labelB: '0.35'
+                        },
+                        {
+                            type: 'sub',
+                            fracNum: 4, fracDen: 5,
+                            decVal: 0.3,
+                            ansType: 'fraction',
+                            correctAnswer: '1/2',
+                            options: ['1/2', '1/5', '2/5', '3/5'],
+                            prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>4</span><span class="border-t border-indigo-300 w-full text-center">5</span></span> <span class="text-indigo-600">-</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.3</span></span> כשבר פשוט (מוקטן)?`,
+                            hint: `נמיר את 0.3 לשבר פשוט: 3/10. <br> נרחיב את 4/5 למכנה 10: 8/10. <br> נחסר: 8/10 - 3/10 = 5/10. <br> נצמצם את 5/10 ונקבל 1/2!`,
+                            numA: 8, numB: 3, den: 10, labelA: '4/5 (8/10)', labelB: '0.3 (3/10)'
+                        }
+                    ];
+                    const temp = hardTemplates[Math.floor(Math.random() * hardTemplates.length)];
+                    q.prompt = temp.prompt;
+                    q.correctAnswer = temp.correctAnswer;
+                    q.options = temp.options.sort(() => Math.random() - 0.5);
+                    q.hint = temp.hint;
+                    q.visual = generateFractionBarVisual(temp.numA, temp.numB, temp.den, temp.type, temp.labelA, temp.labelB);
+                }
+
             } else {
                 const num = Math.floor(Math.random() * 8) + 1;
                 const decVal = (Math.floor(Math.random() * 8) + 1) / 10;
@@ -889,7 +1248,13 @@
         }
 
         function renderQuestionUI(q) {
-            document.getElementById('question-category-tag').innerText = q.tag;
+            let tagHTML = q.tag;
+            if (q.difficultyLevel === 'easy') {
+                tagHTML += ` <span class="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full font-extrabold text-[11px] ml-1.5 align-middle">קל 🌱</span>`;
+            } else if (q.difficultyLevel === 'hard') {
+                tagHTML += ` <span class="bg-rose-100 text-rose-800 px-2.5 py-0.5 rounded-full font-extrabold text-[11px] ml-1.5 align-middle">מאתגר 🔥</span>`;
+            }
+            document.getElementById('question-category-tag').innerHTML = tagHTML;
             document.getElementById('question-prompt').innerHTML = q.prompt;
 
             const visualHelper = document.getElementById('question-visual-helper');
