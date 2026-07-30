@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>עולם הכפל והחילוק שלמים 🌟</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Friendly Hebrew Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=Varela+Round&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti for rewards -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#6C5CE7',
+                            lightPurple: '#A29BFE',
+                            pink: '#FD79A8',
+                            yellow: '#FFEAA7',
+                            orange: '#FAB1A0',
+                            teal: '#00CEC9',
+                            mint: '#55E6C1',
+                            dark: '#2D3436'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Rubik', 'Varela Round', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Rubik', 'Varela Round', sans-serif;
+            background: linear-gradient(135deg, #f6f8fd 0%, #e9effd 100%);
+            min-height: 100vh;
+        }
+
+        .bounce-gentle {
+            animation: bounceGentle 2s infinite;
+        }
+        @keyframes bounceGentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .pulse-subtle {
+            animation: pulseSubtle 1.5s infinite alternate;
+        }
+        @keyframes pulseSubtle {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.03); }
+        }
+
+        .grid-cell {
+            transition: all 0.2s ease;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #A29BFE;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-brand-pink selection:text-white pb-12">
+
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-indigo-100">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+            <!-- App Logo / Title -->
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-bold rounded-xl transition-all flex items-center gap-1.5 text-sm">
+                    🏠 תפריט ראשי
+                </a>
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('learn')">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-purple to-brand-pink flex items-center justify-center text-white text-xl font-bold shadow-md shadow-indigo-200">
+                        ✖️
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-extrabold text-indigo-950 leading-tight">כפל וחילוק שלמים</h1>
+                        <p class="text-xs text-indigo-500 font-medium">לומדים בקלות ובכיף! ✨</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header Gamification Bar (Stars, Streak, Level) -->
+            <div class="flex items-center gap-4 bg-indigo-50/80 px-4 py-1.5 rounded-full border border-indigo-100">
+                <div class="flex items-center gap-1.5" title="כוכבים שצברת">
+                    <span class="text-xl">⭐</span>
+                    <span id="stars-count" class="font-bold text-indigo-900 text-lg">0</span>
+                </div>
+                <div class="w-px h-5 bg-indigo-200"></div>
+                <div class="flex items-center gap-1.5" title="רצף תשובות נכונות">
+                    <span class="text-xl">🔥</span>
+                    <span id="streak-count" class="font-bold text-orange-600 text-lg">0</span>
+                </div>
+                <div class="w-px h-5 bg-indigo-200"></div>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-xs font-semibold px-2 py-0.5 bg-brand-purple text-white rounded-full" id="user-level">רמה 1: מתחילים</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Navigation Tabs -->
+        <nav class="max-w-5xl mx-auto px-4 mt-1 flex gap-2 justify-center border-t border-indigo-50 pt-2">
+            <button id="tab-learn" onclick="switchTab('learn')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-md shadow-indigo-200">
+                <span>📚</span> לומדים שלב-שלב
+            </button>
+            <button id="tab-practice" onclick="switchTab('practice')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-white text-slate-600 hover:bg-indigo-50">
+                <span>🎯</span> מחולל תרגילים
+            </button>
+            <button id="tab-game" onclick="switchTab('game')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-white text-slate-600 hover:bg-indigo-50">
+                <span>🍕</span> אתגר הפיצרייה
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto px-4 mt-6">
+
+        <!-- SECTION 1: LEARN (Step-by-step) -->
+        <section id="sec-learn" class="space-y-6">
+            <!-- Welcome Header Card -->
+            <div class="bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-500 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+                <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
+                <div class="relative z-10 max-w-xl">
+                    <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md text-white text-xs font-bold rounded-full mb-2">ברוכים הבאים לשיעור האינטראקטיבי! 👋</span>
+                    <h2 class="text-2xl md:text-3xl font-extrabold mb-2">מה זה כפל וחילוק?</h2>
+                    <p class="text-indigo-100 text-sm md:text-base leading-relaxed">
+                        כפל הוא דרך קצרה ומהירה לבצע **חיבור חוזר** של אותו מספר! חילוק הוא הפעולה ההפוכה - הוא עוזר לנו **לחלק באופן שווה** קבוצה של דברים לכמה קבוצות קטנות יותר! 🌟
+                    </p>
+                </div>
+            </div>
+
+            <!-- Step Navigation Controls -->
+            <div class="flex items-center justify-between bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
+                <button onclick="prevLessonStep()" id="btn-prev-step" class="px-4 py-2 rounded-xl border border-slate-200 font-semibold text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">
+                    ➡️ השלב הקודם
+                </button>
+                <div class="flex gap-2" id="step-dots">
+                    <!-- Dots generated dynamically -->
+                </div>
+                <button onclick="nextLessonStep()" id="btn-next-step" class="px-4 py-2 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 shadow-sm">
+                    השלב הבא ⬅️
+                </button>
+            </div>
+
+            <!-- LESSON STEP 0: Repeated Addition & Visual Grid -->
+            <div id="lesson-step-0" class="lesson-card bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center">1</span>
+                    <h3 class="text-xl font-bold text-slate-800">כפל הוא חיבור חוזר! 🔁</h3>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 items-center">
+                    <div class="space-y-4 text-slate-600">
+                        <p class="text-base leading-relaxed">
+                            במקום לחבר שוב ושוב: **3 + 3 + 3 + 3 = 12**, <br>
+                            אנחנו יכולים פשוט להגיד שיש לנו **4 קבוצות של 3 קוביות**, שזה בקצרה: <br>
+                            <span class="font-extrabold text-indigo-700">4 ✖️ 3 = 12</span>!
+                        </p>
+                        <div class="p-4 bg-indigo-50/70 rounded-2xl border border-indigo-100 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-700">מספר שורות (קבוצות):</span>
+                                <span id="mul-val-rows" class="text-lg font-bold text-indigo-600">3</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-700">מספר עמודות (בכל קבוצה):</span>
+                                <span id="mul-val-cols" class="text-lg font-bold text-purple-600">4</span>
+                            </div>
+                            <div class="w-full h-px bg-slate-200 my-2"></div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-900 text-lg">תרגיל כפל ✖️:</span>
+                                <span id="mul-formula-text" class="text-xl font-black text-indigo-600 bg-white px-3 py-1 rounded-lg border border-indigo-200">3 × 4 = 12</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Multiplication Grid -->
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center space-y-4">
+                        <h4 class="font-bold text-slate-700">הזיזו את הסרגלים וראו את מערך הקוביות:</h4>
+
+                        <!-- Grid Container -->
+                        <div class="flex justify-center items-center min-h-[140px]">
+                            <div id="mul-grid-display" class="grid gap-1 bg-white p-3 rounded-xl border border-indigo-200 shadow-inner">
+                                <!-- Generated by JS -->
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <div class="flex items-center justify-between gap-4" dir="ltr">
+                                <span id="mul-slider-rows-val" class="font-bold text-indigo-600 text-base min-w-[20px]">3</span>
+                                <input type="range" id="mul-slider-rows" min="1" max="6" value="3" class="w-full accent-indigo-600 cursor-pointer" oninput="updateMulVisualizer()">
+                                <label class="text-xs font-semibold text-slate-600 whitespace-nowrap" dir="rtl">שורות:</label>
+                            </div>
+                            <div class="flex items-center justify-between gap-4" dir="ltr">
+                                <span id="mul-slider-cols-val" class="font-bold text-purple-600 text-base min-w-[20px]">4</span>
+                                <input type="range" id="mul-slider-cols" min="1" max="6" value="4" class="w-full accent-purple-600 cursor-pointer" oninput="updateMulVisualizer()">
+                                <label class="text-xs font-semibold text-slate-600 whitespace-nowrap" dir="rtl">עמודות:</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LESSON STEP 1: Multiplication Table Chart -->
+            <div id="lesson-step-1" class="lesson-card hidden bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center">2</span>
+                    <h3 class="text-xl font-bold text-slate-800">לוח הכפל - מפת הדרכים שלנו! 🗺️</h3>
+                </div>
+
+                <p class="text-slate-600 mb-6">
+                    לוח הכפל עוזר לנו למצוא במהירות תוצאות של כפל בין שני מספרים עד 10!
+                </p>
+
+                <div class="overflow-x-auto">
+                    <table class="table-auto border-collapse border-2 border-indigo-200 text-center mx-auto text-xs md:text-sm font-bold bg-white" dir="ltr" id="mul-table-chart">
+                        <!-- Built dynamically -->
+                    </table>
+                </div>
+                <p class="text-xs text-slate-500 mt-4 text-center">
+                    💡 **טיפ:** חפשו את המפגש בין השורה לעמודה כדי לדעת את תוצאת המכפלה!
+                </p>
+            </div>
+
+            <!-- LESSON STEP 2: Division & Fair Sharing -->
+            <div id="lesson-step-2" class="lesson-card hidden bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center">3</span>
+                    <h3 class="text-xl font-bold text-slate-800">חילוק - לחלק שווה בשווה! 🍰</h3>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 items-center">
+                    <div class="space-y-4 text-slate-600">
+                        <p class="text-base leading-relaxed">
+                            תארו לעצמכם שיש לכם **12 עוגיות** ואתם רוצים לחלק אותן באופן שווה בין **3 חברים**.
+                            כמה עוגיות יקבל כל אחד?
+                        </p>
+                        <div class="p-4 bg-indigo-50/70 rounded-2xl border border-indigo-100 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-700">סך הכל עוגיות:</span>
+                                <span class="text-lg font-bold text-indigo-600">12 עוגיות</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-700">מספר חברים (קבוצות):</span>
+                                <span id="div-groups-text" class="text-lg font-bold text-purple-600">3 חברים</span>
+                            </div>
+                            <div class="w-full h-px bg-slate-200 my-2"></div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-900 text-lg">תרגיל חילוק ➗:</span>
+                                <span id="div-formula-text" class="text-xl font-black text-emerald-600 bg-white px-3 py-1 rounded-lg border border-emerald-200">12 ÷ 3 = 4</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Division Visualizer -->
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center space-y-4">
+                        <h4 class="font-bold text-slate-700">הזיזו את מספר הקבוצות וראו את החלוקה:</h4>
+
+                        <div id="div-visual-plates" class="flex justify-center gap-3 flex-wrap min-h-[100px]">
+                            <!-- Generated by JS -->
+                        </div>
+
+                        <div class="flex items-center justify-between gap-4" dir="ltr">
+                            <span id="div-slider-val" class="font-black text-indigo-600 text-lg min-w-[30px]">3</span>
+                            <input type="range" id="div-slider" min="1" max="6" value="3" class="w-full accent-indigo-600 cursor-pointer" oninput="updateDivVisualizer()">
+                            <label class="text-sm font-semibold text-slate-600 whitespace-nowrap" dir="rtl">מספר קבוצות:</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LESSON STEP 3: Real Life Applications -->
+            <div id="lesson-step-3" class="lesson-card hidden bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center">4</span>
+                    <h3 class="text-xl font-bold text-slate-800">איפה פוגשים כפל וחילוק בחיים? 💰</h3>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 items-center">
+                    <div class="space-y-4">
+                        <p class="text-slate-600 leading-relaxed">
+                            כפל וחילוק נמצאים בכל מקום! בכל פעם שאנחנו קונים כמה פריטים מאותו סוג, או מתחלקים באוכל עם חברים:
+                        </p>
+                        <div class="space-y-2">
+                            <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between">
+                                <span class="font-bold text-emerald-900">3 חבילות קלפים ב-₪5 כל אחת</span>
+                                <span class="text-sm bg-white px-2 py-1 rounded text-emerald-700 font-semibold shadow-xs">3 × 5 = ₪15</span>
+                            </div>
+                            <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-between">
+                                <span class="font-bold text-emerald-900">חבילת 24 טושים שמחולקת ל-4 ילדים</span>
+                                <span class="text-sm bg-white px-2 py-1 rounded text-emerald-700 font-semibold shadow-xs">24 ÷ 4 = 6 טושים לכל אחד!</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-amber-50 p-6 rounded-2xl border border-amber-200 text-center space-y-3">
+                        <span class="text-4xl">🚀</span>
+                        <h4 class="font-bold text-amber-900">הגיע הזמן לתרגל ולהפוך לאלופים!</h4>
+                        <p class="text-sm text-amber-800 leading-relaxed">
+                            הירשמו למחולל התרגילים, פתרו תרגילים, וגלו את כוחם של הכפל והחילוק!
+                        </p>
+                        <button onclick="switchTab('practice')" class="w-full mt-2 py-3 bg-gradient-to-r from-amber-500 to-orange-500 text-white font-extrabold rounded-xl shadow-md hover:brightness-105 transition-all">
+                            מוכנים? קדימה לתרגול! 🌟
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: PRACTICE (Question Generator) -->
+        <section id="sec-practice" class="hidden space-y-6">
+            <!-- Practice Controls & Difficulty Selection -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-slate-800">🎯 מחולל תרגילי כפל וחילוק</h2>
+                    <p class="text-sm text-slate-500">תרגלו את לוח הכפל והחילוק וצברו כוכבים!</p>
+                </div>
+
+                <!-- Difficulty & Topic Selector Buttons -->
+                <div class="flex flex-wrap gap-2 bg-slate-100 p-1.5 rounded-2xl justify-center">
+                    <button onclick="setDifficulty('simple-mul')" id="diff-simple-mul" class="diff-btn active px-3 py-2 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-xs">
+                        ✖️ כפל פשוט
+                    </button>
+                    <button onclick="setDifficulty('simple-div')" id="diff-simple-div" class="diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
+                        ➗ חילוק פשוט
+                    </button>
+                    <button onclick="setDifficulty('table-10')" id="diff-table-10" class="diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
+                        🌟 כפל עד 100
+                    </button>
+                    <button onclick="setDifficulty('div-100')" id="diff-div-100" class="diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
+                        ⚡ חילוק עד 100
+                    </button>
+                    <button onclick="setDifficulty('equations')" id="diff-equations" class="diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
+                        ❓ משוואות עם נעלם
+                    </button>
+                    <button onclick="setDifficulty('comparison')" id="diff-comparison" class="diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white">
+                        ⚖️ השוואת ביטויים
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question Card Container -->
+            <div class="bg-white rounded-3xl p-8 shadow-md border border-slate-100 text-center relative overflow-hidden">
+                <!-- Visual Question Badge -->
+                <span id="question-category-tag" class="inline-block px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-full mb-4">
+                    תרגיל זיהוי
+                </span>
+
+                <!-- Question Prompt -->
+                <div id="question-prompt" class="text-2xl md:text-3xl font-black text-slate-800 mb-6 flex flex-col items-center justify-center gap-2" dir="ltr">
+                    בטעינה...
+                </div>
+
+                <!-- Interactive Visual Helper (Rendered dynamically) -->
+                <div id="question-visual-helper" class="mb-6 flex justify-center min-h-[40px] items-center">
+                    <!-- Dynamic Grid / Visuals -->
+                </div>
+
+                <!-- Answer Options Grid -->
+                <div id="options-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg mx-auto mb-6">
+                    <!-- Option Buttons dynamically generated -->
+                </div>
+
+                <!-- Feedback Banner -->
+                <div id="practice-feedback" class="hidden mb-4 p-3 rounded-2xl font-bold text-sm"></div>
+
+                <!-- Hint Toggle Button & Text -->
+                <div class="mt-4 pt-4 border-t border-slate-100">
+                    <button onclick="toggleHint()" class="text-xs text-indigo-500 hover:text-indigo-700 font-semibold flex items-center justify-center gap-1 mx-auto">
+                        <span>💡</span> <span id="hint-btn-text">צריכה רמז?</span>
+                    </button>
+                    <p id="hint-box" class="hidden mt-2 text-xs bg-amber-50 text-amber-800 p-2.5 rounded-xl border border-amber-200 max-w-md mx-auto">
+                        רמז יופיע כאן...
+                    </p>
+                </div>
+            </div>
+
+            <!-- Streak & Score Mini Footer -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-100 text-center">
+                    <span class="text-xs font-bold text-emerald-700 block">תשובות נכונות בסך הכל</span>
+                    <span id="total-correct-display" class="text-2xl font-black text-emerald-800">0</span>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-2xl border border-purple-100 text-center">
+                    <span class="text-xs font-bold text-purple-700 block">רצף נוכחי</span>
+                    <span id="streak-practice-display" class="text-2xl font-black text-purple-800">0 🔥</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: PIZZA GAME -->
+        <section id="sec-game" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-3xl p-6 text-white shadow-xl flex justify-between items-center">
+                <div>
+                    <span class="px-3 py-1 bg-white/20 text-white text-xs font-bold rounded-full mb-1 inline-block">משחקון חווייתי 🍕</span>
+                    <h2 class="text-2xl font-black">פיצריית הכפל והחילוק של פיצי!</h2>
+                    <p class="text-xs md:text-sm text-amber-100">הכינו ללקוחות את הפיצה עם כמות הזיתים המדויקת לפי הסיפור החשבוני!</p>
+                </div>
+                <div class="text-4xl">👨‍🍳</div>
+            </div>
+
+            <!-- Pizza Game Board -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 grid md:grid-cols-2 gap-8 items-center">
+                <!-- Customer Order Card -->
+                <div class="space-y-4">
+                    <div class="bg-amber-50 border-2 border-amber-200 p-4 rounded-2xl relative">
+                        <div class="text-xs font-bold text-amber-700 mb-1">📋 סיפור ההזמנה של הלקוח:</div>
+                        <div id="pizza-order-text" class="text-lg font-extrabold text-slate-800">
+                            "אני רוצה פיצה שיהיו עליה <span class="text-indigo-600 font-black">2 × 3</span> זיתים!"
+                        </div>
+                    </div>
+
+                    <div class="text-slate-600 text-sm space-y-2">
+                        <p>👉 לחצו על משולשי הפיצה כדי להוסיף או להסיר זיתים.</p>
+                        <p>👉 פתרו את שאלת הכפל או החילוק כדי לגלות כמה זיתים דרושים בדיוק!</p>
+                    </div>
+
+                    <div class="bg-slate-50 p-3 rounded-xl flex items-center justify-between font-bold text-sm">
+                        <span>משולשים מסומנים: <span id="pizza-count-display" class="text-indigo-600 font-black text-lg">0</span> / 10</span>
+                    </div>
+
+                    <div id="pizza-feedback" class="hidden p-3 rounded-xl font-bold text-center text-sm"></div>
+
+                    <button onclick="checkPizzaOrder()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-200 transition-all text-lg">
+                        הגש פיצה ללקוח! 🍕
+                    </button>
+                </div>
+
+                <!-- SVG Equal Slices Pizza Container -->
+                <div class="flex justify-center items-center py-4">
+                    <div class="relative w-72 h-72 flex items-center justify-center">
+                        <svg id="pizza-svg" viewBox="0 0 300 300" class="w-full h-full drop-shadow-xl cursor-pointer">
+                            <!-- Pizza slices rendered dynamically -->
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Global Application State
+        const state = {
+            stars: 0,
+            streak: 0,
+            totalCorrect: 0,
+            currentTab: 'learn',
+            lessonStep: 0,
+            totalLessonSteps: 4,
+            difficulty: 'simple-mul',
+            currentQuestion: null,
+            pizzaTargetVal: 6,
+            pizzaSelectedSlices: new Array(10).fill(false)
+        };
+
+        // Web Audio API Audio Synthesizer
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            if (type === 'correct') {
+                const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                notes.forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.08);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime + idx * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.08 + 0.35);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(audioCtx.currentTime + idx * 0.08);
+                    osc.stop(audioCtx.currentTime + idx * 0.08 + 0.35);
+                });
+            } else if (type === 'wrong') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.18, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.25);
+            } else if (type === 'click') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(450, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.05);
+            }
+        }
+
+        function switchTab(tabName) {
+            playSound('click');
+            state.currentTab = tabName;
+
+            document.getElementById('sec-learn').classList.add('hidden');
+            document.getElementById('sec-practice').classList.add('hidden');
+            document.getElementById('sec-game').classList.add('hidden');
+
+            ['learn', 'practice', 'game'].forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (btn) {
+                    btn.className = 'tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-white text-slate-600 hover:bg-indigo-50';
+                }
+            });
+
+            const activeSec = document.getElementById(`sec-${tabName}`);
+            if (activeSec) activeSec.classList.remove('hidden');
+
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            if (activeBtn) {
+                activeBtn.className = 'tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition-all flex items-center gap-2 bg-indigo-600 text-white shadow-md shadow-indigo-200';
+            }
+
+            if (tabName === 'practice' && !state.currentQuestion) {
+                generateNewQuestion();
+            } else if (tabName === 'game') {
+                initPizzaGame();
+            }
+        }
+
+        function updateLessonStepUI() {
+            for (let i = 0; i < state.totalLessonSteps; i++) {
+                const stepCard = document.getElementById(`lesson-step-${i}`);
+                if (stepCard) stepCard.classList.add('hidden');
+            }
+
+            const currentCard = document.getElementById(`lesson-step-${state.lessonStep}`);
+            if (currentCard) currentCard.classList.remove('hidden');
+
+            const prevBtn = document.getElementById('btn-prev-step');
+            const nextBtn = document.getElementById('btn-next-step');
+
+            if (prevBtn) prevBtn.disabled = state.lessonStep === 0;
+            if (nextBtn) {
+                if (state.lessonStep === state.totalLessonSteps - 1) {
+                    nextBtn.innerHTML = 'עבור לתרגול 🎯';
+                } else {
+                    nextBtn.innerHTML = 'השלב הבא ⬅️';
+                }
+            }
+
+            const dotsContainer = document.getElementById('step-dots');
+            if (dotsContainer) {
+                dotsContainer.innerHTML = '';
+                for (let i = 0; i < state.totalLessonSteps; i++) {
+                    const dot = document.createElement('span');
+                    dot.className = `step-dot w-3 h-3 rounded-full cursor-pointer transition-all ${i === state.lessonStep ? 'bg-indigo-600 w-6' : 'bg-slate-200 hover:bg-indigo-300'}`;
+                    dot.onclick = () => {
+                        playSound('click');
+                        state.lessonStep = i;
+                        updateLessonStepUI();
+                    };
+                    dotsContainer.appendChild(dot);
+                }
+            }
+        }
+
+        function prevLessonStep() {
+            if (state.lessonStep > 0) {
+                playSound('click');
+                state.lessonStep--;
+                updateLessonStepUI();
+            }
+        }
+
+        function nextLessonStep() {
+            if (state.lessonStep < state.totalLessonSteps - 1) {
+                playSound('click');
+                state.lessonStep++;
+                updateLessonStepUI();
+            } else {
+                switchTab('practice');
+            }
+        }
+
+        // Lesson Step 0: Grid visualizer
+        function updateMulVisualizer() {
+            const rows = parseInt(document.getElementById('mul-slider-rows').value);
+            const cols = parseInt(document.getElementById('mul-slider-cols').value);
+
+            document.getElementById('mul-slider-rows-val').innerText = rows;
+            document.getElementById('mul-slider-cols-val').innerText = cols;
+
+            document.getElementById('mul-val-rows').innerText = rows;
+            document.getElementById('mul-val-cols').innerText = cols;
+            document.getElementById('mul-formula-text').innerText = `${rows} × ${cols} = ${rows * cols}`;
+
+            const grid = document.getElementById('mul-grid-display');
+            if (!grid) return;
+
+            grid.style.gridTemplateRows = `repeat(${rows}, minmax(0, 1fr))`;
+            grid.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+            grid.innerHTML = '';
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'w-6 h-6 rounded bg-indigo-500 border border-indigo-600 shadow-xs grid-cell';
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        // Lesson Step 1: Multiplication Table chart
+        function buildMultiplicationTable() {
+            const table = document.getElementById('mul-table-chart');
+            if (!table) return;
+            table.innerHTML = '';
+
+            // Header row
+            let headerRow = '<tr><th class="p-1 bg-indigo-100 border border-indigo-200">×</th>';
+            for (let i = 1; i <= 10; i++) {
+                headerRow += `<th class="p-1 bg-indigo-50 border border-indigo-200 text-indigo-700">${i}</th>`;
+            }
+            headerRow += '</tr>';
+            table.innerHTML += headerRow;
+
+            // Content rows
+            for (let r = 1; r <= 10; r++) {
+                let rowHTML = `<tr><td class="p-1 bg-indigo-50 border border-indigo-200 text-indigo-700">${r}</td>`;
+                for (let c = 1; c <= 10; c++) {
+                    rowHTML += `<td class="p-1 border border-indigo-100 hover:bg-yellow-100 cursor-pointer transition-colors" title="${r} × ${c} = ${r*c}">${r * c}</td>`;
+                }
+                rowHTML += '</tr>';
+                table.innerHTML += rowHTML;
+            }
+        }
+
+        // Lesson Step 2: Division Visualizer
+        function updateDivVisualizer() {
+            const groups = parseInt(document.getElementById('div-slider').value);
+            const totalCookies = 12;
+            const cookiesPerGroup = Math.floor(totalCookies / groups);
+            const remainder = totalCookies % groups;
+
+            document.getElementById('div-slider-val').innerText = groups;
+            document.getElementById('div-groups-text').innerText = `${groups} חברים`;
+
+            let formula = `12 ÷ ${groups} = ${cookiesPerGroup}`;
+            if (remainder > 0) {
+                formula += ` (שארית ${remainder})`;
+            }
+            document.getElementById('div-formula-text').innerText = formula;
+
+            const container = document.getElementById('div-visual-plates');
+            if (!container) return;
+            container.innerHTML = '';
+
+            for (let g = 0; r = 0, g < groups; g++) {
+                const plate = document.createElement('div');
+                plate.className = 'w-24 p-3 bg-white border-2 border-indigo-200 rounded-full flex flex-col items-center gap-1 shadow-xs';
+                plate.innerHTML = `<span class="text-[10px] text-slate-400 font-bold block">צלחת ${g+1}</span>`;
+
+                const cookiesContainer = document.createElement('div');
+                cookiesContainer.className = 'flex flex-wrap justify-center gap-1';
+                for (let c = 0; c < cookiesPerGroup; c++) {
+                    cookiesContainer.innerHTML += '🍪';
+                }
+                plate.appendChild(cookiesContainer);
+                container.appendChild(plate);
+            }
+
+            if (remainder > 0) {
+                const remainderPlate = document.createElement('div');
+                remainderPlate.className = 'w-24 p-3 bg-amber-50 border-2 border-dashed border-amber-300 rounded-full flex flex-col items-center gap-1 shadow-xs';
+                remainderPlate.innerHTML = `<span class="text-[10px] text-amber-600 font-bold block">שארית</span>`;
+
+                const cookiesContainer = document.createElement('div');
+                cookiesContainer.className = 'flex flex-wrap justify-center gap-1';
+                for (let c = 0; c < remainder; c++) {
+                    cookiesContainer.innerHTML += '🍪';
+                }
+                remainderPlate.appendChild(cookiesContainer);
+                container.appendChild(remainderPlate);
+            }
+        }
+
+        function setDifficulty(diff) {
+            playSound('click');
+            state.difficulty = diff;
+
+            const buttons = document.querySelectorAll('.diff-btn');
+            buttons.forEach(btn => {
+                btn.className = 'diff-btn px-3 py-2 rounded-xl font-bold text-xs transition-all text-slate-600 hover:bg-white';
+            });
+
+            const activeBtn = document.getElementById(`diff-${diff}`);
+            if (activeBtn) {
+                activeBtn.className = 'diff-btn active px-3 py-2 rounded-xl font-bold text-xs transition-all bg-indigo-600 text-white shadow-xs';
+            }
+
+            generateNewQuestion();
+        }
+
+        function generateDistractors(correctVal, diff) {
+            const options = new Set();
+            options.add(correctVal.toString());
+
+            const val = parseInt(correctVal);
+            let attempts = 0;
+            const maxAttempts = 100;
+
+            while (options.size < 4 && attempts < maxAttempts) {
+                attempts++;
+                const offset = Math.floor(Math.random() * 9) - 4; // -4 to +4
+                const dist = val + offset;
+                if (dist >= 0) {
+                    options.add(dist.toString());
+                }
+            }
+
+            let offset = 1;
+            while (options.size < 4) {
+                const fallbackDist = val + offset;
+                if (fallbackDist >= 0) {
+                    options.add(fallbackDist.toString());
+                }
+                offset++;
+            }
+
+            return Array.from(options).sort(() => Math.random() - 0.5);
+        }
+
+        function generatePracticeGridVisual(rows, cols) {
+            let html = `<div class="flex flex-col items-center gap-1 bg-slate-50 p-3 rounded-2xl border border-slate-200">`;
+            html += `<span class="text-xs font-bold text-slate-500 mb-1">המחשה ויזואלית:</span>`;
+            html += `<div class="grid gap-1" style="grid-template-columns: repeat(${cols}, minmax(0, 1fr))">`;
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    html += `<div class="w-4 h-4 rounded bg-indigo-600 shadow-xs"></div>`;
+                }
+            }
+            html += `</div></div>`;
+            return html;
+        }
+
+        function generateNewQuestion() {
+            const hintBox = document.getElementById('hint-box');
+            if (hintBox) hintBox.classList.add('hidden');
+            const feedback = document.getElementById('practice-feedback');
+            if (feedback) feedback.classList.add('hidden');
+
+            const diff = state.difficulty;
+            let q = {};
+
+            if (diff === 'simple-mul') {
+                const a = Math.floor(Math.random() * 4) + 2; // 2 to 5
+                const b = Math.floor(Math.random() * 4) + 2; // 2 to 5
+                const result = a * b;
+                q.tag = "כפל פשוט 🍰";
+                q.prompt = `כמה זה <span class="text-indigo-600 font-extrabold mx-1 border-b-2 border-indigo-300 inline-block" dir="ltr">${a} × ${b}</span> ?`;
+                q.correctAnswer = result.toString();
+                q.options = generateDistractors(result, diff);
+                q.hint = `זה כמו לחבר את המספר ${b} בדיוק ${a} פעמים!`;
+                q.visual = generatePracticeGridVisual(a, b);
+
+            } else if (diff === 'simple-div') {
+                const b = Math.floor(Math.random() * 3) + 2; // 2 to 4
+                const ans = Math.floor(Math.random() * 4) + 2; // 2 to 5
+                const a = b * ans;
+                q.tag = "חילוק פשוט ➗";
+                q.prompt = `כמה זה <span class="text-indigo-600 font-extrabold mx-1 border-b-2 border-indigo-300 inline-block" dir="ltr">${a} ÷ ${b}</span> ?`;
+                q.correctAnswer = ans.toString();
+                q.options = generateDistractors(ans, diff);
+                q.hint = `אם נחלק ${a} פריטים באופן שווה ל-${b} קבוצות, כמה פריטים יהיו בכל קבוצה?`;
+                q.visual = null;
+
+            } else if (diff === 'table-10') {
+                const a = Math.floor(Math.random() * 8) + 3; // 3 to 10
+                const b = Math.floor(Math.random() * 8) + 3; // 3 to 10
+                const result = a * b;
+                q.tag = "כפל עד 100 🌟";
+                q.prompt = `כמה זה <span class="text-indigo-600 font-extrabold mx-1 border-b-2 border-indigo-300 inline-block" dir="ltr">${a} × ${b}</span> ?`;
+                q.correctAnswer = result.toString();
+                q.options = generateDistractors(result, diff);
+                q.hint = `היעזרו בלוח הכפל שראינו בשיעור!`;
+                q.visual = null;
+
+            } else if (diff === 'div-100') {
+                const b = Math.floor(Math.random() * 8) + 3; // 3 to 10
+                const ans = Math.floor(Math.random() * 8) + 3; // 3 to 10
+                const a = b * ans;
+                q.tag = "חילוק עד 100 ⚡";
+                q.prompt = `כמה זה <span class="text-indigo-600 font-extrabold mx-1 border-b-2 border-indigo-300 inline-block" dir="ltr">${a} ÷ ${b}</span> ?`;
+                q.correctAnswer = ans.toString();
+                q.options = generateDistractors(ans, diff);
+                q.hint = `זכרו שחילוק הוא הפעולה ההפוכה לכפל! מה כפול ${b} יתן לנו ${a}?`;
+                q.visual = null;
+
+            } else if (diff === 'equations') {
+                const isMul = Math.random() > 0.5;
+                const b = Math.floor(Math.random() * 5) + 2; // 2 to 6
+                const ans = Math.floor(Math.random() * 5) + 2; // 2 to 6
+                const a = b * ans;
+
+                q.tag = "משוואות עם נעלם ❓";
+                if (isMul) {
+                    q.prompt = `מצאו את ❓ במשוואה: <br> <span class="text-indigo-600 font-extrabold text-2xl mx-1" dir="ltr">${b} × ❓ = ${a}</span>`;
+                    q.correctAnswer = ans.toString();
+                    q.options = generateDistractors(ans, diff);
+                    q.hint = `בכדי למצוא את המספר החסר, בצעו את הפעולה ההפוכה: חילקו את התוצאה ${a} במספר הידוע ${b}!`;
+                } else {
+                    q.prompt = `מצאו את ❓ במשוואה: <br> <span class="text-indigo-600 font-extrabold text-2xl mx-1" dir="ltr">❓ ÷ ${b} = ${ans}</span>`;
+                    q.correctAnswer = a.toString();
+                    q.options = generateDistractors(a, diff);
+                    q.hint = `בכדי למצוא את מספר השלם ההתחלתי, בצעו כפל בין שני המספרים הידועים: ${ans} × ${b}!`;
+                }
+                q.visual = null;
+
+            } else {
+                // Comparison
+                const mulA1 = Math.floor(Math.random() * 3) + 2;
+                const mulA2 = Math.floor(Math.random() * 3) + 3;
+                const leftSide = mulA1 * mulA2;
+
+                const divB1 = Math.floor(Math.random() * 12) + 12; // 12 to 23
+                const divB2 = Math.floor(Math.random() * 2) + 2; // 2 to 3
+                const rightSide = Math.floor(divB1 / divB2);
+
+                let sign = "=";
+                if (leftSide > rightSide) sign = ">";
+                if (leftSide < rightSide) sign = "<";
+
+                q.tag = "השוואת ביטויים ⚖️";
+                q.prompt = `איזה סימן מתאים בין שני התרגילים?`;
+                q.correctAnswer = sign;
+                q.options = [">", "<", "="];
+                q.hint = `חשבו את המכפלה מצד שמאל (${mulA1}×${mulA2} = ${leftSide}) ואת החילוק מצד ימין (${divB1}÷${divB2} = ${rightSide}) ואז השוו!`;
+                q.visual = `
+                    <div class="flex items-center justify-center gap-6 mt-2 text-xl" dir="ltr">
+                        <span class="bg-blue-50 text-blue-700 px-4 py-2 rounded-xl border border-blue-200 font-extrabold">${mulA1} × ${mulA2}</span>
+                        <span class="text-2xl font-black text-slate-400">❓</span>
+                        <span class="bg-purple-50 text-purple-700 px-4 py-2 rounded-xl border border-purple-200 font-extrabold">${divB1} ÷ ${divB2}</span>
+                    </div>
+                `;
+            }
+
+            state.currentQuestion = q;
+            renderQuestionUI(q);
+        }
+
+        function renderQuestionUI(q) {
+            document.getElementById('question-category-tag').innerHTML = q.tag;
+            document.getElementById('question-prompt').innerHTML = q.prompt;
+
+            const visualHelper = document.getElementById('question-visual-helper');
+            if (visualHelper) {
+                visualHelper.innerHTML = q.visual || '';
+            }
+
+            const grid = document.getElementById('options-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full py-3 px-4 bg-slate-50 hover:bg-indigo-50 border-2 border-slate-200 hover:border-indigo-300 font-extrabold text-slate-700 text-lg rounded-2xl transition-all shadow-xs flex items-center justify-center';
+                btn.innerText = opt;
+                if (!/[\u0590-\u05FF]/.test(opt)) {
+                    btn.setAttribute('dir', 'ltr');
+                }
+                btn.onclick = () => checkAnswer(opt, btn);
+                grid.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selectedOpt, btnElement) {
+            const q = state.currentQuestion;
+            if (!q) return;
+
+            const isCorrect = selectedOpt === q.correctAnswer;
+            const feedback = document.getElementById('practice-feedback');
+
+            if (isCorrect) {
+                playSound('correct');
+                if (window.confetti) {
+                    confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+                }
+
+                state.stars += 10;
+                state.streak += 1;
+                state.totalCorrect += 1;
+
+                if (btnElement) {
+                    btnElement.className = 'w-full py-3 px-4 bg-emerald-500 text-white font-extrabold text-lg rounded-2xl shadow-md flex items-center justify-center';
+                }
+
+                if (feedback) {
+                    feedback.className = 'mb-4 p-3 rounded-2xl font-bold text-center text-sm bg-emerald-100 text-emerald-800 border border-emerald-200';
+                    feedback.innerText = 'כל הכבוד! תשובה נכונה! ⭐ +10';
+                    feedback.classList.remove('hidden');
+                }
+
+                updateGamificationUI();
+
+                setTimeout(() => {
+                    generateNewQuestion();
+                }, 1200);
+
+            } else {
+                playSound('wrong');
+                state.streak = 0;
+
+                if (btnElement) {
+                    btnElement.className = 'w-full py-3 px-4 bg-rose-500 text-white font-extrabold text-lg rounded-2xl shadow-md flex items-center justify-center';
+                }
+
+                if (feedback) {
+                    feedback.className = 'mb-4 p-3 rounded-2xl font-bold text-center text-sm bg-rose-100 text-rose-800 border border-rose-200';
+                    feedback.innerText = 'לא מדויק, נסו שוב! 💪';
+                    feedback.classList.remove('hidden');
+                }
+
+                updateGamificationUI();
+            }
+        }
+
+        function toggleHint() {
+            playSound('click');
+            const hintBox = document.getElementById('hint-box');
+            if (hintBox && state.currentQuestion) {
+                hintBox.innerHTML = state.currentQuestion.hint || 'אין רמז זמין לתרגיל זה.';
+                hintBox.classList.toggle('hidden');
+            }
+        }
+
+        function updateGamificationUI() {
+            document.getElementById('stars-count').innerText = state.stars;
+            document.getElementById('streak-count').innerText = state.streak;
+            document.getElementById('total-correct-display').innerText = state.totalCorrect;
+            document.getElementById('streak-practice-display').innerText = `${state.streak} 🔥`;
+
+            const levelBadge = document.getElementById('user-level');
+            if (levelBadge) {
+                if (state.stars >= 100) levelBadge.innerText = 'רמה 3: אלופים 🏆';
+                else if (state.stars >= 40) levelBadge.innerText = 'רמה 2: מתקדמים 🚀';
+                else levelBadge.innerText = 'רמה 1: מתחילים 🌱';
+            }
+        }
+
+        function initPizzaGame() {
+            const isMul = Math.random() > 0.5;
+            let a, b, text;
+            if (isMul) {
+                a = Math.floor(Math.random() * 3) + 2; // 2 to 4
+                b = Math.floor(Math.random() * 2) + 1; // 1 to 2
+                state.pizzaTargetVal = a * b;
+                text = `"שלום! אני רוצה פיצה שיהיו עליה <span class="text-indigo-600 font-black text-xl">${a} כפול ${b}</span> זיתים!"`;
+            } else {
+                b = Math.floor(Math.random() * 2) + 2; // 2 to 3
+                const ans = Math.floor(Math.random() * 3) + 2; // 2 to 4
+                a = b * ans;
+                state.pizzaTargetVal = ans;
+                text = `"שלום! אני רוצה פיצה שיהיו עליה <span class="text-indigo-600 font-black text-xl">${a} לחלק ל-${b}</span> זיתים!"`;
+            }
+
+            state.pizzaSelectedSlices = new Array(10).fill(false);
+            document.getElementById('pizza-order-text').innerHTML = text;
+
+            const feedback = document.getElementById('pizza-feedback');
+            if (feedback) feedback.classList.add('hidden');
+
+            renderSVGPizza();
+            updatePizzaProgress();
+        }
+
+        function renderSVGPizza() {
+            const svg = document.getElementById('pizza-svg');
+            if (!svg) return;
+            svg.innerHTML = '';
+
+            const cx = 150, cy = 150, r = 135;
+
+            // Crust
+            const crust = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            crust.setAttribute('cx', cx);
+            crust.setAttribute('cy', cy);
+            crust.setAttribute('r', r);
+            crust.setAttribute('fill', '#D97706');
+            crust.setAttribute('stroke', '#B45309');
+            crust.setAttribute('stroke-width', '6');
+            svg.appendChild(crust);
+
+            // Cheese
+            const cheese = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            cheese.setAttribute('cx', cx);
+            cheese.setAttribute('cy', cy);
+            cheese.setAttribute('r', r - 12);
+            cheese.setAttribute('fill', '#FDE68A');
+            svg.appendChild(cheese);
+
+            // 10 equal slices (36 degrees each)
+            for (let i = 0; i < 10; i++) {
+                const startAngle = (i * 36 - 90) * (Math.PI / 180);
+                const endAngle = ((i + 1) * 36 - 90) * (Math.PI / 180);
+
+                const x1 = cx + (r - 12) * Math.cos(startAngle);
+                const y1 = cy + (r - 12) * Math.sin(startAngle);
+                const x2 = cx + (r - 12) * Math.cos(endAngle);
+                const y2 = cy + (r - 12) * Math.sin(endAngle);
+
+                const slicePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const pathData = `M ${cx} ${cy} L ${x1} ${y1} A ${r - 12} ${r - 12} 0 0 1 ${x2} ${y2} Z`;
+
+                slicePath.setAttribute('d', pathData);
+                slicePath.setAttribute('fill', state.pizzaSelectedSlices[i] ? 'rgba(234, 179, 8, 0.4)' : 'transparent');
+                slicePath.setAttribute('stroke', '#D97706');
+                slicePath.setAttribute('stroke-width', '2');
+                slicePath.setAttribute('class', 'transition-colors hover:fill-amber-300/60 cursor-pointer');
+                slicePath.onclick = () => togglePizzaSlice(i);
+                svg.appendChild(slicePath);
+
+                if (state.pizzaSelectedSlices[i]) {
+                    const midAngle = (startAngle + endAngle) / 2;
+                    const oliveR = r * 0.55;
+                    const ox = cx + oliveR * Math.cos(midAngle);
+                    const oy = cy + oliveR * Math.sin(midAngle);
+
+                    const olive = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    olive.setAttribute('cx', ox);
+                    olive.setAttribute('cy', oy);
+                    olive.setAttribute('r', '9');
+                    olive.setAttribute('fill', '#14532D');
+                    olive.setAttribute('stroke', '#052E16');
+                    olive.setAttribute('stroke-width', '3');
+                    olive.onclick = () => togglePizzaSlice(i);
+                    svg.appendChild(olive);
+                }
+            }
+        }
+
+        function togglePizzaSlice(index) {
+            playSound('click');
+            state.pizzaSelectedSlices[index] = !state.pizzaSelectedSlices[index];
+            renderSVGPizza();
+            updatePizzaProgress();
+        }
+
+        function updatePizzaProgress() {
+            const count = state.pizzaSelectedSlices.filter(Boolean).length;
+            document.getElementById('pizza-count-display').innerText = count;
+        }
+
+        function checkPizzaOrder() {
+            const count = state.pizzaSelectedSlices.filter(Boolean).length;
+            const feedback = document.getElementById('pizza-feedback');
+
+            if (count === state.pizzaTargetVal) {
+                playSound('correct');
+                if (window.confetti) {
+                    confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
+                }
+
+                state.stars += 15;
+                state.streak += 1;
+                updateGamificationUI();
+
+                if (feedback) {
+                    feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-emerald-100 text-emerald-800 border border-emerald-200';
+                    feedback.innerText = `הזמנה מושלמת! סימנתם ${count} זיתים כמו שצריך! 🍕⭐ (+15)`;
+                    feedback.classList.remove('hidden');
+                }
+
+                setTimeout(() => {
+                    initPizzaGame();
+                }, 1800);
+
+            } else {
+                playSound('wrong');
+                state.streak = 0;
+                updateGamificationUI();
+
+                if (feedback) {
+                    feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-rose-100 text-rose-800 border border-rose-200';
+                    feedback.innerText = `כמעט! סימנתם ${count} משולשים, אבל הלקוח ביקש ${state.pizzaTargetVal} זיתים בסך הכל. פתרו את התרגיל ונסו שוב!`;
+                    feedback.classList.remove('hidden');
+                }
+            }
+        }
+
+        window.onload = function() {
+            updateMulVisualizer();
+            buildMultiplicationTable();
+            updateDivVisualizer();
+            updateLessonStepUI();
+        };
+    </script>
+</body>
+</html>
