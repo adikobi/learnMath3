@@ -463,14 +463,37 @@
                         </div>
                     </div>
 
-                    <div class="text-slate-600 text-sm space-y-2">
-                        <p>👉 לחצו על משולשי הפיצה כדי להוסיף או להסיר זיתים.</p>
-                        <p>👉 כל 10 המשולשים שווים בגודלם בדיוק! ספרו כמה משולשים דרושים.</p>
+                    <!-- Topping Selector -->
+                    <div id="pizza-topping-selector" class="bg-slate-50 p-3 rounded-xl border border-slate-200 space-y-2">
+                        <span class="text-xs font-bold text-slate-500 block">בחר תוספת להוספה/הסרה:</span>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button onclick="setPizzaActiveTopping('olives')" id="topping-btn-olives" class="py-2 px-3 bg-indigo-600 border-2 border-indigo-700 text-white font-extrabold text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5">
+                                <span>🫒</span> זיתים
+                            </button>
+                            <button onclick="setPizzaActiveTopping('corn')" id="topping-btn-corn" class="py-2 px-3 bg-white border-2 border-slate-200 text-slate-700 font-extrabold text-sm rounded-xl transition-all shadow-xs flex items-center justify-center gap-1.5 hover:bg-slate-50">
+                                <span>🌽</span> תירס
+                            </button>
+                            <button onclick="setPizzaActiveTopping('erase')" id="topping-btn-erase" class="py-2 px-3 bg-white border-2 border-slate-200 text-slate-700 font-extrabold text-sm rounded-xl transition-all shadow-xs flex items-center justify-center gap-1.5 hover:bg-slate-50">
+                                <span>🧹</span> מחיקה
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="bg-slate-50 p-3 rounded-xl flex items-center justify-between font-bold text-sm">
-                        <span>משולשים מסומנים: <span id="pizza-count-display" class="text-indigo-600 font-black text-lg">0</span> / 10</span>
-                        <span>שבר עשרוני: <span id="pizza-decimal-display" class="text-purple-600 font-black text-lg">0.0</span></span>
+                    <div class="text-slate-600 text-sm space-y-2">
+                        <p id="pizza-instruction-tap">👉 בחרו תוספת ולחצו על משולשי הפיצה כדי להוסיף אותה, או בחרו מחיקה.</p>
+                        <p id="pizza-instruction-count">👉 כל <span id="pizza-instruction-slices-count" class="font-bold text-indigo-600">10</span> המשולשים שווים בגודלם בדיוק! חשבו כמה משולשים דרושים לכל תוספת.</p>
+                    </div>
+
+                    <div class="bg-slate-50 p-3 rounded-xl flex flex-col gap-2 font-bold text-sm">
+                        <div class="flex items-center justify-between">
+                            <span>סה"כ פרוסות בפיצה: <span id="pizza-total-slices" class="text-indigo-600 font-black text-base">10</span></span>
+                            <span>רצף נוכחי בפיצה: <span id="pizza-streak-display" class="text-orange-600 font-black text-base">0 🔥</span></span>
+                        </div>
+                        <div class="h-px bg-slate-200"></div>
+                        <div class="flex items-center justify-between flex-wrap gap-2 text-xs">
+                            <span class="flex items-center gap-1">🫒 זיתים שהנחת: <span id="pizza-olives-count" class="font-extrabold text-indigo-600 text-sm">0</span></span>
+                            <span class="flex items-center gap-1">🌽 תירס שהנחת: <span id="pizza-corn-count" class="font-extrabold text-indigo-600 text-sm">0</span></span>
+                        </div>
                     </div>
 
                     <div id="pizza-feedback" class="hidden p-3 rounded-xl font-bold text-center text-sm"></div>
@@ -505,8 +528,17 @@
             difficulty: 'easy',
             currentQuestion: null,
             showHardVisual: false,
-            pizzaTargetTenths: 6,
-            pizzaSelectedSlices: new Array(10).fill(false)
+            // Pizza Game enhanced state properties
+            pizzaStreak: 0,
+            pizzaActiveTopping: 'olives', // 'olives', 'corn', 'erase'
+            pizzaSlicesCount: 10, // 10 or 20
+            pizzaTargetToppings: {
+                olives: 0, // required count of slices containing olives
+                corn: 0    // required count of slices containing corn
+            },
+            pizzaSelectedToppings: [], // Array of objects: { olives: boolean, corn: boolean }
+            pizzaTargetTenths: 6, // preserved legacy fallback
+            pizzaSelectedSlices: new Array(10).fill(false) // preserved legacy fallback
         };
 
         // Web Audio API Audio Synthesizer
@@ -1029,9 +1061,7 @@
 
                         q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
                         q.hint = `במכנים שונים, נמצא מכנה משותף שהוא כפולה של שני המכנים: <br>
-                            השבר הראשון ${pair.numA}/${pair.denA} שווה ל-${equivalentNumA}/${commonDen}. <br>
-                            השבר השני ${pair.numB}/${pair.denB} שווה ל-${equivalentNumB}/${commonDen}. <br>
-                            עכשיו נוכל לחבר: ${equivalentNumA}/${commonDen} + ${equivalentNumB}/${commonDen}!`;
+                            המירו את שני השברים כך שיהיה להם מכנה משותף, ואז חברו את המונים שלהם.`;
                         q.visual = generateFractionBarVisual(equivalentNumA, equivalentNumB, commonDen, 'add', `${pair.numA}/${pair.denA} (${equivalentNumA}/${commonDen})`, `${pair.numB}/${pair.denB} (${equivalentNumB}/${commonDen})`);
                     } else {
                         const resultNum = equivalentNumA - equivalentNumB;
@@ -1062,9 +1092,7 @@
 
                         q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
                         q.hint = `במכנים שונים, נמצא מכנה משותף שהוא כפולה של שני המכנים: <br>
-                            השבר הראשון ${pair.numA}/${pair.denA} שווה ל-${equivalentNumA}/${commonDen}. <br>
-                            השבר השני ${pair.numB}/${pair.denB} שווה ל-${equivalentNumB}/${commonDen}. <br>
-                            עכשיו נוכל לחסר: ${equivalentNumA}/${commonDen} - ${equivalentNumB}/${commonDen}!`;
+                            המירו את שני השברים כך שיהיה להם מכנה משותף, ואז החסירו את המונים שלהם.`;
                         q.visual = generateFractionBarVisual(equivalentNumA, equivalentNumB, commonDen, 'sub', `${pair.numA}/${pair.denA} (${equivalentNumA}/${commonDen})`, `${pair.numB}/${pair.denB} (${equivalentNumB}/${commonDen})`);
                     }
                 }
@@ -1097,7 +1125,7 @@
                             </span> כשבר עשרוני?`;
                             q.correctAnswer = resultDec.toFixed(1);
                             q.options = generateDistractors(q.correctAnswer, 'tenths');
-                            q.hint = `נמיר את השבר ${numA}/10 לשבר עשרוני: 0.${numA}. <br> כעת נחבר: 0.${numA} + ${decVal.toFixed(1)} = ${q.correctAnswer}`;
+                            q.hint = `נמיר את השבר ${numA}/10 לשבר עשרוני. כעת נוכל לחבר את שני השברים העשרוניים בקלות!`;
                         } else {
                             q.prompt = `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr">
                                 <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
@@ -1115,7 +1143,7 @@
                                 optionsSet.add(`${rNum}/${den}`);
                             }
                             q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
-                            q.hint = `נמיר את השבר העשרוני ${decVal.toFixed(1)} לשבר פשוט: ${numB}/10. <br> כעת נחבר את המונים: ${numA}/10 + ${numB}/10 = ${q.correctAnswer}`;
+                            q.hint = `נמיר את השבר העשרוני לשבר פשוט בעל מכנה 10. כעת נוכל לחבר את המונים שלהם!`;
                         }
                         q.visual = generateFractionBarVisual(numA, numB, den, 'add', `${numA}/10`, `${decVal.toFixed(1)} (${numB}/10)`);
                     } else {
@@ -1137,7 +1165,7 @@
                             </span> כשבר עשרוני?`;
                             q.correctAnswer = resultDec.toFixed(1);
                             q.options = generateDistractors(q.correctAnswer, 'tenths');
-                            q.hint = `נמיר את השבר ${numA}/10 לשבר עשרוני: 0.${numA}. <br> כעת נחסר: 0.${numA} - ${decVal.toFixed(1)} = ${q.correctAnswer}`;
+                            q.hint = `נמיר את השבר ${numA}/10 לשבר עשרוני. כעת נוכל לבצע חיסור בין השברים העשרוניים!`;
                         } else {
                             q.prompt = `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr">
                                 <span class="inline-flex flex-col items-center bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-200">
@@ -1155,7 +1183,7 @@
                                 optionsSet.add(`${rNum}/${den}`);
                             }
                             q.options = Array.from(optionsSet).sort(() => Math.random() - 0.5);
-                            q.hint = `נמיר את השבר העשרוני ${decVal.toFixed(1)} לשבר פשוט: ${numB}/10. <br> כעת נחסר את המונים: ${numA}/10 - ${numB}/10 = ${q.correctAnswer}`;
+                            q.hint = `נמיר את השבר העשרוני לשבר פשוט בעל מכנה 10. כעת נוכל לבצע חיסור בין המונים!`;
                         }
                         q.visual = generateFractionBarVisual(numA, numB, den, 'sub', `${numA}/10`, `${decVal.toFixed(1)} (${numB}/10)`);
                     }
@@ -1169,7 +1197,7 @@
                             correctAnswer: '0.75',
                             options: ['0.75', '0.65', '0.55', '0.45'],
                             prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>1</span><span class="border-t border-indigo-300 w-full text-center">4</span></span> <span class="text-indigo-600">+</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.5</span></span> כשבר עשרוני?`,
-                            hint: `זכרו שרבע (1/4) שווה ל-0.25 כשבר עשרוני! <br> לכן: 0.25 + 0.5 = 0.75.`,
+                            hint: `נסו להמיר את רבע (1/4) לשבר עשרוני, ואז חברו אותו ל-0.5.`,
                             numA: 25, numB: 50, den: 100, labelA: '1/4 (0.25)', labelB: '0.5 (0.50)'
                         },
                         {
@@ -1180,7 +1208,7 @@
                             correctAnswer: '3/4',
                             options: ['3/4', '1/4', '2/4', '1/2'],
                             prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>1</span><span class="border-t border-indigo-300 w-full text-center">2</span></span> <span class="text-indigo-600">+</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.25</span></span> כשבר פשוט?`,
-                            hint: `נמיר את השבר העשרוני 0.25 לשבר פשוט: 1/4 (רבע). <br> כעת נרחיב את חצי (1/2) לרבעים: 2/4. <br> נחבר: 2/4 + 1/4 = 3/4.`,
+                            hint: `נסו להמיר את השבר העשרוני 0.25 לשבר פשוט, מצאו מכנה משותף של 4, ואז חברו אותם.`,
                             numA: 2, numB: 1, den: 4, labelA: '1/2 (2/4)', labelB: '0.25 (1/4)'
                         },
                         {
@@ -1191,7 +1219,7 @@
                             correctAnswer: '0.25',
                             options: ['0.25', '0.35', '0.15', '0.45'],
                             prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>3</span><span class="border-t border-indigo-300 w-full text-center">4</span></span> <span class="text-indigo-600">-</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.5</span></span> כשבר עשרוני?`,
-                            hint: `זכרו ששלושת רבעי (3/4) שווים ל-0.75 כשבר עשרוני. <br> לכן: 0.75 - 0.5 = 0.25.`,
+                            hint: `המירו את 3/4 לשבר עשרוני, ואז החסירו ממנו 0.5.`,
                             numA: 75, numB: 50, den: 100, labelA: '3/4 (0.75)', labelB: '0.5 (0.50)'
                         },
                         {
@@ -1202,7 +1230,7 @@
                             correctAnswer: '0.35',
                             options: ['0.35', '0.25', '0.45', '0.15'],
                             prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>1</span><span class="border-t border-indigo-300 w-full text-center">2</span></span> <span class="text-indigo-600">-</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.15</span></span> כשבר עשרוני?`,
-                            hint: `חצי (1/2) שווה ל-0.50 כשבר עשרוני. <br> לכן: 0.50 - 0.15 = 0.35.`,
+                            hint: `זכרו שחצי (1/2) הוא 0.50 כשבר עשרוני, נסו להחסיר 0.15 מתוך 0.50.`,
                             numA: 50, numB: 15, den: 100, labelA: '1/2 (0.50)', labelB: '0.15'
                         },
                         {
@@ -1213,7 +1241,7 @@
                             correctAnswer: '0.75',
                             options: ['0.75', '0.65', '0.55', '0.85'],
                             prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>2</span><span class="border-t border-indigo-300 w-full text-center">5</span></span> <span class="text-indigo-600">+</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.35</span></span> כשבר עשרוני?`,
-                            hint: `נמיר את 2/5 לשבר עשרוני: נרחיב ל-4/10 שזה 0.4 (או 0.40). <br> לכן: 0.40 + 0.35 = 0.75.`,
+                            hint: `הרחיבו את השבר 2/5 למכנה 10 כדי לקבל שבר עשרוני נוח, ואז חברו אותו ל-0.35.`,
                             numA: 40, numB: 35, den: 100, labelA: '2/5 (0.40)', labelB: '0.35'
                         },
                         {
@@ -1224,7 +1252,7 @@
                             correctAnswer: '1/2',
                             options: ['1/2', '1/5', '2/5', '3/5'],
                             prompt: `כמה זה <span class="inline-flex items-center gap-1 font-bold" dir="ltr"><span class="inline-flex flex-col items-center bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200"><span>4</span><span class="border-t border-indigo-300 w-full text-center">5</span></span> <span class="text-indigo-600">-</span> <span class="bg-purple-50 px-2 py-0.5 rounded border border-purple-200">0.3</span></span> כשבר פשוט (מוקטן)?`,
-                            hint: `נמיר את 0.3 לשבר פשוט: 3/10. <br> נרחיב את 4/5 למכנה 10: 8/10. <br> נחסר: 8/10 - 3/10 = 5/10. <br> נצמצם את 5/10 ונקבל 1/2!`,
+                            hint: `המירו את 0.3 לשבר פשוט, הרחיבו את 4/5 למכנה משותף של 10, החסירו ואז צמצמו את השבר שקיבלתם.`,
                             numA: 8, numB: 3, den: 10, labelA: '4/5 (8/10)', labelB: '0.3 (3/10)'
                         }
                     ];
@@ -1402,16 +1430,137 @@
             }
         }
 
-        function initPizzaGame() {
-            state.pizzaTargetTenths = Math.floor(Math.random() * 9) + 1;
-            state.pizzaSelectedSlices = new Array(10).fill(false);
+        function setPizzaActiveTopping(topping) {
+            playSound('click');
+            state.pizzaActiveTopping = topping;
 
-            const dec = (state.pizzaTargetTenths / 10).toFixed(1);
-            document.getElementById('pizza-order-text').innerHTML = 
-                `"שלום! אני רוצה פיצה ש- <span class="text-indigo-600 font-black text-xl">${dec}</span> ממנה מכוסה בזיתים!"`;
+            // Update UI buttons
+            ['olives', 'corn', 'erase'].forEach(t => {
+                const btn = document.getElementById(`topping-btn-${t}`);
+                if (btn) {
+                    if (t === topping) {
+                        btn.className = "py-2 px-3 bg-indigo-600 border-2 border-indigo-700 text-white font-extrabold text-sm rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5";
+                    } else {
+                        btn.className = "py-2 px-3 bg-white border-2 border-slate-200 text-slate-700 font-extrabold text-sm rounded-xl transition-all shadow-xs flex items-center justify-center gap-1.5 hover:bg-slate-50";
+                    }
+                }
+            });
+        }
+
+        function initPizzaGame() {
+            // Build progressive difficulty based on current state.pizzaStreak
+            const streak = state.pizzaStreak;
+            let slices = 10;
+            let olivesReq = 0;
+            let cornReq = 0;
+            let orderHTML = "";
+
+            if (streak < 2) {
+                // Easy Stage: 10 Slices, Decimals only, single topping (Olives)
+                slices = 10;
+                olivesReq = Math.floor(Math.random() * 8) + 2; // 2 to 9
+                const dec = (olivesReq / 10).toFixed(1);
+                orderHTML = `שלום! אני רוצה פיצה ש-<span class="text-indigo-600 font-black text-xl">${dec}</span> ממנה מכוסה בתוספת <span class="text-indigo-600 font-black">זיתים</span>! 🫒`;
+            } else if (streak < 4) {
+                // Medium Stage: 10 Slices, simple fractions/decimals, single topping (Olives or Corn)
+                slices = 10;
+                const useCorn = Math.random() > 0.5;
+                const reqValue = [2, 4, 5, 6, 8][Math.floor(Math.random() * 5)]; // nice fractions
+                if (useCorn) {
+                    cornReq = reqValue;
+                    const prob = Math.random();
+                    if (prob < 0.33) {
+                        orderHTML = `אהלן! אשמח לפיצה עם <span class="text-indigo-600 font-black">תירס</span> 🌽 על <span class="text-indigo-600 font-black text-xl">0.${cornReq}</span> מחלקי הפיצה.`;
+                    } else if (prob < 0.66) {
+                        const num = cornReq / 2;
+                        orderHTML = `שלום! אני צריך <span class="text-indigo-600 font-black text-xl">${num}/5</span> פיצה עם תירס 🌽!`;
+                    } else {
+                        const dec = (cornReq / 10).toFixed(1);
+                        orderHTML = `היי, אני רוצה פיצה ש-<span class="text-indigo-600 font-black text-xl">${dec}</span> ממנה מצופה בתירס מתוק 🌽!`;
+                    }
+                } else {
+                    olivesReq = reqValue;
+                    const prob = Math.random();
+                    if (prob < 0.33) {
+                        orderHTML = `שלום שף! אני רוצה <span class="text-indigo-600 font-black text-xl">0.${olivesReq}</span> מהפיצה שלי עם זיתים ירוקים 🫒.`;
+                    } else if (prob < 0.66) {
+                        const num = olivesReq / 2;
+                        orderHTML = `היי, בבקשה תכינו לי <span class="text-indigo-600 font-black text-xl">${num}/5</span> פיצה עם זיתים 🫒!`;
+                    } else {
+                        const dec = (olivesReq / 10).toFixed(1);
+                        orderHTML = `אשמח לקבל פיצה ש-<span class="text-indigo-600 font-black text-xl">${dec}</span> ממנה מכוסה בזיתים 🫒.`;
+                    }
+                }
+            } else if (streak < 6) {
+                // Hard Stage: 10 Slices, Decimals, TWO toppings (Olives and Corn)
+                slices = 10;
+                olivesReq = Math.floor(Math.random() * 4) + 1; // 1 to 4
+                cornReq = Math.floor(Math.random() * 4) + 1;   // 1 to 4
+                const oliveDec = (olivesReq / 10).toFixed(1);
+                const cornDec = (cornReq / 10).toFixed(1);
+                orderHTML = `היי שף! אני רוצה להזמין פיצה מיוחדת: <br>
+                    ש-<span class="text-indigo-600 font-black text-xl">${oliveDec}</span> ממנה יהיה עם <span class="text-indigo-600 font-black">זיתים</span> 🫒 <br>
+                    ו-<span class="text-indigo-600 font-black text-xl">${cornDec}</span> ממנה יהיה עם <span class="text-indigo-600 font-black">תירס</span> 🌽!`;
+            } else {
+                // Master Stage: 20 Slices, Mixed fractions and decimals, TWO toppings (Olives and Corn)
+                slices = 20;
+                // We'll generate nice fractional values matching a 20-slice pizza (denominators: 2, 4, 5, 10, 20)
+                const olivesOptions = [
+                    { label: "0.2", count: 4 },
+                    { label: "0.3", count: 6 },
+                    { label: "1/4", count: 5 },
+                    { label: "1/2", count: 10 },
+                    { label: "2/5", count: 8 },
+                    { label: "3/10", count: 6 },
+                    { label: "0.4", count: 8 },
+                    { label: "3/5", count: 12 },
+                    { label: "0.15", count: 3 }
+                ];
+                const cornOptions = [
+                    { label: "0.2", count: 4 },
+                    { label: "0.25", count: 5 },
+                    { label: "1/4", count: 5 },
+                    { label: "1/5", count: 4 },
+                    { label: "3/4", count: 15 },
+                    { label: "3/5", count: 12 },
+                    { label: "0.35", count: 7 },
+                    { label: "0.45", count: 9 },
+                    { label: "1/10", count: 2 }
+                ];
+                const oliveChoice = olivesOptions[Math.floor(Math.random() * olivesOptions.length)];
+                const cornChoice = cornOptions[Math.floor(Math.random() * cornOptions.length)];
+                olivesReq = oliveChoice.count;
+                cornReq = cornChoice.count;
+
+                orderHTML = `אהלן! הגעתי לפיצריית האתגרים! אשמח לפיצה של <b>20 משולשים</b> שבה: <br>
+                    בדיוק <span class="text-indigo-600 font-black text-xl">${oliveChoice.label}</span> ממנה מכוסה ב<span class="text-indigo-600 font-black">זיתים</span> 🫒 <br>
+                    ובדיוק <span class="text-indigo-600 font-black text-xl">${cornChoice.label}</span> ממנה מכוסה ב<span class="text-indigo-600 font-black">תירס</span> 🌽!`;
+            }
+
+            // Save order settings
+            state.pizzaSlicesCount = slices;
+            state.pizzaTargetToppings = {
+                olives: olivesReq,
+                corn: cornReq
+            };
+            // Fill selected toppings array with empty structures
+            state.pizzaSelectedToppings = Array.from({ length: slices }, () => ({ olives: false, corn: false }));
+
+            // Update legacy fallbacks just in case
+            state.pizzaTargetTenths = olivesReq;
+            state.pizzaSelectedSlices = new Array(slices).fill(false);
+
+            // Update UI elements
+            document.getElementById('pizza-order-text').innerHTML = orderHTML;
+            document.getElementById('pizza-total-slices').innerText = slices;
+            document.getElementById('pizza-instruction-slices-count').innerText = slices;
+            document.getElementById('pizza-streak-display').innerText = `${state.pizzaStreak} 🔥`;
 
             const feedback = document.getElementById('pizza-feedback');
             if (feedback) feedback.classList.add('hidden');
+
+            // Select olives as default active topping tool
+            setPizzaActiveTopping('olives');
 
             renderSVGPizza();
             updatePizzaProgress();
@@ -1423,6 +1572,8 @@
             svg.innerHTML = '';
 
             const cx = 150, cy = 150, r = 135;
+            const slices = state.pizzaSlicesCount;
+            const stepAngle = 360 / slices;
             
             // Crust background
             const crust = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
@@ -1431,90 +1582,159 @@
             crust.setAttribute('r', r);
             crust.setAttribute('fill', '#D97706');
             crust.setAttribute('stroke', '#B45309');
-            crust.setAttribute('stroke-width', '6');
+            crust.setAttribute('stroke-width', '5');
             svg.appendChild(crust);
 
             // Cheese background
             const cheese = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
             cheese.setAttribute('cx', cx);
             cheese.setAttribute('cy', cy);
-            cheese.setAttribute('r', r - 12);
+            cheese.setAttribute('r', r - 10);
             cheese.setAttribute('fill', '#FDE68A');
             svg.appendChild(cheese);
 
-            // 10 equal pie slices (36 degrees each)
-            for (let i = 0; i < 10; i++) {
-                const startAngle = (i * 36 - 90) * (Math.PI / 180);
-                const endAngle = ((i + 1) * 36 - 90) * (Math.PI / 180);
+            // Slices rendering
+            for (let i = 0; i < slices; i++) {
+                const startAngle = (i * stepAngle - 90) * (Math.PI / 180);
+                const endAngle = ((i + 1) * stepAngle - 90) * (Math.PI / 180);
 
-                const x1 = cx + (r - 12) * Math.cos(startAngle);
-                const y1 = cy + (r - 12) * Math.sin(startAngle);
-                const x2 = cx + (r - 12) * Math.cos(endAngle);
-                const y2 = cy + (r - 12) * Math.sin(endAngle);
+                const x1 = cx + (r - 10) * Math.cos(startAngle);
+                const y1 = cy + (r - 10) * Math.sin(startAngle);
+                const x2 = cx + (r - 10) * Math.cos(endAngle);
+                const y2 = cy + (r - 10) * Math.sin(endAngle);
 
                 const slicePath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                const pathData = `M ${cx} ${cy} L ${x1} ${y1} A ${r - 12} ${r - 12} 0 0 1 ${x2} ${y2} Z`;
+                const pathData = `M ${cx} ${cy} L ${x1} ${y1} A ${r - 10} ${r - 10} 0 0 1 ${x2} ${y2} Z`;
                 
                 slicePath.setAttribute('d', pathData);
-                slicePath.setAttribute('fill', state.pizzaSelectedSlices[i] ? 'rgba(234, 179, 8, 0.4)' : 'transparent');
+
+                const toppings = state.pizzaSelectedToppings[i] || { olives: false, corn: false };
+                let fillColor = 'transparent';
+                if (toppings.olives && toppings.corn) {
+                    fillColor = 'rgba(168, 85, 247, 0.25)'; // Purple-ish tint when both are on slice
+                } else if (toppings.olives) {
+                    fillColor = 'rgba(79, 70, 229, 0.15)'; // Indigo tint
+                } else if (toppings.corn) {
+                    fillColor = 'rgba(234, 179, 8, 0.15)'; // Yellow tint
+                }
+
+                slicePath.setAttribute('fill', fillColor);
                 slicePath.setAttribute('stroke', '#D97706');
-                slicePath.setAttribute('stroke-width', '2');
-                slicePath.setAttribute('class', 'transition-colors hover:fill-amber-300/60 cursor-pointer');
+                slicePath.setAttribute('stroke-width', '1.5');
+                slicePath.setAttribute('class', 'transition-colors hover:fill-amber-300/40 cursor-pointer');
                 slicePath.onclick = () => togglePizzaSlice(i);
                 svg.appendChild(slicePath);
 
-                // If slice is selected, render Olives
-                if (state.pizzaSelectedSlices[i]) {
-                    const midAngle = (startAngle + endAngle) / 2;
-                    const oliveR = r * 0.55;
+                // Render Toppings
+                const midAngle = (startAngle + endAngle) / 2;
+
+                // Render Olives if active on slice
+                if (toppings.olives) {
+                    const oliveR = r * (slices === 20 ? 0.65 : 0.55);
                     const ox = cx + oliveR * Math.cos(midAngle);
                     const oy = cy + oliveR * Math.sin(midAngle);
 
                     const olive = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                     olive.setAttribute('cx', ox);
                     olive.setAttribute('cy', oy);
-                    olive.setAttribute('r', '9');
+                    olive.setAttribute('r', slices === 20 ? '7' : '9');
                     olive.setAttribute('fill', '#14532D');
                     olive.setAttribute('stroke', '#052E16');
-                    olive.setAttribute('stroke-width', '3');
+                    olive.setAttribute('stroke-width', '2.5');
                     olive.onclick = () => togglePizzaSlice(i);
                     svg.appendChild(olive);
+                }
+
+                // Render Corn if active on slice
+                if (toppings.corn) {
+                    // Position corn slightly inner or outer from olive to prevent overlapping
+                    const cornR = r * (slices === 20 ? 0.40 : 0.32);
+                    const kx = cx + cornR * Math.cos(midAngle);
+                    const ky = cy + cornR * Math.sin(midAngle);
+
+                    const corn = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                    const size = slices === 20 ? 8 : 11;
+                    corn.setAttribute('x', kx - size/2);
+                    corn.setAttribute('y', ky - size/2);
+                    corn.setAttribute('width', size);
+                    corn.setAttribute('height', size);
+                    corn.setAttribute('rx', '2.5');
+                    corn.setAttribute('fill', '#FACC15');
+                    corn.setAttribute('stroke', '#CA8A04');
+                    corn.setAttribute('stroke-width', '1.5');
+                    corn.onclick = () => togglePizzaSlice(i);
+                    svg.appendChild(corn);
                 }
             }
         }
 
         function togglePizzaSlice(index) {
             playSound('click');
-            state.pizzaSelectedSlices[index] = !state.pizzaSelectedSlices[index];
+            const tool = state.pizzaActiveTopping;
+            if (!state.pizzaSelectedToppings[index]) {
+                state.pizzaSelectedToppings[index] = { olives: false, corn: false };
+            }
+
+            if (tool === 'olives') {
+                state.pizzaSelectedToppings[index].olives = !state.pizzaSelectedToppings[index].olives;
+            } else if (tool === 'corn') {
+                state.pizzaSelectedToppings[index].corn = !state.pizzaSelectedToppings[index].corn;
+            } else if (tool === 'erase') {
+                state.pizzaSelectedToppings[index].olives = false;
+                state.pizzaSelectedToppings[index].corn = false;
+            }
+
+            // sync legacy fallback array
+            state.pizzaSelectedSlices[index] = state.pizzaSelectedToppings[index].olives || state.pizzaSelectedToppings[index].corn;
+
             renderSVGPizza();
             updatePizzaProgress();
         }
 
         function updatePizzaProgress() {
-            const count = state.pizzaSelectedSlices.filter(Boolean).length;
-            const dec = (count / 10).toFixed(1);
+            let olivesCount = 0;
+            let cornCount = 0;
 
-            document.getElementById('pizza-count-display').innerText = count;
-            document.getElementById('pizza-decimal-display').innerText = dec;
+            state.pizzaSelectedToppings.forEach(t => {
+                if (t.olives) olivesCount++;
+                if (t.corn) cornCount++;
+            });
+
+            document.getElementById('pizza-olives-count').innerText = olivesCount;
+            document.getElementById('pizza-corn-count').innerText = cornCount;
         }
 
         function checkPizzaOrder() {
-            const count = state.pizzaSelectedSlices.filter(Boolean).length;
+            let olivesCount = 0;
+            let cornCount = 0;
+
+            state.pizzaSelectedToppings.forEach(t => {
+                if (t.olives) olivesCount++;
+                if (t.corn) cornCount++;
+            });
+
+            const reqOlives = state.pizzaTargetToppings.olives;
+            const reqCorn = state.pizzaTargetToppings.corn;
+
+            const olivesCorrect = (olivesCount === reqOlives);
+            const cornCorrect = (cornCount === reqCorn);
+
             const feedback = document.getElementById('pizza-feedback');
 
-            if (count === state.pizzaTargetTenths) {
+            if (olivesCorrect && cornCorrect) {
                 playSound('correct');
                 if (window.confetti) {
-                    confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
+                    confetti({ particleCount: 65, spread: 75, origin: { y: 0.7 } });
                 }
 
-                state.stars += 15;
+                state.stars += 20;
+                state.pizzaStreak += 1;
                 state.streak += 1;
                 updateGamificationUI();
 
                 if (feedback) {
                     feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-emerald-100 text-emerald-800 border border-emerald-200';
-                    feedback.innerText = 'הזמנה מושלמת! הלקוח מרוצה מאוד! 🍕⭐ (+15)';
+                    feedback.innerText = 'הזמנה מושלמת! הלקוח מרוצה מאוד! 🍕⭐ (+20 נקודות)';
                     feedback.classList.remove('hidden');
                 }
 
@@ -1524,12 +1744,22 @@
 
             } else {
                 playSound('wrong');
+                state.pizzaStreak = 0;
                 state.streak = 0;
                 updateGamificationUI();
 
+                let errorMsg = "אופס! משהו בהזמנה לא מדויק: <br>";
+                if (!olivesCorrect) {
+                    errorMsg += `• כמות ה<b>זיתים</b> אינה נכונה! 🫒 <br>`;
+                }
+                if (!cornCorrect) {
+                    errorMsg += `• כמות ה<b>תירס</b> אינה נכונה! 🌽 <br>`;
+                }
+                errorMsg += "חשבו מחדש, תקנו את התוספות או השתמשו במחק!";
+
                 if (feedback) {
                     feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-rose-100 text-rose-800 border border-rose-200';
-                    feedback.innerText = `כמעט! סימנת ${count} משולשים, אבל הלקוח ביקש ${(state.pizzaTargetTenths / 10).toFixed(1)} (${state.pizzaTargetTenths} משולשים).`;
+                    feedback.innerHTML = errorMsg;
                     feedback.classList.remove('hidden');
                 }
             }
