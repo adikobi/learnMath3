@@ -410,7 +410,7 @@
                 <div>
                     <span class="px-3 py-1 bg-white/20 text-white text-xs font-bold rounded-full mb-1 inline-block">משחקון חווייתי 🍕</span>
                     <h2 class="text-2xl font-black">פיצריית הכפל והחילוק של פיצי!</h2>
-                    <p class="text-xs md:text-sm text-amber-100">הכינו ללקוחות את הפיצה עם כמות הזיתים המדויקת לפי הסיפור החשבוני!</p>
+                    <p class="text-xs md:text-sm text-amber-100">הכינו ללקוחות את הפיצה עם כמות התוספות המדויקת לפי הסיפור החשבוני!</p>
                 </div>
                 <div class="text-4xl">👨‍🍳</div>
             </div>
@@ -421,18 +421,38 @@
                 <div class="space-y-4">
                     <div class="bg-amber-50 border-2 border-amber-200 p-4 rounded-2xl relative">
                         <div class="text-xs font-bold text-amber-700 mb-1">📋 סיפור ההזמנה של הלקוח:</div>
-                        <div id="pizza-order-text" class="text-lg font-extrabold text-slate-800">
-                            "אני רוצה פיצה שיהיו עליה <span class="text-indigo-600 font-black">2 × 3</span> זיתים!"
+                        <div id="pizza-order-text" class="text-lg font-extrabold text-slate-800 leading-relaxed">
+                            "אני רוצה פיצה עם תוספות!"
                         </div>
                     </div>
 
-                    <div class="text-slate-600 text-sm space-y-2">
-                        <p>👉 לחצו על משולשי הפיצה כדי להוסיף או להסיר זיתים.</p>
-                        <p>👉 פתרו את שאלת הכפל או החילוק כדי לגלות כמה זיתים דרושים בדיוק!</p>
+                    <!-- Topping Selection Buttons -->
+                    <div class="space-y-2">
+                        <span class="text-xs font-bold text-slate-500 block">בחר תוספת להנחה:</span>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="topping-btn-olive" onclick="setPizzaTopping('olive')" class="py-2.5 px-3 rounded-xl font-bold text-sm transition-all border-2 border-green-600 bg-green-50 text-green-800 flex items-center justify-center gap-2">
+                                🟢 זיתים ירוקים
+                            </button>
+                            <button id="topping-btn-corn" onclick="setPizzaTopping('corn')" class="py-2.5 px-3 rounded-xl font-bold text-sm transition-all border-2 border-slate-200 bg-white text-slate-700 hover:bg-amber-50 flex items-center justify-center gap-2">
+                                🌽 תירס מתוק
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="bg-slate-50 p-3 rounded-xl flex items-center justify-between font-bold text-sm">
-                        <span>משולשים מסומנים: <span id="pizza-count-display" class="text-indigo-600 font-black text-lg">0</span> / 10</span>
+                    <div class="text-slate-600 text-sm space-y-1.5 pt-1">
+                        <p>👉 <strong>בחר תוספת</strong> מלמעלה, ואז לחץ על משולשי הפיצה כדי לשים או להסיר אותה!</p>
+                        <p>👉 פתרו את שאלת הכפל/חילוק בהזמנה כדי לדעת כמה לשים מכל סוג!</p>
+                    </div>
+
+                    <div class="bg-slate-50 p-3 rounded-xl grid grid-cols-2 gap-2 font-bold text-xs text-center">
+                        <div class="bg-white p-2 rounded-lg border border-slate-200">
+                            <span class="block text-slate-500">זיתים שהנחת:</span>
+                            <span id="pizza-olives-count" class="text-green-700 font-extrabold text-lg">0</span>
+                        </div>
+                        <div class="bg-white p-2 rounded-lg border border-slate-200">
+                            <span class="block text-slate-500">תירס שהנחת:</span>
+                            <span id="pizza-corn-count" class="text-amber-600 font-extrabold text-lg">0</span>
+                        </div>
                     </div>
 
                     <div id="pizza-feedback" class="hidden p-3 rounded-xl font-bold text-center text-sm"></div>
@@ -466,8 +486,10 @@
             totalLessonSteps: 4,
             difficulty: 'simple-mul',
             currentQuestion: null,
-            pizzaTargetVal: 6,
-            pizzaSelectedSlices: new Array(10).fill(false)
+            pizzaTargetOlives: 3,
+            pizzaTargetCorn: 3,
+            pizzaSelectedTopping: 'olive', // 'olive' or 'corn'
+            pizzaSlices: Array.from({length: 10}, () => ({ olive: false, corn: false }))
         };
 
         // Web Audio API Audio Synthesizer
@@ -676,7 +698,7 @@
             if (!container) return;
             container.innerHTML = '';
 
-            for (let g = 0; r = 0, g < groups; g++) {
+            for (let g = 0; g < groups; g++) {
                 const plate = document.createElement('div');
                 plate.className = 'w-24 p-3 bg-white border-2 border-indigo-200 rounded-full flex flex-col items-center gap-1 shadow-xs';
                 plate.innerHTML = `<span class="text-[10px] text-slate-400 font-bold block">צלחת ${g+1}</span>`;
@@ -968,24 +990,77 @@
             }
         }
 
-        function initPizzaGame() {
-            const isMul = Math.random() > 0.5;
-            let a, b, text;
-            if (isMul) {
-                a = Math.floor(Math.random() * 3) + 2; // 2 to 4
-                b = Math.floor(Math.random() * 2) + 1; // 1 to 2
-                state.pizzaTargetVal = a * b;
-                text = `"שלום! אני רוצה פיצה שיהיו עליה <span class="text-indigo-600 font-black text-xl">${a} כפול ${b}</span> זיתים!"`;
+        function setPizzaTopping(topping) {
+            playSound('click');
+            state.pizzaSelectedTopping = topping;
+
+            const btnOlive = document.getElementById('topping-btn-olive');
+            const btnCorn = document.getElementById('topping-btn-corn');
+
+            if (topping === 'olive') {
+                btnOlive.className = 'py-2.5 px-3 rounded-xl font-bold text-sm transition-all border-2 border-green-600 bg-green-50 text-green-800 flex items-center justify-center gap-2';
+                btnCorn.className = 'py-2.5 px-3 rounded-xl font-bold text-sm transition-all border-2 border-slate-200 bg-white text-slate-700 hover:bg-amber-50 flex items-center justify-center gap-2';
             } else {
-                b = Math.floor(Math.random() * 2) + 2; // 2 to 3
-                const ans = Math.floor(Math.random() * 3) + 2; // 2 to 4
-                a = b * ans;
-                state.pizzaTargetVal = ans;
-                text = `"שלום! אני רוצה פיצה שיהיו עליה <span class="text-indigo-600 font-black text-xl">${a} לחלק ל-${b}</span> זיתים!"`;
+                btnOlive.className = 'py-2.5 px-3 rounded-xl font-bold text-sm transition-all border-2 border-slate-200 bg-white text-slate-700 hover:bg-green-50 flex items-center justify-center gap-2';
+                btnCorn.className = 'py-2.5 px-3 rounded-xl font-bold text-sm transition-all border-2 border-amber-500 bg-amber-50 text-amber-800 flex items-center justify-center gap-2';
+            }
+        }
+
+        function initPizzaGame() {
+            // Generate standard or advanced level questions
+            const gameMode = Math.random() > 0.5 ? 'advanced' : 'standard';
+
+            if (gameMode === 'advanced') {
+                // E.g. "I want 2 groups of 3 olives, and half that amount of corn"
+                const factor = Math.floor(Math.random() * 2) + 2; // 2 or 3
+                const base = 2;
+                const olives = factor * base; // 4 or 6
+                const corn = olives / 2; // 2 or 3
+
+                state.pizzaTargetOlives = olives;
+                state.pizzaTargetCorn = corn;
+
+                document.getElementById('pizza-order-text').innerHTML = `
+                    "אני רוצה פיצה מאתגרת: <span class="text-green-600 font-black">${factor} קבוצות של ${base} זיתים</span>, <br>
+                    ומספר תוספות תירס השווה בדיוק ל<span class="text-amber-500 font-black">חצי</span> מכמות הזיתים!"
+                `;
+            } else {
+                // Multiplication / Division logic for toppings
+                const isMulOlive = Math.random() > 0.5;
+                const isMulCorn = Math.random() > 0.5;
+
+                let oA, oB, cA, cB;
+                if (isMulOlive) {
+                    oA = Math.floor(Math.random() * 2) + 2; // 2 to 3
+                    oB = 2;
+                    state.pizzaTargetOlives = oA * oB;
+                } else {
+                    oA = 6;
+                    oB = Math.random() > 0.5 ? 2 : 3;
+                    state.pizzaTargetOlives = oA / oB;
+                }
+
+                if (isMulCorn) {
+                    cA = Math.floor(Math.random() * 2) + 2; // 2 to 3
+                    cB = 2;
+                    state.pizzaTargetCorn = cA * cB;
+                } else {
+                    cA = 8;
+                    cB = Math.random() > 0.5 ? 2 : 4;
+                    state.pizzaTargetCorn = cA / cB;
+                }
+
+                const oliveExpr = isMulOlive ? `${oA} × ${oB}` : `${oA} ÷ ${oB}`;
+                const cornExpr = isMulCorn ? `${cA} × ${cB}` : `${cA} ÷ ${cB}`;
+
+                document.getElementById('pizza-order-text').innerHTML = `
+                    "היי! אני רוצה פיצה שיהיו עליה <span class="text-green-600 font-black" dir="ltr">${oliveExpr}</span> זיתים, <br>
+                    ועוד <span class="text-amber-500 font-black" dir="ltr">${cornExpr}</span> תוספות תירס מתוק!"
+                `;
             }
 
-            state.pizzaSelectedSlices = new Array(10).fill(false);
-            document.getElementById('pizza-order-text').innerHTML = text;
+            state.pizzaSlices = Array.from({length: 10}, () => ({ olive: false, corn: false }));
+            setPizzaTopping('olive');
 
             const feedback = document.getElementById('pizza-feedback');
             if (feedback) feedback.classList.add('hidden');
@@ -1033,49 +1108,103 @@
                 const pathData = `M ${cx} ${cy} L ${x1} ${y1} A ${r - 12} ${r - 12} 0 0 1 ${x2} ${y2} Z`;
 
                 slicePath.setAttribute('d', pathData);
-                slicePath.setAttribute('fill', state.pizzaSelectedSlices[i] ? 'rgba(234, 179, 8, 0.4)' : 'transparent');
+                const hasToppings = state.pizzaSlices[i].olive || state.pizzaSlices[i].corn;
+                slicePath.setAttribute('fill', hasToppings ? 'rgba(234, 179, 8, 0.2)' : 'transparent');
                 slicePath.setAttribute('stroke', '#D97706');
                 slicePath.setAttribute('stroke-width', '2');
                 slicePath.setAttribute('class', 'transition-colors hover:fill-amber-300/60 cursor-pointer');
-                slicePath.onclick = () => togglePizzaSlice(i);
+                slicePath.onclick = () => togglePizzaSliceTopping(i);
                 svg.appendChild(slicePath);
 
-                if (state.pizzaSelectedSlices[i]) {
-                    const midAngle = (startAngle + endAngle) / 2;
-                    const oliveR = r * 0.55;
+                const midAngle = (startAngle + endAngle) / 2;
+
+                // Render Olive
+                if (state.pizzaSlices[i].olive) {
+                    const oliveR = r * 0.45;
                     const ox = cx + oliveR * Math.cos(midAngle);
                     const oy = cy + oliveR * Math.sin(midAngle);
 
                     const olive = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
                     olive.setAttribute('cx', ox);
                     olive.setAttribute('cy', oy);
-                    olive.setAttribute('r', '9');
+                    olive.setAttribute('r', '8');
                     olive.setAttribute('fill', '#14532D');
                     olive.setAttribute('stroke', '#052E16');
-                    olive.setAttribute('stroke-width', '3');
-                    olive.onclick = () => togglePizzaSlice(i);
+                    olive.setAttribute('stroke-width', '2.5');
+                    olive.setAttribute('class', 'cursor-pointer');
+                    olive.onclick = (e) => {
+                        e.stopPropagation();
+                        togglePizzaSliceTopping(i);
+                    };
                     svg.appendChild(olive);
+                }
+
+                // Render Corn (drawn as 3 little yellow circles together)
+                if (state.pizzaSlices[i].corn) {
+                    const cornR = r * 0.68;
+                    const cx_offset = cx + cornR * Math.cos(midAngle);
+                    const cy_offset = cy + cornR * Math.sin(midAngle);
+
+                    // Group of 3 small corn kernels
+                    const offsets = [
+                        {dx: -5, dy: -3},
+                        {dx: 5, dy: -3},
+                        {dx: 0, dy: 4}
+                    ];
+
+                    offsets.forEach(off => {
+                        const cornKernel = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        cornKernel.setAttribute('cx', cx_offset + off.dx);
+                        cornKernel.setAttribute('cy', cy_offset + off.dy);
+                        cornKernel.setAttribute('r', '4');
+                        cornKernel.setAttribute('fill', '#F59E0B');
+                        cornKernel.setAttribute('stroke', '#D97706');
+                        cornKernel.setAttribute('stroke-width', '1');
+                        cornKernel.setAttribute('class', 'cursor-pointer');
+                        cornKernel.onclick = (e) => {
+                            e.stopPropagation();
+                            togglePizzaSliceTopping(i);
+                        };
+                        svg.appendChild(cornKernel);
+                    });
                 }
             }
         }
 
-        function togglePizzaSlice(index) {
+        function togglePizzaSliceTopping(index) {
             playSound('click');
-            state.pizzaSelectedSlices[index] = !state.pizzaSelectedSlices[index];
+            const top = state.pizzaSelectedTopping; // 'olive' or 'corn'
+            state.pizzaSlices[index][top] = !state.pizzaSlices[index][top];
             renderSVGPizza();
             updatePizzaProgress();
         }
 
         function updatePizzaProgress() {
-            const count = state.pizzaSelectedSlices.filter(Boolean).length;
-            document.getElementById('pizza-count-display').innerText = count;
+            let olivesCount = 0;
+            let cornCount = 0;
+            state.pizzaSlices.forEach(sl => {
+                if (sl.olive) olivesCount++;
+                if (sl.corn) cornCount++;
+            });
+
+            document.getElementById('pizza-olives-count').innerText = olivesCount;
+            document.getElementById('pizza-corn-count').innerText = cornCount;
         }
 
         function checkPizzaOrder() {
-            const count = state.pizzaSelectedSlices.filter(Boolean).length;
+            let olivesCount = 0;
+            let cornCount = 0;
+            state.pizzaSlices.forEach(sl => {
+                if (sl.olive) olivesCount++;
+                if (sl.corn) cornCount++;
+            });
+
             const feedback = document.getElementById('pizza-feedback');
 
-            if (count === state.pizzaTargetVal) {
+            const oliveCorrect = olivesCount === state.pizzaTargetOlives;
+            const cornCorrect = cornCount === state.pizzaTargetCorn;
+
+            if (oliveCorrect && cornCorrect) {
                 playSound('correct');
                 if (window.confetti) {
                     confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
@@ -1087,7 +1216,7 @@
 
                 if (feedback) {
                     feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-emerald-100 text-emerald-800 border border-emerald-200';
-                    feedback.innerText = `הזמנה מושלמת! סימנתם ${count} זיתים כמו שצריך! 🍕⭐ (+15)`;
+                    feedback.innerText = `הזמנה מושלמת! סימנתם ${olivesCount} זיתים ו-${cornCount} תירס בדיוק כמו שצריך! 🍕⭐ (+15)`;
                     feedback.classList.remove('hidden');
                 }
 
@@ -1102,7 +1231,7 @@
 
                 if (feedback) {
                     feedback.className = 'p-3 rounded-xl font-bold text-center text-sm bg-rose-100 text-rose-800 border border-rose-200';
-                    feedback.innerText = `כמעט! סימנתם ${count} משולשים, אבל הלקוח ביקש ${state.pizzaTargetVal} זיתים בסך הכל. פתרו את התרגיל ונסו שוב!`;
+                    feedback.innerText = `לא לגמרי מדויק! הנחתם ${olivesCount} זיתים ו-${cornCount} תירס, אך הלקוח ביקש ${state.pizzaTargetOlives} זיתים ו-${state.pizzaTargetCorn} תירס. חשבו את התרגיל ונסו שוב!`;
                     feedback.classList.remove('hidden');
                 }
             }
